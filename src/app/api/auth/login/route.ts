@@ -2,6 +2,7 @@ import { rateLimitInstance } from '@/lib/redis';
 import { directus, generateAndHashOtp } from '@/lib/utils';
 import { readItem, updateItems } from '@directus/sdk';
 import { NextResponse } from 'next/server';
+import { sendEmail } from '@/lib/helpers';
 
 export async function POST(req: Request) {
     const ip = req.headers.get('x-forwarded-for') || "no-ip";
@@ -36,8 +37,10 @@ export async function POST(req: Request) {
                 action: 'login'
             }))
             // mail the otp to the user
+            const emailSent = await sendEmail(email, otp.toString());
+
             NextResponse.json({
-                message: 'OTP sent to your email'
+                message: emailSent ? 'OTP sent to your email' : 'Failed to send OTP to your email'
             })
         }
     }
