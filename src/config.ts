@@ -8,6 +8,10 @@ const config: ConfigProps = {
         port: parseInt(process.env.REDIS_PORT!),
         password: process.env.REDIS_PASSWORD!,
     },
+    email: {
+        admin: process.env.ADMIN_EMAIL_ID!,
+        adminPwd: process.env.ADMIN_EMAIL_PASSWORD!,
+    }
 }
 
 export default config
