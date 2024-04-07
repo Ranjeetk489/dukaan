@@ -1,5 +1,7 @@
 import config from '@/config';
 import nodemailer from 'nodemailer';
+import jwt from 'jsonwebtoken';
+import { NextResponse } from 'next/server';
 
 export async function sendEmail(to: string, otp: string) {
     try {
@@ -52,4 +54,30 @@ function generateEmailText(name: string, otp: string): string {
                     </div>
                 </div>
             </div>`;
+}
+
+
+function createToken(payload: object, secret: string, expiresIn: string): string {
+    return jwt.sign(payload, secret, { expiresIn});
+}
+
+function verifyToken(token: string, secret: string): string | object {
+    return jwt.verify(token, secret);
+}
+
+export const jwtHelpers = {
+    createToken,
+    verifyToken
+}
+
+export const responseHelper = (message: object, status: number, limit?: number, remaining?: number) => {
+    const response = new NextResponse(JSON.stringify({ message }), { status })
+    response.headers.set('Content-Type', 'application/json');
+    if(limit) {
+        response.headers.set('X-RateLimit-Limit', limit.toString());
+    }
+    if(remaining) {
+        response.headers.set('X-RateLimit-Remaining', remaining.toString());
+    }
+    return response;
 }
