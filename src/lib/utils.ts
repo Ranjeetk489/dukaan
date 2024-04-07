@@ -28,4 +28,6 @@ export const generateAndHashOtp = async () => {
   return {otp, hashedOtp}
 }
 
-
+export const verifyOtp = async (otp: string, hashedOtp: string) => {
+  return await bcrypt.compare(otp, hashedOtp)
+}

@@ -1,5 +1,4 @@
-import React from "react";
-
+"use client"
 type Props = {};
 
 import Link from "next/link";
@@ -14,16 +13,27 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { withAuthDirectus } from "@/lib/utils";
+import { useState } from "react";
+import { InputOTPForm } from "@/components/block/InputOtpForm";
 
-export function LoginForm() {
+export default function LoginForm() {
+   const [showOtpScreen, setShowOtpScreen] = useState(false)
+   const [email, setEmail] = useState("")
 
-    const handleSubmit = (formData: FormData) => {
-        "use server"
-        const email = formData.get("email") as string
-        const password = formData.get("password") as string
-        const response = withAuthDirectus.login(email, password)
-        console.log(response)
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault()
+        const formData = new FormData(event.currentTarget); 
+        const email = formData.get("email")
+        await fetch("/api/auth/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email })
+        })
+        setShowOtpScreen(true)
     }
+
   return (
     <div className="flex justify-center items-center h-screen">
       <div>
@@ -36,7 +46,8 @@ export function LoginForm() {
           </CardHeader>
           <CardContent>
             {/* @ts-ignore */}
-            <form action={handleSubmit} className="grid gap-4">
+            {showOtpScreen ? <InputOTPForm fieldState={{email}}/> :
+            <form onSubmit={handleSubmit} className="grid gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -45,18 +56,9 @@ export function LoginForm() {
                   name="email"
                   placeholder="m@example.com"
                   required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}  
                 />
-              </div>
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  <Link
-                    href="#"
-                    className="ml-auto inline-block text-sm underline">
-                    Forgot your password?
-                  </Link>
-                </div>
-                <Input id="password" type="password" name="password" required />
               </div>
               <Button type="submit" className="w-full">
                 Login
@@ -64,7 +66,7 @@ export function LoginForm() {
               <Button variant="outline" className="w-full">
                 Login with Google
               </Button>
-            </form>
+            </form> }
             <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{" "}
               <Link href="#" className="underline">
@@ -77,3 +79,10 @@ export function LoginForm() {
     </div>
   );
 }
+
+
+
+
+
+
+

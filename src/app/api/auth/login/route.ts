@@ -1,50 +1,70 @@
-import { rateLimitInstance } from '@/lib/redis';
 import { directus, generateAndHashOtp } from '@/lib/utils';
-import { readItem, updateItems } from '@directus/sdk';
-import { NextResponse } from 'next/server';
-import { sendEmail } from '@/lib/helpers';
+import { readItems, updateItem, createItem } from '@directus/sdk';
+import { responseHelper, sendEmail } from '@/lib/helpers';
+import rateLimit from '@/lib/ratelimit';
+import { AuthRequest } from '@/types/api';
+
+const limiter = rateLimit({
+    interval: 60 * 1000, // 60 seconds
+    uniqueTokenPerInterval: 10, // Max 10 users per second
+});
 
 export async function POST(req: Request) {
-    const ip = req.headers.get('x-forwarded-for') || "no-ip";
-    const rateLimit = await rateLimitInstance(5, '60s');
-    const ratelimit = await rateLimit.limit(`${ip}-login`);
-    
-    const response = new NextResponse();
-    response.headers.set('X-RateLimit-Limit', ratelimit.limit.toString());
-    response.headers.set('X-RateLimit-Remaining', ratelimit.remaining.toString());
-    response.headers.set('X-RateLimit-Reset', ratelimit.reset.toString());
+    try {
+        const ip = req.headers.get('x-forwarded-for') || "no-ip";
+        const token = `${ip}-signup`;
+        const { remaining, limit } = await limiter.check(10, token);
 
-    if (!ratelimit.success) {
-        return new NextResponse('Too many requests', { status: 429 });
-    }
+        const { email } = await req.json();
+        if (!email) {
+            return responseHelper({ message: 'Email is missing' }, 400, limit, remaining);
+        }
 
-    // check if email exists in the database
-    const { email } = await req.json()
-    if(email) {
-        const isEmailExists = await directus.request(readItem('users', 'email', {
+        const isEmailExists = await directus.request(readItems('users', {
+            filter: { email: { _eq: email } }
+        }));
+
+        if (!isEmailExists.length) {
+            return responseHelper({ message: 'Email not found' }, 400, limit, remaining);
+        }
+
+        const { otp, hashedOtp } = await generateAndHashOtp();
+        const authRequestExists = await directus.request(readItems('auth_requests', {
             filter: {
-                email
+                email: { _eq: email },
+                action: { _eq: 'login' }
             }
-        }))
-        if(isEmailExists) {
-            const {otp, hashedOtp} = await generateAndHashOtp()
-            await directus.request(updateItems("auth_request", ['created_at', 'updated_at', 'hashed_otp', 'email', 'status' , 'action'], {
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
+        }));
+
+        if (authRequestExists.length) {
+            const requestObj = authRequestExists[0] as AuthRequest;
+            await directus.request(updateItem('auth_requests', requestObj.id, {
+                date_updated: new Date().toISOString(),
+                hashed_otp: hashedOtp,
+                status: 'pending',
+                action: 'login'
+            }));
+        } else {
+            await directus.request(createItem('auth_requests', {
+                date_created: new Date().toISOString(),
+                date_updated: new Date().toISOString(),
                 hashed_otp: hashedOtp,
                 email,
                 status: 'pending',
                 action: 'login'
-            }))
-            // mail the otp to the user
-            const emailSent = await sendEmail(email, otp.toString());
-
-            NextResponse.json({
-                message: emailSent ? 'OTP sent to your email' : 'Failed to send OTP to your email'
-            })
+            }));
         }
-    }
-    
 
-    return response; // Make sure to return a response for successful requests as well
+        try {
+            sendEmail(email, otp.toString());
+        } catch (err) {
+            console.error('Error sending email:', err);
+            // Notify admin or handle error
+        }
+
+        return responseHelper({ message: 'OTP sent to your email' }, 200, limit, remaining);
+    } catch (err) {
+        console.error('Internal server error:', err);
+        return responseHelper({ message: 'Internal server error' }, 500);
+    }
 }
