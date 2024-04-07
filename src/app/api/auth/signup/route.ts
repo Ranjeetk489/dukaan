@@ -2,7 +2,7 @@ import { rateLimitInstance } from '@/lib/redis';
 import { directus, generateAndHashOtp } from '@/lib/utils';
 import { readItem, updateItems } from '@directus/sdk';
 import { NextResponse } from 'next/server';
-import { sendEmail } from '../../email';
+import { sendEmail } from '@/lib/helpers';
 
 export async function POST(req: Request) {
     const ip = req.headers.get('x-forwarded-for') || "no-ip";
