@@ -6,4 +6,9 @@ export interface ConfigProps {
         port: number;
         password: string;
     };
+    email: {
+        admin: string;
+        adminPwd: string;
+    }
 }
+

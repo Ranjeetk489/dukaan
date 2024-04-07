@@ -1,23 +1,21 @@
+import config from '@/config';
 import nodemailer from 'nodemailer';
 
 export async function sendEmail(to: string, otp: string) {
     try {
-        const { ADMIN_EMAIL_ID, ADMIN_EMAIL_PASSWORD } = process.env;
-
         // Create a Nodemailer transporter with SMTP settings
         const transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
             port: 587,
             secure: false, // true for 465, false for other ports
             auth: {
-                user: ADMIN_EMAIL_ID,
-                pass: ADMIN_EMAIL_PASSWORD,
+                user: config.email.admin,
+                pass: config.email.adminPwd,
             },
         });
-
         // Define email options
         const mailOptions = {
-            from: ADMIN_EMAIL_ID,
+            from: config.email.admin,
             to,
             subject: 'OTP Verification',
             text: `Your OTP is ${otp}`,
@@ -35,7 +33,7 @@ export async function sendEmail(to: string, otp: string) {
 
 
 function generateEmailText(name: string, otp: string): string {
-    const BRAND_NAME = process.env.BRAND_NAME;
+    const BRAND_NAME = config.appName;
 
     return `<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
                 <div style="margin:50px auto;width:70%;padding:20px 0">
