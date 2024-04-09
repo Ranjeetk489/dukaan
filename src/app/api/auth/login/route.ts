@@ -19,7 +19,7 @@ export async function POST(req: Request) {
         if (!email) {
             return responseHelper({ message: 'Email is missing' }, 400, limit, remaining);
         }
-
+        //@ts-ignore
         const isEmailExists = await directus.request(readItems('users', {
             filter: { email: { _eq: email } }
         }));
@@ -29,6 +29,7 @@ export async function POST(req: Request) {
         }
 
         const { otp, hashedOtp } = await generateAndHashOtp();
+        //@ts-ignore
         const authRequestExists = await directus.request(readItems('auth_requests', {
             filter: {
                 email: { _eq: email },

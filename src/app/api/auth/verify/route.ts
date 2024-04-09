@@ -19,6 +19,7 @@ export async function POST(req: Request) {
         const token = `${ip}-verify`
         const { remaining, limit } = await limiter.check(10, token)
         const { otp, email, first_name, last_name } = await req.json()
+        //@ts-ignore
         const authRequest = await directus.request(readItems('auth_requests', {
             filter: {
                 email: {
@@ -37,6 +38,7 @@ export async function POST(req: Request) {
         if (requestObj.action === 'login') {
             const isVerified = await verifyOtp(otp, requestObj.hashed_otp)
             if (isVerified) {
+                //@ts-ignore
                 const user = await directus.request(readItems('users', {
                     filter: { email: { _eq: email } }
                 }));
