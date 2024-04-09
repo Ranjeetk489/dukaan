@@ -61,6 +61,7 @@ function createToken(payload: object, secret: string, expiresIn: string): string
     return jwt.sign(payload, secret, { expiresIn});
 }
 
+// Not use this function => goto lib/auth
 function verifyToken(token: string, secret: string): string | object {
     return jwt.verify(token, secret);
 }
