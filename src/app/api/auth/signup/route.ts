@@ -21,11 +21,13 @@ export async function POST(req: Request) {
         }
 
         const userFilter = { filter: { email: { _eq: email } } };
+        //@ts-expect-error
         const isEmailExists = await directus.request(readItems('users', userFilter));
 
         const { otp, hashedOtp } = await generateAndHashOtp();
         const action = isEmailExists.length ? 'login' : 'signup';
         const authRequestFilter = { filter: { email: { _eq: email }, action: { _eq: action } } };
+        //@ts-expect-error
         const authRequestExists = await directus.request(readItems('auth_requests', authRequestFilter));
         if (authRequestExists.length) {
             const requestObj = authRequestExists[0] as AuthRequest;
