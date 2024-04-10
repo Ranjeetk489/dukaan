@@ -24,13 +24,19 @@ export default function LoginForm() {
         event.preventDefault()
         const formData = new FormData(event.currentTarget); 
         const email = formData.get("email")
-        await fetch("/api/auth/login", {
+        let response = await fetch("/api/auth/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({ email })
         })
+console.log(response, "response")
+        if(response && response.status === 400) {
+          // TODO: go to Sign up page with email
+          return;
+        }
+        console.log(response, "response")
         setShowOtpScreen(true)
     }
 
