@@ -4,34 +4,32 @@ import Config from "../src/config";
 import { verifyAuth } from "./lib/auth";
 
 export async function middleware(req: NextRequest) {
-
     let token = req.cookies?.get("token")?.value;
+    const BASE_URL = 'http://localhost:3000';
 
     if (!token) {
-        return NextResponse.redirect(new URL("/login", req.url))
+        return NextResponse.redirect(BASE_URL + "/auth/login");
     }
-    let verificationToken = await verifyAuth(token, Config.jwtSecret)
-    // console.log(verificationToken, "verificationToken", req.nextUrl.pathname)
 
-    if (req.nextUrl.pathname.startsWith("/login") && !verificationToken) {
+    let verificationToken = await verifyAuth(token, Config.jwtSecret);
+
+    if (req.nextUrl.pathname.startsWith(BASE_URL + "/auth/login") && !verificationToken) {
         return;
     }
 
-    if (req.nextUrl.pathname.startsWith("/login") && verificationToken) {
-        return NextResponse.redirect(new URL("/products", req.url))
+    if (req.nextUrl.pathname.startsWith(BASE_URL + "/auth/login") && verificationToken) {
+        return NextResponse.redirect(BASE_URL + "/products");
     }
 
     if (!verificationToken) {
-        return NextResponse.redirect(new URL("/login", req.url))
+        return NextResponse.redirect(BASE_URL + "/auth/login");
     }
 
-    return NextResponse.next()
+    return NextResponse.next();
 }
 
-
-
 const config = {
-    matcher: ["/", "/products", "/login"],
+    matcher: ["/products", "/auth/login"],
 };
 
 export { config };

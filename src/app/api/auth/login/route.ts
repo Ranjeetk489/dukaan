@@ -17,7 +17,7 @@ export async function POST(req: Request) {
 
         const { email } = await req.json();
         if (!email) {
-            return responseHelper({ message: 'Email is missing' }, 400, limit, remaining);
+            return responseHelper({ message: 'Email is missing', status: 400 }, 200, limit, remaining);
         }
         //@ts-ignore
         const isEmailExists = await directus.request(readItems('users', {
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
         }));
 
         if (!isEmailExists.length) {
-            return responseHelper({ message: 'Email not found' }, 400, limit, remaining);
+            return responseHelper({ message: 'Please signup first' , status: 400}, 200, limit, remaining);
         }
 
         const { otp, hashedOtp } = await generateAndHashOtp();
@@ -60,12 +60,12 @@ export async function POST(req: Request) {
             sendEmail(email, otp.toString());
         } catch (err) {
             console.error('Error sending email:', err);
-            // Notify admin or handle error
+            return responseHelper({ message: 'Error sending email', status: 400 }, 500, limit, remaining);
         }
 
-        return responseHelper({ message: 'OTP sent to your email' }, 200, limit, remaining);
+        return responseHelper({ message: 'OTP sent to your email', status: 200 }, 200, limit, remaining);
     } catch (err) {
         console.error('Internal server error:', err);
-        return responseHelper({ message: 'Internal server error' }, 500);
+        return responseHelper({ message: 'Internal server error', status: 400 }, 500);
     }
 }
