@@ -8,28 +8,26 @@ export async function middleware(req: NextRequest) {
     const BASE_URL = 'http://localhost:3000';
 
     if (!token) {
-        return NextResponse.redirect(BASE_URL + "/auth/login");
+        return NextResponse.redirect(new URL("/auth/login", req.url))
     }
 
-    let verificationToken = await verifyAuth(token, Config.jwtSecret);
+    // if (req.nextUrl.pathname.startsWith("/login") && !verificationToken) {
+    //     return;
+    // }
 
-    if (req.nextUrl.pathname.startsWith(BASE_URL + "/auth/login") && !verificationToken) {
-        return;
-    }
+    // if (req.nextUrl.pathname.startsWith("/login") && verificationToken) {
+    //     return NextResponse.redirect(new URL("/products", req.url))
+    // }
 
-    if (req.nextUrl.pathname.startsWith(BASE_URL + "/auth/login") && verificationToken) {
-        return NextResponse.redirect(BASE_URL + "/products");
-    }
-
-    if (!verificationToken) {
-        return NextResponse.redirect(BASE_URL + "/auth/login");
-    }
+    // if (!verificationToken) {
+    //     return NextResponse.redirect(new URL("/login", req.url))
+    // }
 
     return NextResponse.next();
 }
 
-const config = {
-    matcher: ["/products", "/auth/login"],
-};
 
-export { config };
+
+export const config = {
+    matcher: ['/products'],
+  };
