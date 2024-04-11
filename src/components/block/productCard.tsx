@@ -5,11 +5,10 @@ import { Card } from "../ui/card";
 import config from "@/config";
 import { Button } from "../ui/button";
 import { Product } from "@/types/client/types";
+import { useProductStore } from "@/store/useProductStore";
 
 
 const ProductCard = ({ product }: { product: Product }) => {
-    console.log(product, "product")
-    const [quantity, setQuantity] = useState(1);
     return (
         <Card className="flex flex-col items-center p-4 gap-4 justify-between min-w-[200px]">
             <div className="basis-1/2">
