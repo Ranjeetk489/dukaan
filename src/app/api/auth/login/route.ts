@@ -57,10 +57,13 @@ export async function POST(req: Request) {
         }
 
         try {
-            sendEmail(email, otp.toString());
+            let isMailSent = await sendEmail(email, otp.toString());
+            if (!isMailSent) {
+                return responseHelper({ message: 'Error sending email', status: 400 }, 200, limit, remaining);
+            }
         } catch (err) {
             console.error('Error sending email:', err);
-            return responseHelper({ message: 'Error sending email', status: 400 }, 500, limit, remaining);
+            return responseHelper({ message: 'Error sending email', status: 400 }, 200, limit, remaining);
         }
 
         return responseHelper({ message: 'OTP sent to your email', status: 200 }, 200, limit, remaining);

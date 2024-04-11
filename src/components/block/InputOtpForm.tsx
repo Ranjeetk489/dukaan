@@ -39,6 +39,7 @@ export function InputOTPForm(props: {
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
+      console.log(data, "data");
       const result = await fetch("/api/auth/verify", {
         method: "POST",
         headers: {
@@ -46,6 +47,7 @@ export function InputOTPForm(props: {
         },
         body: JSON.stringify({ ...props.fieldState, otp: data.pin }),
       });
+      console.log(result, "result");
       if (result.ok) {
         toast({
           title: "Success",

@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { withAuthDirectus } from "@/lib/utils";
 import { useState } from "react";
 import { InputOTPForm } from "@/components/block/InputOtpForm";
+import { NextResponse } from "next/server";
 
 export default function LoginForm() {
    const [showOtpScreen, setShowOtpScreen] = useState(false)
@@ -31,10 +32,19 @@ export default function LoginForm() {
             },
             body: JSON.stringify({ email })
         })
-console.log(response, "response")
-        if(response && response.status === 400) {
-          // TODO: go to Sign up page with email
+
+
+        // TODO: Incorrect OTP message to be send
+        //@ts-ignore
+        if(response && response.message && response.message.status === 400) {
+          // TODO: show notification
           return;
+        }
+
+        // TODO: handles OTP wrong request clicked then again clicked  so redirect to login or refresh the page 
+        if(response && response.status === 404) {
+          //refresh the page
+          window.location.reload()
         }
         console.log(response, "response")
         setShowOtpScreen(true)
@@ -51,7 +61,6 @@ console.log(response, "response")
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {/* @ts-ignore */}
             {showOtpScreen ? <InputOTPForm fieldState={{email}}/> :
             <form onSubmit={handleSubmit} className="grid gap-4">
               <div className="grid gap-2">

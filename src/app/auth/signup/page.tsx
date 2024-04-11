@@ -44,6 +44,9 @@ export default function SignupForm() {
       body: JSON.stringify({ email, firstName, lastName }),
     });
     console.log(response)
+    if(response.status !== 200) {
+      // TODO notification response.message
+    }
     setShowOtpScreen(true)
   };
 

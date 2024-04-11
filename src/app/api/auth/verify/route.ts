@@ -30,10 +30,15 @@ export async function POST(req: Request) {
                 }
             }
         }))
+
+        if(!authRequest.length) {
+            return responseHelper({ message: 'Expired OTP' , status: 404}, 200, limit, remaining)
+        }
+
         const requestObj = authRequest[0] as AuthRequest
         const isVerified = await verifyOtp(otp, requestObj.hashed_otp)
         if(!isVerified) {
-            return responseHelper({ message: 'Invalid OTP' }, 400, limit, remaining)
+            return responseHelper({ message: 'Invalid OTP' , status: 400}, 200, limit, remaining)
         }
         if (requestObj.action === 'login') {
             const isVerified = await verifyOtp(otp, requestObj.hashed_otp)

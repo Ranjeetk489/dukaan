@@ -17,17 +17,15 @@ export async function POST(req: Request) {
         const { email } = await req.json();
 
         if (!email) {
-            return responseHelper({ message: 'Email is required' }, 400, limit, remaining);
+            return responseHelper({ message: 'Email is required', status: 400 }, 200, limit, remaining);
         }
 
         const userFilter = { filter: { email: { _eq: email } } };
-        //@ts-expect-error
         const isEmailExists = await directus.request(readItems('users', userFilter));
 
         const { otp, hashedOtp } = await generateAndHashOtp();
         const action = isEmailExists.length ? 'login' : 'signup';
         const authRequestFilter = { filter: { email: { _eq: email }, action: { _eq: action } } };
-        //@ts-expect-error
         const authRequestExists = await directus.request(readItems('auth_requests', authRequestFilter));
         if (authRequestExists.length) {
             const requestObj = authRequestExists[0] as AuthRequest;
@@ -49,10 +47,13 @@ export async function POST(req: Request) {
         }
 
         // Mail the OTP to the user
-        sendEmail(email, otp.toString());
-        return responseHelper({ message: 'OTP sent to your email' }, 200, limit, remaining);
+        let response = sendEmail(email, otp.toString());
+        if(!response) {
+            return responseHelper({ message: 'Error sending OTP to email', status: 400 }, 200, limit, remaining);
+        }
+        return responseHelper({ message: 'OTP sent to your email', status: 400}, 200, limit, remaining);
     } catch (error) {
         console.error(error);
-        responseHelper({ message: 'Internal server error' }, 500);
+        responseHelper({ message: 'Internal server error', status: 500 }, 500);
     }
 }
