@@ -4,20 +4,11 @@ import { useState } from "react";
 import { Card } from "../ui/card";
 import config from "@/config";
 import { Button } from "../ui/button";
+import { Product } from "@/types/client/types";
 
-type Product = {
-    id: number;
-    name: string;
-    price: string;
-    description: string;
-    stock_quantity: number;
-    category_id: number;
-    created_at: string;
-    updated_at: string;
-    image: string;
-};
 
 const ProductCard = ({ product }: { product: Product }) => {
+    console.log(product, "product")
     const [quantity, setQuantity] = useState(1);
     return (
         <Card className="flex flex-col items-center p-4 gap-4 justify-between min-w-[200px]">

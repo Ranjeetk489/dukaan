@@ -17,7 +17,7 @@ export async function POST(req: Request) {
 
         const { email } = await req.json();
         if (!email) {
-            return responseHelper({ message: 'Email is missing', status: 400 }, 200, limit, remaining);
+            return responseHelper({ message: 'Email is missing', statusCode: 400, data: {} }, 200, limit, remaining);
         }
         //@ts-ignore
         const isEmailExists = await directus.request(readItems('users', {
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
         }));
 
         if (!isEmailExists.length) {
-            return responseHelper({ message: 'Please signup first' , status: 400}, 200, limit, remaining);
+            return responseHelper({ message: 'Please signup first' , statusCode: 400, data: {}}, 200, limit, remaining);
         }
 
         const { otp, hashedOtp } = await generateAndHashOtp();
@@ -57,18 +57,18 @@ export async function POST(req: Request) {
         }
 
         try {
-            let isMailSent = await sendEmail(email, otp.toString());
+            let isMailSent =  sendEmail(email, otp.toString());
             if (!isMailSent) {
-                return responseHelper({ message: 'Error sending email', status: 400 }, 200, limit, remaining);
+                return responseHelper({ message: 'Error sending email', statusCode: 400, data: {} }, 200, limit, remaining);
             }
         } catch (err) {
             console.error('Error sending email:', err);
-            return responseHelper({ message: 'Error sending email', status: 400 }, 200, limit, remaining);
+            return responseHelper({ message: 'Error sending email', statusCode: 400, data: {} }, 200, limit, remaining);
         }
 
-        return responseHelper({ message: 'OTP sent to your email', status: 200 }, 200, limit, remaining);
+        return responseHelper({ message: 'OTP sent to your email', statusCode: 200, data: {} }, 200, limit, remaining);
     } catch (err) {
         console.error('Internal server error:', err);
-        return responseHelper({ message: 'Internal server error', status: 400 }, 500);
+        return responseHelper({ message: 'Internal server error', statusCode: 400 , data:{}}, 500);
     }
 }

@@ -71,14 +71,20 @@ export const jwtHelpers = {
     verifyToken
 }
 
-export const responseHelper = (message: object, status: number, limit?: number, remaining?: number) => {
-    const response = new NextResponse(JSON.stringify({ message }), { status })
-    response.headers.set('Content-Type', 'application/json');
-    if(limit) {
-        response.headers.set('X-RateLimit-Limit', limit.toString());
-    }
-    if(remaining) {
-        response.headers.set('X-RateLimit-Remaining', remaining.toString());
-    }
-    return response;
+type ResponseObject = {
+    message: string,
+    data: {},
+    statusCode: number,
 }
+
+export const responseHelper = (res: ResponseObject, status: number, limit?: number, remaining?: number) => {
+    const response = new NextResponse(JSON.stringify({ response: res, }), {
+        status,
+        headers: {
+            'Content-Type': 'application/json',
+            ...(limit && { 'X-RateLimit-Limit': limit.toString() }),
+            ...(remaining && { 'X-RateLimit-Remaining': remaining.toString() }),
+        },
+    });
+    return response;
+};

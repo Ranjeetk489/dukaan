@@ -20,12 +20,17 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { toast } from "@/components/ui/use-toast";
+import { ResponseObject } from "@/types/client/types";
+import { useState } from "react";
+import { LoadingSpinner } from "../ui/loading-spinner";
 
 const FormSchema = z.object({
   pin: z.string().min(6, {
     message: "Your one-time password must be 6 characters.",
   }),
 });
+
+
 
 export function InputOTPForm(props: {
   fieldState: { email: string; firstName?: string; lastName?: string };
@@ -36,10 +41,11 @@ export function InputOTPForm(props: {
       pin: "",
     },
   });
+  const [isLoading, setIsLoading] = useState(false)
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
-      console.log(data, "data");
+      setIsLoading(true)
       const result = await fetch("/api/auth/verify", {
         method: "POST",
         headers: {
@@ -47,8 +53,9 @@ export function InputOTPForm(props: {
         },
         body: JSON.stringify({ ...props.fieldState, otp: data.pin }),
       });
-      console.log(result, "result");
-      if (result.ok) {
+      const resultjson: ResponseObject = await result.json();
+      
+      if (resultjson.response.statusCode === 200) {
         toast({
           title: "Success",
           description: "OTP verified",
@@ -59,6 +66,7 @@ export function InputOTPForm(props: {
           description: "Invalid OTP",
         });
       }
+      setIsLoading(false)
     } catch (err) {
       toast({
         title: "Error",
@@ -89,14 +97,16 @@ export function InputOTPForm(props: {
                 </InputOTP>
               </FormControl>
               <FormDescription>
-                Please enter the one-time password sent to your phone.
+                Please enter the one-time OTP sent to your Email.
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <Button type="submit">Submit</Button>
+        <Button type="submit" disabled={isLoading}>
+        {isLoading ? <LoadingSpinner/> : false}
+          Submit</Button>
       </form>
     </Form>
   );

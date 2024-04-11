@@ -43,6 +43,8 @@ export default function SignupForm() {
       },
       body: JSON.stringify({ email, firstName, lastName }),
     });
+    // const resultjson: Responsee = await Result.json();
+      
     console.log(response)
     if(response.status !== 200) {
       // TODO notification response.message

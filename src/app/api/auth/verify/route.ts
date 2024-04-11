@@ -32,13 +32,13 @@ export async function POST(req: Request) {
         }))
 
         if(!authRequest.length) {
-            return responseHelper({ message: 'Expired OTP' , status: 404}, 200, limit, remaining)
+            return responseHelper({ message: 'Expired OTP' , statusCode: 404, data: {}}, 200, limit, remaining,)
         }
 
         const requestObj = authRequest[0] as AuthRequest
         const isVerified = await verifyOtp(otp, requestObj.hashed_otp)
         if(!isVerified) {
-            return responseHelper({ message: 'Invalid OTP' , status: 400}, 200, limit, remaining)
+            return responseHelper({ message: 'Invalid OTP' , statusCode: 400, data: {}}, 200, limit, remaining)
         }
         if (requestObj.action === 'login') {
             const isVerified = await verifyOtp(otp, requestObj.hashed_otp)
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
                     sameSite: 'strict',
                     path: '/'
                 })
-                return responseHelper({ message: 'OTP verified' }, 200, limit, remaining)   
+                return responseHelper({ message: 'OTP verified', statusCode: 200 , data: {}}, 200, limit, remaining)   
             }
         } else {
             const isVerified = await verifyOtp(otp, requestObj.hashed_otp)
@@ -81,15 +81,15 @@ export async function POST(req: Request) {
                     sameSite: 'strict',
                     path: '/'
                 })
-                return responseHelper({ message: 'OTP verified' }, 200, limit, remaining)
+                return responseHelper({ message: 'OTP verified', statusCode: 200, data: {} }, 200, limit, remaining)
             }
         }
     } catch(error) {
         console.log(error)
         if((error as Error)?.message === "Rate limit exceeded") {
-            return responseHelper({ message: 'Rate limit exceeded' }, 429)
+            return responseHelper({ message: 'Rate limit exceeded', statusCode: 429, data: {} }, 429)
         }
-        return responseHelper({ message: 'Internal server error' }, 500)
+        return responseHelper({ message: 'Internal server error', statusCode: 500 , data:{}}, 500)
     }
 
     // check if email exists in the database

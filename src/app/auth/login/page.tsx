@@ -16,15 +16,20 @@ import { withAuthDirectus } from "@/lib/utils";
 import { useState } from "react";
 import { InputOTPForm } from "@/components/block/InputOtpForm";
 import { NextResponse } from "next/server";
+import { useToast } from "@/components/ui/use-toast";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export default function LoginForm() {
    const [showOtpScreen, setShowOtpScreen] = useState(false)
    const [email, setEmail] = useState("")
+   const [isLoading, setIsLoading] = useState(false)
+   const {toast} = useToast()
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         const formData = new FormData(event.currentTarget); 
         const email = formData.get("email")
+        setIsLoading(true)
         let response = await fetch("/api/auth/login", {
             method: "POST",
             headers: {
@@ -32,21 +37,22 @@ export default function LoginForm() {
             },
             body: JSON.stringify({ email })
         })
-
-
+        const data = await response.json()
+        setIsLoading(false)
         // TODO: Incorrect OTP message to be send
         //@ts-ignore
-        if(response && response.message && response.message.status === 400) {
+        if(data && data.message && data.message.status === 400) {
           // TODO: show notification
+          toast({
+            title: "Error",
+            description: "Please try again",
+          });
           return;
         }
 
-        // TODO: handles OTP wrong request clicked then again clicked  so redirect to login or refresh the page 
-        if(response && response.status === 404) {
-          //refresh the page
-          window.location.reload()
-        }
-        console.log(response, "response")
+        
+        toast({title: "Success", description:"OTP sent to your email"})
+        console.log(data, "response")
         setShowOtpScreen(true)
     }
 
@@ -61,27 +67,35 @@ export default function LoginForm() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {showOtpScreen ? <InputOTPForm fieldState={{email}}/> :
-            <form onSubmit={handleSubmit} className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  name="email"
-                  placeholder="m@example.com"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}  
-                />
-              </div>
-              <Button type="submit" className="w-full">
-                Login
-              </Button>
-              <Button variant="outline" className="w-full">
-                Login with Google
-              </Button>
-            </form> }
+            {showOtpScreen ? (
+              <InputOTPForm fieldState={{ email }} />
+            ) : (
+              <form onSubmit={handleSubmit} className="grid gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    name="email"
+                    placeholder="m@example.com"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  className={"w-full"}
+                  disabled={isLoading}
+                  >
+                  {isLoading ? <LoadingSpinner/> : false}
+                  Login
+                </Button>
+                <Button variant="outline" className="w-full">
+                  Login with Google
+                </Button>
+              </form>
+            )}
             <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{" "}
               <Link href="#" className="underline">
