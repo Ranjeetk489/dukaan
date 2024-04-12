@@ -9,6 +9,7 @@ interface ProductStore {
     updateProducts: (products: Product[]) => void
     addToCart: (product: Product) => void;
     removeFromCart: (product: Product) => void;
+    removeOneItemFromCart: (productId: number) => void
 }
 
 async function getProducts (): Promise<Product[] | []> {
@@ -31,6 +32,7 @@ const dummyProducts = [
         'Nurture your well-being with a health-conscious choice.\n' +
         'Experience Perfect Taste and Aromatic rice with the Original Basmati.',
       price: '204',
+      quantity: "500 grams",
       stock_quantity: 50,
       category_id: 1,
       created_at: '2024-04-06T07:40:13',
@@ -42,6 +44,7 @@ const dummyProducts = [
       name: 'Daawat Sehat Mini Mogra Basmati Rice (Broken)',
       description: 'Short and aromatic\nAuthentic taste\nLight and fluffy in texture',
       price: '297',
+      quantity: "500 grams",
       stock_quantity: 100,
       category_id: 1,
       created_at: '2024-04-06T07:42:38',
@@ -54,6 +57,7 @@ const dummyProducts = [
       description: 'Tata Sampann Masoor Dal (Whole) is delicious in taste\n' +
         'No artificial polishing with water, oil or leather, thereby retaining their goodness and wholesome character',
       price: '72',
+      quantity: "500 grams",
       stock_quantity: 50,
       category_id: 1,
       created_at: '2024-04-06T07:48:23',
@@ -66,6 +70,7 @@ const dummyProducts = [
       description: 'Made from a blend of juicy tomatoes and spices\n' +
         'Offers a mixed tangy-sweet taste',
       price: '79',
+      quantity: "500 grams",
       stock_quantity: 50,
       category_id: 2,
       created_at: '2024-04-06T07:50:56',
@@ -78,6 +83,7 @@ const dummyProducts = [
       description: "Veeba Veg Mayonnaise - Chef's Special :- 6 months\n" +
         "Veeba Chef's Special Tomato Ketchup :- 9 months",
       price: '257',
+      quantity: "500 grams",
       stock_quantity: 257,
       category_id: 2,
       created_at: '2024-04-06T07:52:55',
@@ -94,6 +100,7 @@ const dummyProducts = [
         'Helps maintain Strong Bones,\n' +
         'Adds extra Flavour to your favourite food.',
       price: '122',
+      quantity: "500 grams",
       stock_quantity: 22,
       category_id: 3,
       created_at: '2024-04-06T07:55:08',
@@ -105,6 +112,7 @@ const dummyProducts = [
       name: 'Mop',
       description: 'High-quality cleaning mop for household use',
       price: '1159',
+      quantity: "500 grams",
       stock_quantity: 100,
       category_id: 4,
       created_at: '2024-04-06T08:05:28',
@@ -116,6 +124,7 @@ const dummyProducts = [
       name: 'Laundry Detergent',
       description: 'Powerful detergent for effective laundry cleaning. Tide Plus Double Power has STAIN MAGNETS which remove the toughest of stains to give you stainless whites.',
       price: '1014',
+      quantity: "500 grams",
       stock_quantity: 200,
       category_id: 4,
       created_at: '2024-04-06T08:05:28',
@@ -127,6 +136,7 @@ const dummyProducts = [
       name: 'Broom',
       description: 'Durable broom for sweeping floors',
       price: '313',
+      quantity: "500 grams",
       stock_quantity: 150,
       category_id: 4,
       created_at: '2024-04-06T08:05:28',
@@ -138,6 +148,7 @@ const dummyProducts = [
       name: 'Crystal Oxo-Degradable Garbage Bag (M, 19x21 Black) - Pack of 3',
       description: 'Large garbage bags for waste disposal',
       price: '150',
+      quantity: "500 grams",
       stock_quantity: 300,
       category_id: 4,
       created_at: '2024-04-06T08:05:28',
@@ -149,6 +160,7 @@ const dummyProducts = [
       name: 'Head & Shoulders Anti Dandruff Shampoo',
       description: 'Moisturizing shampoo for healthy hair',
       price: '502',
+      quantity: "500 grams",
       stock_quantity: 120,
       category_id: 5,
       created_at: '2024-04-06T08:05:28',
@@ -160,6 +172,7 @@ const dummyProducts = [
       name: 'Colgate Strong Teeth Anticavity Toothpaste (150 g)',
       description: 'Fluoride toothpaste for cavity protection',
       price: '92',
+      quantity: "500 grams",
       stock_quantity: 250,
       category_id: 5,
       created_at: '2024-04-06T08:05:28',
@@ -171,6 +184,7 @@ const dummyProducts = [
       name: 'Nivea Body Milk Nourishing Lotion',
       description: 'Hydrating body lotion for soft skin',
       price: '110',
+      quantity: "500 grams",
       stock_quantity: 180,
       category_id: 5,
       created_at: '2024-04-06T08:05:28',
@@ -182,6 +196,7 @@ const dummyProducts = [
       name: 'Dettol Skincare Hand Wash Refill',
       description: 'Gentle hand soap for effective cleansing',
       price: '91',
+      quantity: "500 grams",
       stock_quantity: 200,
       category_id: 5,
       created_at: '2024-04-06T08:05:28',
@@ -193,6 +208,7 @@ const dummyProducts = [
       name: 'Colgate Strong Teeth Anticavity Toothpaste (150 g)',
       description: 'Fluoride toothpaste for cavity protection',
       price: '92',
+      quantity: "500 grams",
       stock_quantity: 250,
       category_id: 5,
       created_at: '2024-04-06T08:05:28',
@@ -204,6 +220,7 @@ const dummyProducts = [
       name: 'Nivea Body Milk Nourishing Lotion',
       description: 'Hydrating body lotion for soft skin',
       price: '110',
+      quantity: "500 grams",
       stock_quantity: 180,
       category_id: 5,
       created_at: '2024-04-06T08:05:28',
@@ -215,6 +232,7 @@ const dummyProducts = [
       name: 'Dettol Skincare Hand Wash Refill',
       description: 'Gentle hand soap for effective cleansing',
       price: '91',
+      quantity: "500 grams",
       stock_quantity: 200,
       category_id: 5,
       created_at: '2024-04-06T08:05:28',
@@ -226,6 +244,7 @@ const dummyProducts = [
       name: 'Colgate Strong Teeth Anticavity Toothpaste (150 g)',
       description: 'Fluoride toothpaste for cavity protection',
       price: '92',
+      quantity: "500 grams",
       stock_quantity: 250,
       category_id: 5,
       created_at: '2024-04-06T08:05:28',
@@ -237,6 +256,7 @@ const dummyProducts = [
       name: 'Nivea Body Milk Nourishing Lotion',
       description: 'Hydrating body lotion for soft skin',
       price: '110',
+      quantity: "500 grams",
       stock_quantity: 180,
       category_id: 5,
       created_at: '2024-04-06T08:05:28',
@@ -248,6 +268,7 @@ const dummyProducts = [
       name: 'Dettol Skincare Hand Wash Refill',
       description: 'Gentle hand soap for effective cleansing',
       price: '91',
+      quantity: "500 grams",
       stock_quantity: 200,
       category_id: 5,
       created_at: '2024-04-06T08:05:28',
@@ -259,6 +280,7 @@ const dummyProducts = [
       name: 'Colgate Strong Teeth Anticavity Toothpaste (150 g)',
       description: 'Fluoride toothpaste for cavity protection',
       price: '92',
+      quantity: "500 grams",
       stock_quantity: 250,
       category_id: 5,
       created_at: '2024-04-06T08:05:28',
@@ -270,6 +292,7 @@ const dummyProducts = [
       name: 'Nivea Body Milk Nourishing Lotion',
       description: 'Hydrating body lotion for soft skin',
       price: '110',
+      quantity: "500 grams",
       stock_quantity: 180,
       category_id: 5,
       created_at: '2024-04-06T08:05:28',
@@ -281,6 +304,7 @@ const dummyProducts = [
       name: 'Dettol Skincare Hand Wash Refill',
       description: 'Gentle hand soap for effective cleansing',
       price: '91',
+      quantity: "500 grams",
       stock_quantity: 200,
       category_id: 5,
       created_at: '2024-04-06T08:05:28',
@@ -296,4 +320,8 @@ export const useProductStore = create<ProductStore>((set) => ({
     updateProducts: (products: Product[]) => set((state) => ({products: products})),
     addToCart: (product: Product) => set((state) => ({ cart: [...state.cart, product] })),
     removeFromCart: (product: Product) => set((state) => ({ cart: state.cart.filter((p) => p.id !== product.id) })),
+    removeOneItemFromCart: (productId: number) => set((state) => {
+      const indexToRemove = state.cart.findIndex(item => item.id === productId)
+      return {cart: [...state.cart.slice(0, indexToRemove), ...state.cart.slice(indexToRemove + 1)]}
+    })
 }));

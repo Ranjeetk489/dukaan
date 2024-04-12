@@ -12,12 +12,11 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { withAuthDirectus } from "@/lib/utils";
 import { useState } from "react";
 import { InputOTPForm } from "@/components/block/InputOtpForm";
-import { NextResponse } from "next/server";
 import { useToast } from "@/components/ui/use-toast";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { ResponseObject } from "@/types/client/types";
 
 export default function LoginForm() {
    const [showOtpScreen, setShowOtpScreen] = useState(false)
@@ -37,21 +36,21 @@ export default function LoginForm() {
             },
             body: JSON.stringify({ email })
         })
-        const data = await response.json()
+        const data: ResponseObject = await response.json()
         setIsLoading(false)
         // TODO: Incorrect OTP message to be send
         //@ts-ignore
-        if(data && data.message && data.message.status === 400) {
+        if(data.response.statusCode === 400) {
           // TODO: show notification
           toast({
             title: "Error",
-            description: "Please try again",
+            description: data.response.message ||  "Please try again",
           });
           return;
         }
 
         
-        toast({title: "Success", description:"OTP sent to your email"})
+        // toast({title: "Success", description:"OTP sent to your email"})
         console.log(data, "response")
         setShowOtpScreen(true)
     }
@@ -91,14 +90,14 @@ export default function LoginForm() {
                   {isLoading ? <LoadingSpinner/> : false}
                   Login
                 </Button>
-                <Button variant="outline" className="w-full">
+                {/* <Button variant="outline" className="w-full">
                   Login with Google
-                </Button>
+                </Button> */}
               </form>
             )}
             <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{" "}
-              <Link href="#" className="underline">
+              <Link href="/auth/signup" className="underline">
                 Sign up
               </Link>
             </div>

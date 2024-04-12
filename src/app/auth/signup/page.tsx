@@ -15,9 +15,13 @@ import { Label } from "@/components/ui/label";
 import { directus, withAuthDirectus } from "@/lib/utils";
 import { useState } from "react";
 import { InputOTPForm } from "@/components/block/InputOtpForm";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { ResponseObject } from "@/types/client/types";
+import { toast } from "@/components/ui/use-toast";
 
 export default function SignupForm() {
   const [showOtpScreen, setShowOtpScreen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [fieldState, setFieldState] = useState({
     email: "",
     firstName: "",
@@ -26,7 +30,7 @@ export default function SignupForm() {
   
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    debugger
+    setIsLoading(true)
     const formData = new FormData(event.currentTarget);
     const email = formData.get("email") as string;
     const firstName = formData.get("first-name") as string;
@@ -43,11 +47,19 @@ export default function SignupForm() {
       },
       body: JSON.stringify({ email, firstName, lastName }),
     });
-    // const resultjson: Responsee = await Result.json();
-      
-    console.log(response)
-    if(response.status !== 200) {
+    setIsLoading(false)
+    let data: ResponseObject = await response.json();
+    if(data.response.statusCode !== 200) {
+      toast({
+        title: "Error",
+        description: data.response.message || "Please try again",
+      })
       // TODO notification response.message
+    } else {
+      toast({
+        title: "Success",
+        description: "OTP sent to your email",
+      })
     }
     setShowOtpScreen(true)
   };
@@ -98,16 +110,17 @@ export default function SignupForm() {
             <Label htmlFor="password">Password</Label>
             <Input id="password" type="password" name="password" />
           </div> */}
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? <LoadingSpinner /> : false}
                 Create an account
               </Button>
-              <Button variant="outline" className="w-full">
+              {/* <Button variant="outline" className="w-full">
                 Sign up with GitHub
-              </Button>
+              </Button> */}
             </form>}
             <div className="mt-4 text-center text-sm">
               Already have an account?{" "}
-              <Link href="#" className="underline">
+              <Link href="/auth/login" className="underline">
                 Sign in
               </Link>
             </div>

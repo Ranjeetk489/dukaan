@@ -23,6 +23,7 @@ import { toast } from "@/components/ui/use-toast";
 import { ResponseObject } from "@/types/client/types";
 import { useState } from "react";
 import { LoadingSpinner } from "../ui/loading-spinner";
+import { useRouter } from "next/navigation";
 
 const FormSchema = z.object({
   pin: z.string().min(6, {
@@ -42,7 +43,7 @@ export function InputOTPForm(props: {
     },
   });
   const [isLoading, setIsLoading] = useState(false)
-
+  const {push} = useRouter()
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
       setIsLoading(true)
@@ -60,10 +61,11 @@ export function InputOTPForm(props: {
           title: "Success",
           description: "OTP verified",
         });
+        push("/products")
       } else {
         toast({
           title: "Error",
-          description: "Invalid OTP",
+          description: resultjson.response.message || "Invalid OTP",
         });
       }
       setIsLoading(false)

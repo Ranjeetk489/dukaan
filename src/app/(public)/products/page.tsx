@@ -7,8 +7,6 @@ type Props = {}
 
 export default function Page({ }: Props) {
   const products = useProductStore(state => state.products);
-  const {addToCart, removeFromCart} = useProductStore()
-
 
 
   return (
@@ -20,15 +18,6 @@ export default function Page({ }: Props) {
             <ProductCard product={product} key={product.id} />
           ))
         }
-      </div>
-      <div className="flex overflow-x-auto gap-4 scroll no-scrollbar">
-        {
-          products.map((product, idx) => (
-            // eslint-disable-next-line react/jsx-key
-            <ProductCard product={product} key={product.id} />
-          ))
-        }
-
       </div>
     </div>
 
