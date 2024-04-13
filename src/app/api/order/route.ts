@@ -134,7 +134,7 @@ export async function PATCH(req: Request) {
             return responseHelper({ message: 'Order already out for delivery', statusCode: 400, data: {} }, 400);
         }
 
-        if (notAllowedOnOutForDelivery.includes(status) && orders[0].status === "delivered") {
+        if (notAllowedOnDelivered.includes(status) && orders[0].status === "delivered") {
             return responseHelper({ message: 'Order already delivered', statusCode: 400, data: {} }, 400);
         }
 
