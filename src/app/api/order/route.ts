@@ -105,18 +105,17 @@ async function emptyCart(user_id: string) {
 
 export async function PATCH(req: Request) {
     try {
-        const { userId, status } = await req.json();
+        const { orderId, userId, status } = await req.json();
         let order_placed = config.order_status.ORDER_PLACED;
         let cancelled = config.order_status.CANCELLED;
         let out_for_delivery = config.order_status.OUT_FOR_DELIVERY;
         let delivered = config.order_status.DELIVERED;
 
         const allPossibleStatus = [cancelled, out_for_delivery, delivered]; // "order_placed" is by deafult when order is placed
-        const notAllowedOnOrderPlaced = [cancelled, out_for_delivery, delivered];
-        const notAllowedOnCancelled = [out_for_delivery, delivered];
-        const notAllowedOnOutForDelivery = [cancelled];
-        const notAllowedOnDelivered = [cancelled];
-
+        const notAllowedOnCancelled = [out_for_delivery, delivered, cancelled];
+        const notAllowedOnOutForDelivery = [cancelled, out_for_delivery];
+        const notAllowedOnDelivered = [cancelled, delivered];
+        console.log(allPossibleStatus, allPossibleStatus.includes(status), status)
         if (!userId || !status || allPossibleStatus.includes(status) === false) {
             return responseHelper({ message: 'Invalid request', statusCode: 400, data: {} }, 400);
         }
@@ -125,51 +124,49 @@ export async function PATCH(req: Request) {
             filter: {
                 user_id: {
                     _eq: userId
+                },
+                id: {
+                    _eq: orderId
                 }
             }
         }))
         if (orders.length === 0) {
             return responseHelper({ message: 'No order found', statusCode: 400, data: {} }, 400);
         }
+
         /*
         If order status is 'order_placed' then it can be updated to 'cancelled', out_for_delivery', 'delivered', 'cancelled'
         If order status is 'cancelled' then it can be updated to 'cancelled', out_for_delivery', 'delivered'
         If order status is 'out_for_delivery' then it can be updated to 'cancelled' : respone : Order out for delivery can't be cancelled
         If order status is 'delivered' then it can be updated to 'cancelled'
         */
-
-
-        if (notAllowedOnOrderPlaced.includes(status) && orders[0].status !== order_placed) {
-            return responseHelper({ message: 'Order already placed', statusCode: 400, data: {} }, 400);
+      
+       
+        const currentStatus = orders[0].status;
+        
+        if (currentStatus === cancelled && notAllowedOnCancelled.includes(status)) {
+            return responseHelper({ message: 'Order is cancelled', statusCode: 400, data: {} }, 400);
         }
 
-        if (notAllowedOnCancelled.includes(status) && orders[0].status === cancelled) {
-            return responseHelper({ message: 'Order out for delivery can\'t be cancelled', statusCode: 400, data: {} }, 400);
-        }
-
-        if (notAllowedOnOutForDelivery.includes(status) && orders[0].status === out_for_delivery) {
+        if (currentStatus === out_for_delivery && notAllowedOnOutForDelivery.includes(status)) {
             return responseHelper({ message: 'Order already out for delivery', statusCode: 400, data: {} }, 400);
         }
 
-        if (notAllowedOnDelivered.includes(status) && orders[0].status === delivered) {
+        if (currentStatus === delivered && notAllowedOnDelivered.includes(status)) {
             return responseHelper({ message: 'Order already delivered', statusCode: 400, data: {} }, 400);
         }
 
-
-        let response = await directus.request(updateItem('orders', userId, { status }));
+        let response = await directus.request(updateItem('orders', orderId, { status }));
         if(response) {
             return responseHelper({ message: 'Order status updated successfully', statusCode: 200, data: {} }, 200);
         }
         return responseHelper({ message: 'Order status updated failed', statusCode: 400, data: {} }, 200);
+    
     } catch (err) {
         console.error('Internal server error:', err);
         return responseHelper({ message: 'Order Patch: Internal server error', statusCode: 500, data: {} }, 500);
     }
 }
-
-
-
-
 
 interface OrderItem {
     order_id: number,
