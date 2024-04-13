@@ -14,6 +14,12 @@ const config: ConfigProps = {
     email: {
         admin: process.env.ADMIN_EMAIL_ID!,
         adminPwd: process.env.ADMIN_EMAIL_PASSWORD!,
+    },
+    order_status: {
+        ORDER_PLACED: "order_placed",
+        OUT_FOR_DELIVERY: "out_for_delivery",
+        DELIVERED: "delivered",
+        CANCELLED: "cancelled",
     }
 }
 

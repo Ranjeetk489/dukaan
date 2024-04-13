@@ -1,12 +1,14 @@
 import { responseHelper } from '@/lib/helpers';
 import { directus } from '@/lib/utils';
-import { createItem, createItems, deleteItem, readItems, updateItem } from '@directus/sdk';
+import { createItem, createItems, deleteItem, deleteItems, readItems, updateItem } from '@directus/sdk';
+import config from '../../../config';
 
 
 export async function GET(req: Request) {
     try {
-        // userId will come in params
-        const { userId } = await req.json();
+        const url = new URL(req.url)
+        const userId = url.searchParams.get("userid");
+        
         // Fetch all orders for the user
         const orders = await directus.request(readItems('orders', {
             filter: {
@@ -35,7 +37,6 @@ export async function POST(req: Request) {
                 }
             }
         }));
-        console.log(cartItems, "cartItems")
 
         cartItems.forEach((item) => {
             listOfProductId.push(item.product_id);
@@ -48,20 +49,19 @@ export async function POST(req: Request) {
                 }
             }
         }))
-        console.log(productDetails, "productDetails")
-        // Calculate total amount from cart items
-        const totalAmount: number = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+        const totalAmount: number = cartItems.reduce((total, item) =>
+            total + (Number(productDetails.find((product) =>
+                product.id === item.product_id)?.price) * Number(item.quantity)), 0);
 
         const newOrder = {
             user_id: userId,
             total_amount: totalAmount,
-            status: "order_placed",
+            status: config.order_status.ORDER_PLACED,
             order_date: new Date().toISOString(),
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
         }
         const order = await directus.request(createItem('orders', newOrder));
-        console.log("Order: ", order);
         let orderId: number = order.id;
 
         const orderItemsList: OrderItem[] = []
@@ -72,16 +72,16 @@ export async function POST(req: Request) {
                 product_id: item.product_id,
                 product_name: productDetails.find((product) => product.id === item.product_id)?.name as string,
                 quantity: item.quantity,
-                price_per_unit: item.price,
+                price_per_unit: Number(productDetails.find((product) => product.id === item.product_id)?.price) as number,
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString()
             };
             orderItemsList.push(orderItemData)
         }
         let orderPlaced = await directus.request(createItems('order_items', orderItemsList));
-        console.log("Order Placed: ", orderPlaced);
 
-        // await emptyCart(userId);
+        // let response = await emptyCart(userId);
+        // console.log(response, "response")
 
         return responseHelper({ message: 'Order placed successfully', statusCode: 200, data: order }, 200);
 
@@ -91,14 +91,31 @@ export async function POST(req: Request) {
     }
 }
 
+async function emptyCart(user_id: string) {
+    let result = await directus.request(deleteItems('cart_items', {
+        filter: {
+            user_id: {
+                _eq: user_id
+            }
+        }
+    }));
+    return result;
+}
+
+
 export async function PATCH(req: Request) {
     try {
         const { userId, status } = await req.json();
-        const allPossibleStatus = ["cancelled", "out_for_delivery", "delivered"]; // "order_placed" is by deafult when order is placed
-        const notAllowedOnOrderPlaced = ["cancelled", "out_for_delivery", "delivered"];
-        const notAllowedOnCancelled = ["cancelled", "out_for_delivery"];
-        const notAllowedOnOutForDelivery = ["cancelled"];
-        const notAllowedOnDelivered = ["cancelled"];
+        let order_placed = config.order_status.ORDER_PLACED;
+        let cancelled = config.order_status.CANCELLED;
+        let out_for_delivery = config.order_status.OUT_FOR_DELIVERY;
+        let delivered = config.order_status.DELIVERED;
+
+        const allPossibleStatus = [cancelled, out_for_delivery, delivered]; // "order_placed" is by deafult when order is placed
+        const notAllowedOnOrderPlaced = [cancelled, out_for_delivery, delivered];
+        const notAllowedOnCancelled = [out_for_delivery, delivered];
+        const notAllowedOnOutForDelivery = [cancelled];
+        const notAllowedOnDelivered = [cancelled];
 
         if (!userId || !status || allPossibleStatus.includes(status) === false) {
             return responseHelper({ message: 'Invalid request', statusCode: 400, data: {} }, 400);
@@ -122,19 +139,19 @@ export async function PATCH(req: Request) {
         */
 
 
-        if (notAllowedOnOrderPlaced.includes(status) && orders[0].status !== "order_placed") {
+        if (notAllowedOnOrderPlaced.includes(status) && orders[0].status !== order_placed) {
             return responseHelper({ message: 'Order already placed', statusCode: 400, data: {} }, 400);
         }
 
-        if (notAllowedOnCancelled.includes(status) && orders[0].status === "cancelled") {
+        if (notAllowedOnCancelled.includes(status) && orders[0].status === cancelled) {
             return responseHelper({ message: 'Order out for delivery can\'t be cancelled', statusCode: 400, data: {} }, 400);
         }
 
-        if (notAllowedOnOutForDelivery.includes(status) && orders[0].status === "out_for_delivery") {
+        if (notAllowedOnOutForDelivery.includes(status) && orders[0].status === out_for_delivery) {
             return responseHelper({ message: 'Order already out for delivery', statusCode: 400, data: {} }, 400);
         }
 
-        if (notAllowedOnDelivered.includes(status) && orders[0].status === "delivered") {
+        if (notAllowedOnDelivered.includes(status) && orders[0].status === delivered) {
             return responseHelper({ message: 'Order already delivered', statusCode: 400, data: {} }, 400);
         }
 
@@ -152,10 +169,7 @@ export async function PATCH(req: Request) {
 
 
 
-async function emptyCart(cartId: string) {
-    let result = await directus.request(deleteItem('cart_items', cartId));
-    return result;
-}
+
 
 interface OrderItem {
     order_id: number,
