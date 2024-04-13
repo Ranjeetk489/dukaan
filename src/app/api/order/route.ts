@@ -1,4 +1,3 @@
-import { NextApiRequest, NextApiResponse } from 'next';
 import { responseHelper } from '@/lib/helpers';
 import { directus } from '@/lib/utils';
 import { createItem, createItems, deleteItem, readItems, updateItem } from '@directus/sdk';
