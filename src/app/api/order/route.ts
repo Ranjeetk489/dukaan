@@ -10,6 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // If userId, cartId, and status are provided and method is POST, place the order
         if (userId && cartId && status && req.method === 'POST') {
             // Fetch items from the cart
+            //@ts-ignore
             const cartItems = await directus.request(readItems('cart_items', {
                 filter: {
                     cart_id: {
@@ -58,6 +59,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // If userId is provided and method is GET, fetch all orders for the user
         else if (userId && req.method === 'GET') {
             // Fetch all orders for the user
+            // @ts-ignore
             const orders = await directus.request(readItems('orders', {
                 filter: {
                     user_id: {

@@ -9,7 +9,7 @@ export default function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const { cart, addToCart, removeFromCart, products } = useProductStore();
+    const { cart } = useProductStore();
 
     return (
         <Fragment>
@@ -20,8 +20,8 @@ export default function RootLayout({
                 </div>
                 <div>
                     <Button className="">
-                        Cart
-                        <span>({cart.length})</span>
+                        Cart {' '}
+                        <p className="w-[24px]">({cart.length})</p>
                     </Button>
                 </div>
             </header>
