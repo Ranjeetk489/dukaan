@@ -1,68 +1,48 @@
-import { NextApiRequest, NextApiResponse } from 'next';
 import { responseHelper } from '@/lib/helpers';
 import { directus } from '@/lib/utils';
-import { readItems } from '@directus/sdk';
+import { readItems, readItem } from '@directus/sdk';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export async function PATCH(req: Request) {
     try {
-        const { userId, isPersonal, orderHistory, isAddress, storeInfo } = await req.body;
+        const { userId, personalInfo } = await req.json();
 
-        if (!userId || req.method !== 'GET') {
+        if (!userId) {
             return responseHelper({ message: 'Invalid request', statusCode: 400, data: {} }, 400);
         }
 
-        let responseData: any = {};
 
-        if (isPersonal) {
-            // Fetch user details
-            const userDetails = await directus.request(readItems('users', {
-                filter: {
-                    id: {
-                        _eq: userId
-                    }
-                },
-                limit: 1
-            }));
-            responseData.userDetails = userDetails[0];
 
-            if (orderHistory) {
-                // Fetch orders for the user
-                const userOrders = await directus.request(readItems('orders', {
-                    filter: {
-                        user_id: {
-                            _eq: userId
-                        }
-                    }
-                }));
-                responseData.userOrders = userOrders;
-            }
+        return responseHelper({
+            message: 'User details updated successfully',
+            statusCode: 200,
+            data: {}
+        }, 200);
+    } catch (err) {
+        console.error('Internal server error:', err);
+        return responseHelper({ message: 'Internal server error', statusCode: 500, data: {} }, 500);
+    }
+}
 
-            if (isAddress) {
-                // Fetch addresses for the user
-                const userAddresses = await directus.request(readItems('addresses', {
-                    filter: {
-                        user_id: {
-                            _eq: userId
-                        }
-                    }
-                }));
-                responseData.userAddresses = userAddresses;
-            }
+// Handler for GET requests
+export async function GET(req: Request) {
+    try {
+        const url = new URL(req.url)
+        const userId = url.searchParams.get("userid");
 
-            if (storeInfo) {
-                // Fetch store information from config file (you may need to adjust this part based on how your config is structured)
-                responseData.storeInfo = {
-                    storeName: process.env.STORE_NAME,
-                    storeAddress: process.env.STORE_ADDRESS,
-                    storeContact: process.env.STORE_CONTACT
-                };
-            }
+        if (!userId) {
+            return responseHelper({ message: 'Invalid request, user\'s id is missing', statusCode: 400, data: {} }, 400);
         }
 
+        // Fetch user details
+        const userDetails = await directus.request(readItem('users', userId));
+        if (!userDetails) {
+            return responseHelper({ message: 'User not found', statusCode: 400, data: {} }, 404);
+        }
+        // Return user details as the response
         return responseHelper({
             message: 'User profile details fetched successfully',
             statusCode: 200,
-            data: responseData
+            data: userDetails
         }, 200);
     } catch (err) {
         console.error('Internal server error:', err);

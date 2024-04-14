@@ -13,6 +13,12 @@ export interface ConfigProps {
     email: {
         admin: string;
         adminPwd: string;
+    },
+    order_status: {
+        ORDER_PLACED: string,
+        OUT_FOR_DELIVERY: string,
+        DELIVERED: string,
+        CANCELLED: string,
     }
 }
 
