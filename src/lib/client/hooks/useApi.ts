@@ -24,8 +24,25 @@ type ApiArgs<T> = {
     fetchOnInit?: boolean;
 };
 
+/**
+ * A custom hook that provides a convenient way to make API requests and manage the response data.
+ *
+ * @template T - The type of the response data.
+ * @param {ApiArgs<T>} options - The options object containing the API request details.
+ * @param {string} options.url - The URL of the API endpoint.
+ * @param {string} [options.method='GET'] - The HTTP method to use for the request.
+ * @param {any} [options.body] - The request body.
+ * @param {any} [options.headers] - The request headers.
+ * @param {any} [options.params] - The request query parameters.
+ * @param {number} [options.timeout] - The request timeout in milliseconds.
+ * @param {string} [options.responseType] - The expected response type.
+ * @param {string} [options.cache] - The cache mode for the request.
+ * @param {(data: T) => ResponseObject<T>} [options.mapFn] - A function to map the response data.
+ * @param {boolean} [options.fetchOnInit=true] - Whether to fetch data on component initialization.
+ * @return {ApiResponse<T>} - An object containing the response data, loading state, error state, and error message.
+ */
 function useApi<T>({url, method = 'GET', body, headers, params, timeout, responseType, cache, mapFn, fetchOnInit=true}: ApiArgs<T>): ApiResponse<T> {
-    const [data, setData] = useState<T | null>(null);
+    const [data, setData] =                 useState<T | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isError, setIsError] = useState<boolean>(false);
     const [error, setError] = useState<Error | null>(null);
