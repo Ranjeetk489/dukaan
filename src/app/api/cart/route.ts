@@ -7,8 +7,9 @@ import { ResponseObject } from "@/types/client/types";
 
 export async function GET(req: Request) {
   try {
-    // const { userId } = await req.json();
-    const userId= 1;
+    const url = new URL(req.url)
+    const userId = url.searchParams.get("userid");
+    // const userId= 1;
     console.log("userId", userId)
     if (userId) {
       const cartItems = await directus.request(
