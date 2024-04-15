@@ -42,7 +42,7 @@ type ApiArgs<T> = {
  * @return {ApiResponse<T>} - An object containing the response data, loading state, error state, and error message.
  */
 function useApi<T>({url, method = 'GET', body, headers, params, timeout, responseType, cache, mapFn, fetchOnInit=true}: ApiArgs<T>): ApiResponse<T> {
-    const [data, setData] =                 useState<T | null>(null);
+    const [data, setData] = useState<T | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isError, setIsError] = useState<boolean>(false);
     const [error, setError] = useState<Error | null>(null);
