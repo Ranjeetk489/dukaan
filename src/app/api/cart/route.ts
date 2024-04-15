@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { responseHelper } from '@/lib/helpers';
 import { directus } from '@/lib/utils';
 import { readItems, updateItem, deleteItem, createItem} from '@directus/sdk';
-import { ResponseObject } from "@/types/client/types";
 
 
 export async function GET(req: Request) {
