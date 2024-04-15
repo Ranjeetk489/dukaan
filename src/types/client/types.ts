@@ -10,10 +10,10 @@ export interface Product {
     image: string 
 }
 
-export type ResponseObject = {
+export type ResponseObject<T> = {
     response: {
         message: string,
-        data: {},
+        data: T | null;
         statusCode: number,
     }
 }

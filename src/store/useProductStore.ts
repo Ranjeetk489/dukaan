@@ -1,16 +1,25 @@
 "use client"
+import { NETWORK_STATES, fetchInsideTryCatch } from '@/lib/client/apiUtil';
+import useApi from '@/lib/client/hooks/useApi';
 import { Product } from '@/types/client/types';
 import { create } from 'zustand';
 
+
+type NetworkState = typeof NETWORK_STATES[keyof typeof NETWORK_STATES];
 interface ProductStore {
     products: Product[];
-    cart: Product[];
+    cart: {
+        data: Product[];
+        status: NetworkState
+    }
     getProducts: () => Promise<Product[] | []>;
     updateProducts: (products: Product[]) => void
     addToCart: (product: Product) => void;
     removeFromCart: (product: Product) => void;
     removeOneItemFromCart: (productId: number) => void
 }
+
+
 
 async function getProducts (): Promise<Product[] | []> {
     // @ts-ignore
@@ -19,8 +28,29 @@ async function getProducts (): Promise<Product[] | []> {
     //     return products as Product[];
     // }
     // return [];
+    
     return []
 }
+
+async function  addProductToCart (product: Product) {
+    
+    // @ts-ignore
+    // const cart = await directus.request(createItem('cart', {product_id: product.id}));
+    // return cart as Product;
+    
+    return product
+}
+
+async function getCartItems() {
+  const cartItems = await fetchInsideTryCatch<Product[]>('api/cart', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+  
+}
+
 
 const dummyProducts = [
     {
@@ -311,17 +341,52 @@ const dummyProducts = [
       updated_at: '2024-04-06T08:05:28',
       image: 'ea7d848d-440a-443f-9eb4-01882c73076a'
     },
-  ];
+];
 
-export const useProductStore = create<ProductStore>((set) => ({
+export const useProductStore = create<ProductStore>((set, get) => ({
     products: dummyProducts,
-    cart: [],
+    cart: {
+      data: [],
+      status: NETWORK_STATES.IDLE
+    },
     getProducts,
     updateProducts: (products: Product[]) => set((state) => ({products: products})),
-    addToCart: (product: Product) => set((state) => ({ cart: [...state.cart, product] })),
-    removeFromCart: (product: Product) => set((state) => ({ cart: state.cart.filter((p) => p.id !== product.id) })),
+    addToCart: (product: Product) => set((state) => ({ cart: {...state.cart, data: [...state.cart.data, product]} })),
+    removeFromCart: (product: Product) => set((state) => ({ cart:{...state.cart, data: state.cart.data.filter((p) => p.id !== product.id) }})),
     removeOneItemFromCart: (productId: number) => set((state) => {
-      const indexToRemove = state.cart.findIndex(item => item.id === productId)
-      return {cart: [...state.cart.slice(0, indexToRemove), ...state.cart.slice(indexToRemove + 1)]}
-    })
+      const indexToRemove = state.cart.data.findIndex(item => item.id === productId)
+      if (indexToRemove < 0) return state
+      return {cart: {...state.cart, data:[...state.cart.data.slice(0, indexToRemove), ...state.cart.data.slice(indexToRemove + 1)]}}
+    }),
+    getCartItems: async () => {
+      set({ cart: {data: [], status: NETWORK_STATES.LOADING}})
+      const data = await fetchInsideTryCatch<Product[]>('api/cart', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      if(data && data.response.data) {
+        set({ cart: {data: data.response.data, status: NETWORK_STATES.SUCCESS}})
+      }
+    },
+    addProductToCart: async(product: Product) => {
+      get().addToCart(product)
+      set({ cart: {data: get().cart.data, status: NETWORK_STATES.LOADING}})
+      const data = await fetchInsideTryCatch('api/cart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(product)
+      }, {
+        retryDelay: 1000,
+        maxRetries: 3
+      }
+    )
+      if(data && data.response.statusCode !== 200) {
+        get().removeFromCart(product)
+      }
+      set({ cart: {data: get().cart.data, status: NETWORK_STATES.SUCCESS}})
+    }
 }));

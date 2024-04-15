@@ -10,28 +10,34 @@ import { useProductStore } from "@/store/useProductStore";
 
 const ProductCard = ({ product }: { product: Product }) => {
     
+    if (!product) {
+        throw new Error('ProductCard received a falsy product value');
+    }
+
     return (
-        <Card className="relative flex flex-col border-none shadow-none bg-none items-center p-0 md:p-4 gap-4 justify-between min-w-[130px] min-h-[220px] md:min-w-[200px] md:min-h-[220px]">
-            <div className="basis-1/2  w-fit shadow-sm md:shadow-none border">
+        <Card className="relative flex flex-col border-none shadow-none bg-none  justify-between p-0 gap-2 md:p-4 items-stretch max-h-[280px]">
+            <div className="w-fit shadow-sm md:shadow-none border">
                 {product.image ? (
-                    <div className="relative min-w-[120px] min-h-[120px] md:min-w-[170px] md:min-h-[150px]">
+                    <div className="relative flex items-center justify-center h-full min-w-[120px] min-h-[120px] md:min-w-[170px] md:min-h-[150px]">
                         <Image
                             src={`${config.directusFileDomain}/${product.image}`}
                             alt={product.name}
-                            layout={"fill"}
-                            className=""
-                            // width={180}
-                            // height={250}
+                            style={{
+                                objectFit: "cover",
+                            }}
+                            className="h-full"
+                            width={180}
+                            height={250}
                         />
                     </div>
                 ) : (
-                    false
+                    <div>Product {product.name} has no image</div>
                 )}
             </div>
-            <div className="basis-1/2 w-full flex flex-col justify-between">
+            <div className=" w-full flex flex-col h-full justify-between">
                 <h3 className="text-xs font-semibold line-clamp-2 md:line-clamp-3">{product.name}</h3>
-                <div className="flex justify-between items-center w-full">
-                    <p className="text-xs font-semibold">₹{product.price}</p>
+                <div className="flex justify-between items-center w-full mt-1">
+                    <p className="text-xs font-semibold">₹{product.price || 0}</p>
                     <AddSubtract product={product} />
                 </div>
             </div>
@@ -43,7 +49,7 @@ export default ProductCard;
 
 const AddSubtract = ({product}: {product: Product}) => {
     const {addToCart , removeOneItemFromCart, cart} = useProductStore()
-    const itemCountInCart = cart.filter(item => item.id === product.id).length
+    const itemCountInCart = cart.data.filter(item => item.id === product.id).length
     return (
         <div className="flex items-center">
             {itemCountInCart ? (

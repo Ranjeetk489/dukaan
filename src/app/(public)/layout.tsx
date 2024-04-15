@@ -21,7 +21,7 @@ export default function RootLayout({
                 <div>
                     <Button className="">
                         Cart {' '}
-                        <p className="w-[24px]">({cart.length})</p>
+                        <p className="w-[24px]">({cart.data.length})</p>
                     </Button>
                 </div>
             </header>
