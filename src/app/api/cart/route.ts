@@ -2,6 +2,8 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { responseHelper } from '@/lib/helpers';
 import { directus } from '@/lib/utils';
 import { readItems, updateItem, deleteItem, createItem} from '@directus/sdk';
+import { ResponseObject } from "@/types/client/types";
+import { readAuthTokenFromCookies } from '@/lib/auth';
 
 
 export async function GET(req: Request) {
@@ -42,7 +44,11 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const { userId, productId, quantity } = await req.json();
+    const { productId, quantity } = await req.json();
+    const cookieDecodedData = readAuthTokenFromCookies()
+    //@ts-ignore
+    const {userId} = cookieDecodedData
+
   if (!userId || quantity === undefined) {
     return responseHelper(
       {
