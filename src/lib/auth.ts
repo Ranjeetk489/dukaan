@@ -28,6 +28,8 @@ export const readAuthTokenFromCookies = async () => {
         if (token) {
             let verified = await jwtVerify(token.value, new TextEncoder().encode(config.jwtSecret));
             return verified.payload;
+        } else {
+            return {}
         }
     } catch (error) {
         console.error("error in readTokenFromCookies", error);

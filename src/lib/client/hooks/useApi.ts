@@ -53,7 +53,9 @@ function useApi<T>({url, method = 'GET', body, headers, params, timeout, respons
             // cleanup function
             const cleanup = () => controller.abort();
             // call cleanup on component unmount
-            useEffect(() => cleanup, []);
+            useEffect(() => cleanup, 
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+            []);
 
     const fetchData = async () => {
         setIsLoading(true);
