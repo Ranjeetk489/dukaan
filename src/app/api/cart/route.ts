@@ -1,19 +1,15 @@
-import { NextApiRequest, NextApiResponse } from 'next';
 import { responseHelper } from '@/lib/helpers';
 import { directus } from '@/lib/utils';
 import { readItems, updateItem, deleteItem, createItem} from '@directus/sdk';
-import { ResponseObject } from "@/types/client/types";
 import { readAuthTokenFromCookies } from '@/lib/auth';
 
 
 export async function GET(req: Request) {
   try {
-    // const { userId } = await req.json();
     const cookieDecodedData = await readAuthTokenFromCookies()
     // @ts-expect-error
     const { id:userId } = cookieDecodedData
     if (userId) {
-      // const cartItems = await directus.with
       const result = await directus.request(
         // @ts-expect-error
         readItems('cart', {
@@ -46,7 +42,6 @@ export async function POST(req: Request) {
     const cookieDecodedData = await readAuthTokenFromCookies()
     // @ts-expect-error
     const {id:userId} = cookieDecodedData
-    console.log("userId", userId)
 
   if (!userId || quantity === undefined) {
     return responseHelper(
