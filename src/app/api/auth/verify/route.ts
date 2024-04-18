@@ -51,7 +51,7 @@ export async function POST(req: Request) {
                     status: 'verified',
                     date_updated: new Date().toISOString()
                 }))
-                const token = jwtHelpers.createToken(user[0], config.jwtSecret, '1h')
+                const token = jwtHelpers.createToken(user[0], config.jwtSecret, '7 days')
                 cookies().set('token', token, {
                     httpOnly: true,
                     secure: true,
@@ -74,7 +74,7 @@ export async function POST(req: Request) {
                     date_created: new Date().toISOString(),
                     date_updated: new Date().toISOString()
                 }))
-                const token = jwtHelpers.createToken(user, config.jwtSecret, '1h')
+                const token = jwtHelpers.createToken(user, config.jwtSecret, '7 days')
                 cookies().set('token', token, {
                     httpOnly: true,
                     secure: true,

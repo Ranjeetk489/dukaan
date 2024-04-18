@@ -20,7 +20,7 @@ export const fetchInsideTryCatch = async <T>(
         retryDelay?: number,
     } = {}
 ): Promise<ResponseObject<T> | void> => {
-    const { maxRetries = 3, retryDelay = 1000 } = retryOptions;
+    const { maxRetries = 1, retryDelay = 1000 } = retryOptions;
     let retries = 0;
 
     let response: Response | null = null;
@@ -29,24 +29,24 @@ export const fetchInsideTryCatch = async <T>(
 
     while (retries < maxRetries) {
         try {
-            response = await fetch(url, options);
+            response = await fetch(`http://127.0.0.1:3000/${url}`, options);
             data = await response.json();
 
             if (!response.ok) {
                 throw new Error(data.response.message);
             }
 
-            toast.success(data.response.message);
+            // toast.success(data.response.message);
             return data;
         } catch (err) {
             error = err as Error;
-            toast.error((error as Error).message);
+            // toast.error((error as Error).message);
             await new Promise(resolve => setTimeout(resolve, retryDelay));
             retries++;
         }
     }
     // TODO -> Report the error to analytics
-    toast.error("Unexpected error occurred");
+    // toast.error("Unexpected error occurred");
 };
 
 
