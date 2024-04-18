@@ -10,8 +10,9 @@ export async function GET(req: Request) {
         const { productId, quantity } = await req.json();
         const cookieDecodedData = readAuthTokenFromCookies()
         //@ts-ignore
-        const {userId} = cookieDecodedData
-        
+        const { id: userId } = cookieDecodedData
+
+
         // Fetch all orders for the user
         // @ts-ignore
         const orders = await directus.request(readItems('orders', {
@@ -145,10 +146,10 @@ export async function PATCH(req: Request) {
         If order status is 'out_for_delivery' then it can be updated to 'cancelled' : respone : Order out for delivery can't be cancelled
         If order status is 'delivered' then it can be updated to 'cancelled'
         */
-      
-       
+
+
         const currentStatus = orders[0].status;
-        
+
         if (currentStatus === cancelled && notAllowedOnCancelled.includes(status)) {
             return responseHelper({ message: 'Order is cancelled', statusCode: 400, data: {} }, 400);
         }
@@ -162,11 +163,11 @@ export async function PATCH(req: Request) {
         }
 
         let response = await directus.request(updateItem('orders', orderId, { status }));
-        if(response) {
+        if (response) {
             return responseHelper({ message: 'Order status updated successfully', statusCode: 200, data: {} }, 200);
         }
         return responseHelper({ message: 'Order status updated failed', statusCode: 400, data: {} }, 200);
-    
+
     } catch (err) {
         console.error('Internal server error:', err);
         return responseHelper({ message: 'Order Patch: Internal server error', statusCode: 500, data: {} }, 500);
