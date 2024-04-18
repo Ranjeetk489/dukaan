@@ -2,13 +2,17 @@ import { responseHelper } from '@/lib/helpers';
 import { directus } from '@/lib/utils';
 import { createItem, createItems, deleteItem, deleteItems, readItems, updateItem } from '@directus/sdk';
 import config from '../../../config';
+import { readAuthTokenFromCookies } from '@/lib/auth';
 
 
 export async function GET(req: Request) {
     try {
-        const url = new URL(req.url)
-        const userId = url.searchParams.get("userid");
-        
+        const { productId, quantity } = await req.json();
+        const cookieDecodedData = readAuthTokenFromCookies()
+        //@ts-ignore
+        const { id: userId } = cookieDecodedData
+
+
         // Fetch all orders for the user
         // @ts-ignore
         const orders = await directus.request(readItems('orders', {
@@ -81,7 +85,7 @@ export async function POST(req: Request) {
         }
         let orderPlaced = await directus.request(createItems('order_items', orderItemsList));
 
-        // let response = await emptyCart(userId);
+        // let response = await emptyCart(Number(userId));
         // console.log(response, "response")
 
         return responseHelper({ message: 'Order placed successfully', statusCode: 200, data: order }, 200);
@@ -92,8 +96,8 @@ export async function POST(req: Request) {
     }
 }
 
-async function emptyCart(user_id: string) {
-    let result = await directus.request(deleteItems('cart_items', {
+async function emptyCart(user_id: number) {
+    let result = await directus.request(deleteItems('cart', {
         filter: {
             user_id: {
                 _eq: user_id
@@ -142,10 +146,10 @@ export async function PATCH(req: Request) {
         If order status is 'out_for_delivery' then it can be updated to 'cancelled' : respone : Order out for delivery can't be cancelled
         If order status is 'delivered' then it can be updated to 'cancelled'
         */
-      
-       
+
+
         const currentStatus = orders[0].status;
-        
+
         if (currentStatus === cancelled && notAllowedOnCancelled.includes(status)) {
             return responseHelper({ message: 'Order is cancelled', statusCode: 400, data: {} }, 400);
         }
@@ -159,11 +163,11 @@ export async function PATCH(req: Request) {
         }
 
         let response = await directus.request(updateItem('orders', orderId, { status }));
-        if(response) {
+        if (response) {
             return responseHelper({ message: 'Order status updated successfully', statusCode: 200, data: {} }, 200);
         }
         return responseHelper({ message: 'Order status updated failed', statusCode: 400, data: {} }, 200);
-    
+
     } catch (err) {
         console.error('Internal server error:', err);
         return responseHelper({ message: 'Order Patch: Internal server error', statusCode: 500, data: {} }, 500);

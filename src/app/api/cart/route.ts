@@ -1,23 +1,19 @@
-import { NextApiRequest, NextApiResponse } from 'next';
 import { responseHelper } from '@/lib/helpers';
 import { directus } from '@/lib/utils';
 import { readItems, updateItem, deleteItem, createItem} from '@directus/sdk';
-import { ResponseObject } from "@/types/client/types";
 import { readAuthTokenFromCookies } from '@/lib/auth';
 
 
 export async function GET(req: Request) {
   try {
-    // const { userId } = await req.json();
     const cookieDecodedData = await readAuthTokenFromCookies()
     // @ts-expect-error
     const { id:userId } = cookieDecodedData
     if (userId) {
-      // const cartItems = await directus.with
       const result = await directus.request(
         // @ts-expect-error
         readItems('cart', {
-          fields: ['*', 'product_id.*'],
+          fields: ['quantity', 'product_id.*'],
         })
       );
 
@@ -46,7 +42,6 @@ export async function POST(req: Request) {
     const cookieDecodedData = await readAuthTokenFromCookies()
     // @ts-expect-error
     const {id:userId} = cookieDecodedData
-    console.log("userId", userId)
 
   if (!userId || quantity === undefined) {
     return responseHelper(
@@ -73,7 +68,7 @@ export async function POST(req: Request) {
   );
   
   let cartId:number = result[0] ? result[0].id : null;
-  console.log(result, result[0].id)
+
   let apimessage = ''
   if (quantity === 0 && cartId) {
     // If quantity is 0, remove the item from the cart
@@ -114,7 +109,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.log(error)
     return responseHelper(
-        { message: "Internal Server Error", statusCode: 500, data: {} },
+        { message: "CART::POST Internal Server Error", statusCode: 500, data: {} },
         500,
       );
   }

@@ -29,7 +29,10 @@ export const fetchInsideTryCatch = async <T>(
 
     while (retries < maxRetries) {
         try {
-            response = await fetch(`http://127.0.0.1:3000/${url}`, options);
+            let URL = 
+            // `http://127.0.0.1:3000/${url}`
+            `http://localhost:3000/${url}`
+            response = await fetch(URL, options);
             data = await response.json();
 
             if (!response.ok) {

@@ -24,6 +24,7 @@ export async function GET(req: Request) {
         let fetchAllAddresses: boolean = (id == undefined || id == null);
 
         if (fetchAllAddresses) {
+            //@ts-ignore
             const addresses = await directus.request(readItems('addresses', {
                 filter: { user_id: { _eq: userId } }
             }));
@@ -33,7 +34,7 @@ export async function GET(req: Request) {
         if (!id) {
             return responseHelper({ message: 'Invalid request, address\'s id is missing', statusCode: 400, data: {} }, 400);
         }
-        
+        //@ts-ignore
         const addressItem = await directus.request(readItem('addresses', id));
         if (!addressItem) {
             return responseHelper({ message: 'Address not found', statusCode: 404, data: {} }, 404);

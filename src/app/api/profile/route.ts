@@ -34,7 +34,8 @@ export async function GET(req: Request) {
         }
 
         // Fetch user details
-        const userDetails = await directus.request(readItem('users', userId));
+        //@ts-ignore
+        const userDetails = await directus.request(readItems('users', userId));
         if (!userDetails) {
             return responseHelper({ message: 'User not found', statusCode: 400, data: {} }, 404);
         }
