@@ -73,7 +73,7 @@ export async function POST(req: Request) {
   );
   
   let cartId:number = result[0] ? result[0].id : null;
-  console.log(result, result[0].id)
+
   let apimessage = ''
   if (quantity === 0 && cartId) {
     // If quantity is 0, remove the item from the cart
@@ -114,7 +114,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.log(error)
     return responseHelper(
-        { message: "Internal Server Error", statusCode: 500, data: {} },
+        { message: "CART::POST Internal Server Error", statusCode: 500, data: {} },
         500,
       );
   }
