@@ -2,12 +2,15 @@ import { responseHelper } from '@/lib/helpers';
 import { directus } from '@/lib/utils';
 import { createItem, createItems, deleteItem, deleteItems, readItems, updateItem } from '@directus/sdk';
 import config from '../../../config';
+import { readAuthTokenFromCookies } from '@/lib/auth';
 
 
 export async function GET(req: Request) {
     try {
-        const url = new URL(req.url)
-        const userId = url.searchParams.get("userid");
+        const { productId, quantity } = await req.json();
+        const cookieDecodedData = readAuthTokenFromCookies()
+        //@ts-ignore
+        const {userId} = cookieDecodedData
         
         // Fetch all orders for the user
         // @ts-ignore
@@ -81,7 +84,7 @@ export async function POST(req: Request) {
         }
         let orderPlaced = await directus.request(createItems('order_items', orderItemsList));
 
-        // let response = await emptyCart(userId);
+        // let response = await emptyCart(Number(userId));
         // console.log(response, "response")
 
         return responseHelper({ message: 'Order placed successfully', statusCode: 200, data: order }, 200);
@@ -92,8 +95,8 @@ export async function POST(req: Request) {
     }
 }
 
-async function emptyCart(user_id: string) {
-    let result = await directus.request(deleteItems('cart_items', {
+async function emptyCart(user_id: number) {
+    let result = await directus.request(deleteItems('cart', {
         filter: {
             user_id: {
                 _eq: user_id
