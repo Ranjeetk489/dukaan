@@ -17,7 +17,7 @@ export async function GET(req: Request) {
       const result = await directus.request(
         // @ts-expect-error
         readItems('cart', {
-          fields: ['*', 'product_id.*'],
+          fields: ['quantity', 'product_id.*'],
         })
       );
 
