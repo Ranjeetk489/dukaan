@@ -2,15 +2,15 @@ import { responseHelper } from '@/lib/helpers';
 import { directus } from '@/lib/utils';
 import { createItem, createItems, deleteItem, deleteItems, readItems, updateItem } from '@directus/sdk';
 import config from '../../../config';
-import { readAuthTokenFromCookies } from '@/lib/auth';
+import { isAuthenticatedAndUserData } from '@/lib/auth';
 
 
 export async function GET(req: Request) {
     try {
         const { productId, quantity } = await req.json();
-        const cookieDecodedData = readAuthTokenFromCookies()
+        const auth = await isAuthenticatedAndUserData()
         //@ts-ignore
-        const { id: userId } = cookieDecodedData
+        const { id: userId } = auth.user?.id
 
 
         // Fetch all orders for the user

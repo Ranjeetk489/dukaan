@@ -16,7 +16,7 @@ import { useState } from "react";
 import { InputOTPForm } from "@/components/block/InputOtpForm";
 import { useToast } from "@/components/ui/use-toast";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { ResponseObject } from "@/types/client/types";
+import { ApiResponseObject, ResponseObject } from "@/types/client/types";
 
 export default function LoginForm() {
    const [showOtpScreen, setShowOtpScreen] = useState(false)

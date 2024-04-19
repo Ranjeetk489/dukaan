@@ -1,9 +1,7 @@
 "use client"
 import { NETWORK_STATES, fetchInsideTryCatch } from '@/lib/client/apiUtil';
-import useApi from '@/lib/client/hooks/useApi';
-import { Cart, Product } from '@/types/client/types';
+import { Cart, CartItem, Product } from '@/types/client/types';
 import { create } from 'zustand';
-import debounce from 'lodash/debounce';
 
 type NetworkState = typeof NETWORK_STATES[keyof typeof NETWORK_STATES];
 interface ProductStore {
@@ -12,44 +10,20 @@ interface ProductStore {
     data: Cart
     status: NetworkState
   }
-  // getProducts: () => Promise<Product[] | []>;
-  // updateProducts: (products: Product[]) => void
-  // // add quantity key to Product type
-  // addToCart:  (product: Product, quantity: number) => void;
-  // removeFromCart: (productId: number, quantity: number) => void;
+  updateCart: (cartItems: Cart) => void
   updateProductQuantityInCart: (product: Product, quantity: number) => void
   updateProductQuantityLocal: (product: Product, quantity: number) => void
   // getCartItems: () => void  
 }
 
 
-// interface CartItem {
-//   product: Product;
-//   quantity: number;
-// }
-
-// interface Cart {
-//   [productId: number]: CartItem;
-// }
-
-
 
 async function getProducts(): Promise<Product[] | []> {
-  // @ts-ignore
-  // const products = await directus.request(readItems('products'));
-  // if (products.length) {
-  //     return products as Product[];
-  // }
-  // return [];
 
   return []
 }
 
 async function addProductToCart(product: Product) {
-
-  // @ts-ignore
-  // const cart = await directus.request(createItem('cart', {product_id: product.id}));
-  // return cart as Product;
 
   return product
 }
@@ -359,11 +333,14 @@ const dummyProducts = [
 export const useProductStore = create<ProductStore>((set, get) => ({
   products: dummyProducts,
   cart: {
-    data: {},
+    data: [],
     status: NETWORK_STATES.IDLE
   },
+  updateCart: (cartItems) => {
+    set(state => ({ cart: { data: cartItems , status: NETWORK_STATES.IDLE} }))
+  },
   updateProductQuantityLocal: (product, quantity) => {
-    set(state => ({ cart: { data: { ...state.cart.data, [product.id]: { product, quantity } }, status: NETWORK_STATES.LOADING } }))
+    set(state => ({ cart: { data: {...state.cart.data, [product.id]: {product, quantity}}, status: NETWORK_STATES.IDLE } }))
   },
   updateProductQuantityInCart: async (product, quantity) => {
     set(state => ({ cart: { data: state.cart.data, status: NETWORK_STATES.LOADING } }))

@@ -1,35 +1,41 @@
 import { responseHelper } from '@/lib/helpers';
 import { directus } from '@/lib/utils';
 import { readItems, updateItem, deleteItem, createItem} from '@directus/sdk';
-import { readAuthTokenFromCookies } from '@/lib/auth';
+import { isAuthenticatedAndUserData } from '@/lib/auth';
+import { cookies, headers } from 'next/headers';
+import { NextRequest, NextResponse } from 'next/server';
 
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest, res: NextResponse) {
   try {
-    const cookieDecodedData = await readAuthTokenFromCookies()
-    // @ts-expect-error
-    const { id:userId } = cookieDecodedData
-    if (userId) {
-      const result = await directus.request(
-        // @ts-expect-error
-        readItems('cart', {
-          fields: ['quantity', 'product_id.*'],
-        })
-      );
-
-      return responseHelper(
-        {
-          message: "Cart items fetched successfully",
-          statusCode: 200,
-          data: result,
-        },
-        200,
-      );
+    const headers = req.headers.values()
+    const authData = await isAuthenticatedAndUserData()
+    if(!authData.isAuthenticated) {
+        const baseUrl = new URL(req.url).origin
+        return NextResponse.redirect(new URL("/auth/login", baseUrl));
     }
+    const user_id = authData.user?.id
+    const result = await directus.request(
+      // @ts-expect-error
+      readItems('cart', {
+        fields: ['quantity', 'product_id.*'],
+        filter: {
+          user_id: {
+            _eq: user_id,
+          }
+        }
+      })
+    );
+
     return responseHelper(
-      { message: "User not found", statusCode: 400, data: {} },
+      {
+        message: "Cart items fetched successfully",
+        statusCode: 200,
+        data: result,
+      },
       200,
     );
+
   } catch (error) {
     console.log(error)
     return responseHelper({ message: "Internal Server Error", statusCode: 200, data: {} }, 200);
@@ -39,11 +45,10 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const { productId, quantity } = await req.json();
-    const cookieDecodedData = await readAuthTokenFromCookies()
-    // @ts-expect-error
-    const {id:userId} = cookieDecodedData
-
-  if (!userId || quantity === undefined) {
+    const authData = await isAuthenticatedAndUserData()
+    const userId = authData?.user?.id
+  
+  if (quantity === undefined) {
     return responseHelper(
       {
         message: "Please provide Product id and Quantity id",

@@ -53,9 +53,9 @@ export async function POST(req: Request) {
                 }))
                 const token = jwtHelpers.createToken(user[0], config.jwtSecret, '7 days')
                 cookies().set('token', token, {
-                    httpOnly: true,
-                    secure: true,
-                    sameSite: 'strict',
+                    httpOnly: false,
+                    secure: false,
+                    sameSite: 'lax',
                     path: '/'
                 })
                 return responseHelper({ message: 'OTP verified', statusCode: 200 , data: {}}, 200, limit, remaining)   
@@ -74,11 +74,11 @@ export async function POST(req: Request) {
                     date_created: new Date().toISOString(),
                     date_updated: new Date().toISOString()
                 }))
-                const token = jwtHelpers.createToken(user, config.jwtSecret, '7 days')
+                const token = jwtHelpers.createToken(user, config.jwtSecret, '7 days', )
                 cookies().set('token', token, {
-                    httpOnly: true,
-                    secure: true,
-                    sameSite: 'strict',
+                    httpOnly: false,
+                    secure: false,
+                    sameSite: 'lax',
                     path: '/'
                 })
                 return responseHelper({ message: 'OTP verified', statusCode: 200, data: {} }, 200, limit, remaining)

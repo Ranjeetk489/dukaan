@@ -1,4 +1,4 @@
-import { ResponseObject } from "@/types/client/types";
+import { ApiResponseObject } from "@/types/client/types";
 import toast from "react-hot-toast";
 
 
@@ -19,12 +19,12 @@ export const fetchInsideTryCatch = async <T>(
         maxRetries?: number,
         retryDelay?: number,
     } = {}
-): Promise<ResponseObject<T> | void> => {
+): Promise<ApiResponseObject<T> | void> => {
     const { maxRetries = 1, retryDelay = 1000 } = retryOptions;
     let retries = 0;
 
     let response: Response | null = null;
-    let data: ResponseObject<T>;
+    let data: ApiResponseObject<T>;
     let error: Error | null = null;
 
     while (retries < maxRetries) {
@@ -32,7 +32,7 @@ export const fetchInsideTryCatch = async <T>(
             let URL = 
             // `http://127.0.0.1:3000/${url}`
             `http://localhost:3000/${url}`
-            response = await fetch(URL, options);
+            response = await fetch(URL, {...options, cache: 'no-store'});
             data = await response.json();
 
             if (!response.ok) {

@@ -35,35 +35,25 @@ const CartProduct = (props: Props) => {
     };
 
     return (
-        <div>
-            <div
-                key={props.item.product.id}
-                className="flex items-center justify-between">
-                <div className="flex gap-2">
-                    <Image
-                        src={`${config.directusFileDomain}/${props.item.product.image}`}
-                        alt={props.item.product.name}
-                        width={100}
-                        height={100}
-                        className="border border-slate-500 rounded-md"
-                    />
-                    <div className="flex flex-col gap-1">
-                        <p className="text-slate-800">{props.item.product.name}</p>
-                        <p className="text-slate-600">
-                            {props.item.product.stock_quantity}
-                        </p>
-                        <p className="font-medium text-slate-900">
-                            ₹{props.item.product.price}
-                        </p>
-                    </div>
-                </div>
-                <div className="flex items-center justify-end">
-                    <AddSubtract
-                        count={props.item.quantity}
-                        onCountUpdate={onCountUpdate}
-                    />
+        <div
+            className="flex items-center justify-between">
+            <div className="flex">
+                <Image
+                    src={`${config.directusFileDomain}/${props.item.product.image}`}
+                    alt={props.item.product.name}
+                    width={70}
+                    height={70}
+                    className="border border-slate-200 rounded-md object-contain max-w-[70px] max-h-[70px]"
+                />
+                <div className="flex flex-col ml-2 basis-2/3">
+                    <p className="text-slate-800 mb-0 text-xs line-clamp-2">{props.item.product.name}</p>
+                    <p className="text-slate-600 text-xs">{props.item.product.stock_quantity}</p>
+                    <p className="font-medium text-slate-900 text-xs">
+                        ₹{props.item.product.price}
+                    </p>
                 </div>
             </div>
+            <AddSubtract count={props.item.quantity} onCountUpdate={onCountUpdate} />
         </div>
     );
 };

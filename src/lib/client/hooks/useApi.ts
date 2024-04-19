@@ -1,5 +1,5 @@
 "use client"
-import { ResponseObject } from '@/types/client/types';
+import { ApiResponseObject } from '@/types/client/types';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
@@ -20,7 +20,7 @@ type ApiArgs<T> = {
     timeout?: number;
     responseType?: 'json' | 'text';
     cache?: 'default' | 'no-store' | 'reload' | 'no-cache' | 'force-cache';
-    mapFn?: (data: T) => ResponseObject<T>;
+    mapFn?: (data: T) => ApiResponseObject<T>;
     fetchOnInit?: boolean;
 };
 
@@ -37,7 +37,7 @@ type ApiArgs<T> = {
  * @param {number} [options.timeout] - The request timeout in milliseconds.
  * @param {string} [options.responseType] - The expected response type.
  * @param {string} [options.cache] - The cache mode for the request.
- * @param {(data: T) => ResponseObject<T>} [options.mapFn] - A function to map the response data.
+ * @param {(data: T) => ApiResponseObject<T>} [options.mapFn] - A function to map the response data.
  * @param {boolean} [options.fetchOnInit=true] - Whether to fetch data on component initialization.
  * @return {ApiResponse<T>} - An object containing the response data, loading state, error state, and error message.
  */
@@ -70,7 +70,7 @@ function useApi<T>({url, method = 'GET', body, headers, params, timeout, respons
             if (!response.ok) {
                 throw new Error(response.statusText);
             }
-            let result: ResponseObject<T> = await response.json();
+            let result: ApiResponseObject<T> = await response.json();
             if (mapFn && result.response.data) {
                     result = mapFn(result.response.data);
             }

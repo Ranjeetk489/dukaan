@@ -10,7 +10,15 @@ export interface Product {
     image: string 
 }
 
-export type ResponseObject<T> = {
+export type ResponseObject = {
+    response: {
+        message: string,
+        data: {};
+        statusCode: number,
+    }
+}
+
+export type ApiResponseObject<T> = {
     response: {
         message: string,
         data: T | null;
@@ -22,9 +30,8 @@ export type ResponseObject<T> = {
 export interface CartItem {
     product: Product;
     quantity: number;
-  }
+}
   
 export  interface Cart {
     [productId: number]: CartItem;
-  }
-  
+}

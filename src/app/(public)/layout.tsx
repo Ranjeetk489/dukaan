@@ -10,9 +10,12 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     const { cart } = useProductStore();
+    const totalItemsQuantity = Object.values(cart.data).reduce((acc, item) => acc + item.quantity, 0)
+
+    console.log(totalItemsQuantity, "totalItemsQuantity")
 
     return (
-        <Fragment>
+        <div className="container">
             <header className="flex justify-between my-4">
                 <div className="flex flex-col">
                     <h4 className="text-primary">Dukaan</h4>
@@ -21,11 +24,11 @@ export default function RootLayout({
                 <div>
                     <Button className="">
                         Cart {' '}
-                        <p className="w-[24px]">({cart.data.length})</p>
+                        <p className="w-[24px]">({totalItemsQuantity})</p>
                     </Button>
                 </div>
             </header>
             {children}
-        </Fragment>
+        </div>
     );
 }
