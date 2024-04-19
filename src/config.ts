@@ -3,7 +3,7 @@ import { ConfigProps } from "@/types";
 const config: ConfigProps = {
     domainName: process.env.NEXT_PUBLIC_DOMAIN_NAME!,
     appName: process.env.NEXT_PUBLIC_APP_NAME!,
-    jwtSecret: process.env.JWT_SECRET!,
+    jwtSecret: process.env.NEXT_PUBLIC_JWT_SECRET!,
     directusDomain: process.env.NEXT_PUBLIC_DIRECTUS_DOMAIN!,
     directusFileDomain: `${process.env.NEXT_PUBLIC_DIRECTUS_DOMAIN!}/assets`,
     redis: {

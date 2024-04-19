@@ -63,7 +63,7 @@ export const isAuthenticatedAndUserData = async():Promise<AuthData> => {
     } catch (error) {
         const cookieStore = cookies()
         const token = cookieStore.get('token');
-        console.error("error in readTokenFromCookies", error, token, config.jwtSecret);
+        console.error("error in isAuthenticatedAndUserData", error, token, config.jwtSecret);
         return {
             isAuthenticated: false,
             user: null
