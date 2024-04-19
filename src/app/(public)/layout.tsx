@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useProductStore } from "@/store/useProductStore";
-import { Fragment, useState } from "react";
+import {useRouter} from 'next/navigation'
 
 export default function RootLayout({
     children,
@@ -11,8 +11,7 @@ export default function RootLayout({
 }>) {
     const { cart } = useProductStore();
     const totalItemsQuantity = Object.values(cart.data).reduce((acc, item) => acc + item.quantity, 0)
-
-    console.log(totalItemsQuantity, "totalItemsQuantity")
+    const router = useRouter()
 
     return (
         <div className="container">
@@ -22,7 +21,7 @@ export default function RootLayout({
                     <p>Estimated Delivery in 4hr</p>
                 </div>
                 <div>
-                    <Button className="">
+                    <Button className="" onClick={() => router.push('/cart')}>
                         Cart {' '}
                         <p className="w-[24px]">({totalItemsQuantity})</p>
                     </Button>

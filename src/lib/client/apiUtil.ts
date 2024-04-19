@@ -1,3 +1,4 @@
+import config from "@/config";
 import { ApiResponseObject } from "@/types/client/types";
 import toast from "react-hot-toast";
 
@@ -31,7 +32,7 @@ export const fetchInsideTryCatch = async <T>(
         try {
             let URL = 
             // `http://127.0.0.1:3000/${url}`
-            `http://localhost:3000/${url}`
+            `${config.domainName}${url}`
             response = await fetch(URL, {...options, cache: 'no-store'});
             data = await response.json();
 
