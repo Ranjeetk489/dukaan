@@ -1,15 +1,20 @@
-"use client"
+
 import { Button } from "@/components/ui/button";
+import { isAuthenticatedAndUserData } from "@/lib/auth";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { redirect, useRouter } from "next/navigation";
 
 
-export default  function Home() {
-  const nav = useRouter()
+export default async function Home() {
+  const auth = await isAuthenticatedAndUserData()
+  if(auth.isAuthenticated) {
+    redirect("products")
+  }
   return (
     <main className="flex min-h-screen justify-center gap-4 p-24">
-      <Button onClick={() => nav.push("auth/login")}>Login</Button>
-      <Button onClick={() => nav.push("auth/signup")}>Signup</Button>
+      <Link href={"auth/login"}><Button>Login</Button></Link>
+      <Link href={"auth/signup"}><Button>Signup</Button></Link>
     </main>
   );
 }

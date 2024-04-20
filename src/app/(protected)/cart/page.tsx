@@ -9,10 +9,7 @@ import { IoMdClose } from "react-icons/io";
 
 type Props = {};
 export default async function Page({}: Props) {
-//   const cartData = await getCartItems();
-//   console.log(cartData, "cartData")
     const data = await prisma.$queryRaw`SELECT * FROM cart`
-    console.log(data, "data")
 
 
     return (
