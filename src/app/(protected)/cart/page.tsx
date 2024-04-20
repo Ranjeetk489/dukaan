@@ -2,12 +2,13 @@ import OrderCart from "@/components/block/page/cart/cart";
 import CartItems from "@/components/block/page/cart/cartItems";
 import { getCartItems } from "@/lib/directus/methods";
 import { cookies } from "next/headers";
+import Link from "next/link";
 import React from "react";
 import { IoMdClose } from "react-icons/io";
 
 type Props = {};
-export default async function Page({ }: Props) {
-    const cartData = await getCartItems();
+export default async function Page({}: Props) {
+  const cartData = await getCartItems();
 
     return (
         <div className="m-auto grid grid-cols-1">
@@ -26,5 +27,5 @@ export default async function Page({ }: Props) {
                 </div>
             </div>
         </div>
-    );
+  );
 }
