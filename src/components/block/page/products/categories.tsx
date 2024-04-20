@@ -13,7 +13,10 @@ type Props = {
 
 const Categories = (props: Props) => {
     const {categories, getProductsByCategory, categoryProducts, updateCategories } = useCategoryStore()
- 
+    // useEffect(() => {
+
+    // }, [])
+
     return (
         <div className="grid grid-cols-8">
             <div className="flex flex-col gap-2 col-span-2">

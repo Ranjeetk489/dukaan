@@ -14,6 +14,7 @@ export  default async function Page({}: Props) {
       <Categories
         categories={categories}
       />
+      
     </div>
   )
 }
