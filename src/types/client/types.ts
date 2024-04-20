@@ -3,11 +3,21 @@ export interface Product {
     name: string
     price: string
     description: string
-    stock_quantity: number
     category_id: number
     created_at: string
     updated_at: string
-    image: string 
+    image: string
+    quantity: Quantity
+}
+
+export interface Quantity {
+    id: number
+    quantity: number
+    price: number
+    is_stock_available: number
+    stock_quantity: number
+    created_at: string
+    updated_at: string
 }
 
 export type ResponseObject = {
@@ -34,4 +44,9 @@ export interface CartItem {
   
 export  interface Cart {
     [productId: number]: CartItem;
+}
+
+export interface Category {
+    id: number;
+    name: string; 
 }

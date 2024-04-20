@@ -10,15 +10,16 @@ export async function GET(req: NextRequest, res: NextResponse) {
   try {
     const headers = req.headers.values()
     const authData = await isAuthenticatedAndUserData()
-    if(!authData.isAuthenticated) {
-        const baseUrl = new URL(req.url).origin
-        return NextResponse.redirect(new URL("/auth/login", baseUrl));
-    }
-    const user_id = authData.user?.id
+    // if(!authData.isAuthenticated) {
+    //     const baseUrl = new URL(req.url).origin
+    //     return NextResponse.redirect(new URL("/auth/login", baseUrl));
+    // }
+    // const user_id = authData.user?.id
+    let user_id = 5
     const result = await directus.request(
       // @ts-expect-error
       readItems('cart', {
-        fields: ['quantity', 'product_id.*'],
+        fields: ['quantity', 'id', 'quantity_id',  'quantity_id.*', 'product_id.*'],
         filter: {
           user_id: {
             _eq: user_id,
@@ -44,7 +45,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
 
 export async function POST(req: Request) {
   try {
-    const { productId, quantity } = await req.json();
+    const { productId, quantityId, quantity } = await req.json();
     const authData = await isAuthenticatedAndUserData()
     const userId = authData?.user?.id
   
@@ -67,6 +68,9 @@ export async function POST(req: Request) {
         },
         product_id: {
             _eq: productId
+        },
+        quantity_id: {
+            _eq: quantityId
         }
       },
     }),
@@ -93,6 +97,7 @@ export async function POST(req: Request) {
     await directus.request(createItem("cart", {
         user_id: userId,
         product_id: productId,
+        quantity_id: quantityId,
         quantity: quantity || 1,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
@@ -102,7 +107,7 @@ export async function POST(req: Request) {
   }
   if(apimessage = '') {
     return responseHelper(
-        { message: "Faied to update cart", statusCode: 400, data: {} },
+        { message: "Failed to update cart", statusCode: 400, data: {} },
         200,
       );
   }

@@ -17,6 +17,7 @@ function OrderCart(props: Props) {
     const { toggleCartSheet, cart, updateCart } = useProductStore()
     const totalAmount = Object.values(cart.data).reduce((acc: number, item: CartItem) => acc + (+item.product.price * item.quantity), 0)
     const router = useRouter()
+    
     const handleProceedAction = () => {
         toggleCartSheet(false)
         router.push('/cart')

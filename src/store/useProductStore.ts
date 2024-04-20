@@ -1,6 +1,6 @@
 "use client"
 import { NETWORK_STATES, fetchInsideTryCatch } from '@/lib/client/apiUtil';
-import { Cart, CartItem, Product } from '@/types/client/types';
+import { Cart, Category, Product } from '@/types/client/types';
 import { create } from 'zustand';
 
 type NetworkState = typeof NETWORK_STATES[keyof typeof NETWORK_STATES];
@@ -15,9 +15,18 @@ interface ProductStore {
   updateCart: (cartItems: Cart) => void
   updateProductQuantityInCart: (product: Product, quantity: number) => void
   updateProductQuantityLocal: (product: Product, quantity: number) => void
-  // getCartItems: () => void  
 }
 
+
+interface CategoryStore {
+  categories: Category[],
+  updateCategories: (categories: Category[]) => void
+  categoryProducts: {
+    data: Product[],
+    status: NetworkState
+  },  
+  getProductsByCategory: (id: number) => void
+}
 
 
 async function getProducts(): Promise<Product[] | []> {
@@ -367,5 +376,38 @@ export const useProductStore = create<ProductStore>((set, get) => ({
       set(state => ({ cart: { data: cartState, status: NETWORK_STATES.ERROR } }))
     }
     set(state => ({ cart: { data: get().cart.data, status: NETWORK_STATES.SUCCESS } }))
+  }
+}))
+
+
+async function getProductsByCategoryId(id:number): Promise<Product[]> {
+  const result = await fetchInsideTryCatch<Product[]>(`api/product?categoryId=${id}`)
+  if(result && result.response.statusCode === 200 && result.response.data) {
+    return result.response.data
+  }
+  return []
+}
+
+export const useCategoryStore = create<CategoryStore>((set, get) => ({
+  categories: [],
+  categoryProducts: {
+    data: [],
+    status: NETWORK_STATES.IDLE
+  },
+
+  updateCategories: (categories) => {
+    set(state => ({ categories }))
+  },
+
+  getProductsByCategory: async (id: number) => {
+    set(state => ({ categoryProducts: {
+      data: [],
+      status: NETWORK_STATES.LOADING
+    } }))
+    const products = await getProductsByCategoryId(id)
+    set(state => ({ categoryProducts: {
+      data: products,
+      status: NETWORK_STATES.IDLE
+    } }))
   }
 }))

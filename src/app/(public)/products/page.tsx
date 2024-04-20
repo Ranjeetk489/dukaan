@@ -1,28 +1,20 @@
-"use client"
-import ProductCard from "@/components/block/productCard"
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetTrigger } from "@/components/ui/sheet";
-import useOptimistic from "@/lib/client/hooks/useOptimistic";
-import { useProductStore } from "@/store/useProductStore";
-import {  useState } from "react";
+// "use client"
+import Categories from "@/components/block/page/products/categories";
+import Products from "@/components/block/page/products/products";
+import { getCategories } from "@/lib/directus/methods";
 
 type Props = {}
 
-export default function Page({ }: Props) {
-  const products = useProductStore(state => state.products);
+export  default async function Page({}: Props) {
+  const categories = await getCategories()
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex overflow-x-auto gap-4 scroll no-scrollbar">
-        {
-          products.map((product) => (
-            // eslint-disable-next-line react/jsx-key
-            <ProductCard product={product} key={product.id} />
-          ))
-        }
-      </div> 
+      <Products/>
+      <Categories
+        categories={categories}
+      />
     </div>
-
   )
 }
 

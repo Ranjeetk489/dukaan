@@ -9,6 +9,7 @@ import { IoMdClose } from "react-icons/io";
 type Props = {};
 export default async function Page({}: Props) {
   const cartData = await getCartItems();
+  console.log(cartData, "cartData")
 
     return (
         <div className="m-auto grid grid-cols-1">
