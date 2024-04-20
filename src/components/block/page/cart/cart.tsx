@@ -5,9 +5,9 @@ import { Cart, CartItem } from '@/types/client/types'
 import { useRouter } from 'next/navigation'
 import React, { useEffect } from 'react'
 import CartItems from './cartItems'
-import BillDetails from './ billDetails'
 import { ArrowRightIcon } from 'lucide-react'
 import { Card } from '@/components/ui/card'
+import BillDetails from './billDetails'
 
 type Props = {
     cartData?: Cart
