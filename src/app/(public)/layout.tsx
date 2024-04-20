@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useDevice } from "@/lib/client/hooks/useDevice";
 import { useProductStore } from "@/store/useProductStore";
 import {useRouter} from 'next/navigation'
 
@@ -9,9 +10,18 @@ export default function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const { cart } = useProductStore();
+    const { cart, toggleCartSheet } = useProductStore();
     const totalItemsQuantity = Object.values(cart.data).reduce((acc, item) => acc + item.quantity, 0)
+    const {isMobile} = useDevice()
     const router = useRouter()
+
+    const onCartClick = () => {
+        if(isMobile) {
+            router.push('/cart')
+        } else {
+            toggleCartSheet(true)
+        }
+    }
 
     return (
         <div className="container">
@@ -21,7 +31,7 @@ export default function RootLayout({
                     <p>Estimated Delivery in 4hr</p>
                 </div>
                 <div>
-                    <Button className="" onClick={() => router.push('/cart')}>
+                    <Button className="" onClick={onCartClick}>
                         Cart {' '}
                         <p className="w-[24px]">({totalItemsQuantity})</p>
                     </Button>

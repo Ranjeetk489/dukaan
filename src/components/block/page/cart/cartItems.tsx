@@ -4,6 +4,7 @@ import { Cart } from "@/types/client/types";
 import { useProductStore } from "@/store/useProductStore";
 import CartProduct from "./cartItem";
 import { useEffect } from "react";
+import { useDevice } from "@/lib/client/hooks/useDevice";
 
 type Props = {
     cartData: Cart
@@ -11,7 +12,6 @@ type Props = {
 
 function CartItems(props: Props) {
     const { cart, updateCart } = useProductStore()
-
     useEffect(() => {
         updateCart(props.cartData)
         //eslint-disable-next-line react-hooks/exhaustive-deps

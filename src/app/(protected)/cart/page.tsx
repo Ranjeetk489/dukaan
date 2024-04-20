@@ -1,3 +1,4 @@
+import OrderCart from "@/components/block/page/cart/cart";
 import CartItems from "@/components/block/page/cart/cartItems";
 import { getCartItems } from "@/lib/directus/methods";
 import { cookies } from "next/headers";
@@ -21,10 +22,9 @@ export default async function Page({ }: Props) {
                     Store is open
                 </div>
                 <div className="col-span-1">
-                    <CartItems cartData={cartData} />
+                    <OrderCart cartData={cartData}/>
                 </div>
             </div>
-            {/* <Button onClick={getCart}>Click me</Button> */}
         </div>
     );
 }

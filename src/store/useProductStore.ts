@@ -9,7 +9,9 @@ interface ProductStore {
   cart: {
     data: Cart
     status: NetworkState
-  }
+  },
+  isCartSheetVisible: boolean,
+  toggleCartSheet: (isOpen: boolean) => void
   updateCart: (cartItems: Cart) => void
   updateProductQuantityInCart: (product: Product, quantity: number) => void
   updateProductQuantityLocal: (product: Product, quantity: number) => void
@@ -335,6 +337,10 @@ export const useProductStore = create<ProductStore>((set, get) => ({
   cart: {
     data: [],
     status: NETWORK_STATES.IDLE
+  },
+  isCartSheetVisible: false,
+  toggleCartSheet: (isOpen) => {
+    set(state => ({ isCartSheetVisible: isOpen }))
   },
   updateCart: (cartItems) => {
     set(state => ({ cart: { data: cartItems , status: NETWORK_STATES.IDLE} }))
