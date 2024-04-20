@@ -2,24 +2,45 @@ import { responseHelper } from '@/lib/helpers';
 import { isAuthenticatedAndUserData } from '@/lib/auth';
 import { PrismaClient } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
+import { Cart, CartItem } from '@/types/client/types';
 
 const prisma = new PrismaClient();
 
 export async function GET(req: NextRequest, res: NextResponse) {
   try {
     const authData = await isAuthenticatedAndUserData();
-     // if(!authData.isAuthenticated) {
-    //     const baseUrl = new URL(req.url).origin
-    //     return NextResponse.redirect(new URL("/auth/login", baseUrl));
-    // }
-    // const user_id = authData.user?.id
-    let user_id = 5; // Sample user_id, replace it with actual user_id logic
+     if(!authData.isAuthenticated) {
+        const baseUrl = new URL(req.url).origin
+        return NextResponse.redirect(new URL("/auth/login", baseUrl));
+    }
+    const user_id = authData.user?.id
+    // let user_id = 5; // Sample user_id, replace it with actual user_id logic
     
-    const cartItems:any = await prisma.$queryRaw`
-      SELECT * FROM cart
-      join products on cart.product_id = products.id
-      join quantity on cart.quantity_id = quantity.id
-      WHERE user_id = ${user_id}
+    const cartItems: CartItem[] = await prisma.$queryRaw`
+            SELECT 
+            c.id as cart_id, 
+            c.cart_quantity,
+            c.created_at, 
+            c.updated_at, 
+            p.name, 
+            p.description, 
+            p.image, 
+            p.category_id, 
+            p.quantity_id, 
+            q.price,
+            q.product_id, 
+            q.quantity, 
+            q.price as quantity_price, 
+            q.is_stock_available, 
+            q.stocked_quantity 
+        FROM 
+            cart as c
+        JOIN 
+            products as p ON c.product_id = p.id
+        JOIN 
+            quantity as q ON c.quantity_id = q.id
+        WHERE 
+            user_id = ${user_id};
     `;
 
     return responseHelper(
