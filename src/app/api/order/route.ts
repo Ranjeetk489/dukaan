@@ -2,10 +2,14 @@ import { responseHelper } from '@/lib/helpers';
 import { isAuthenticatedAndUserData } from '@/lib/auth';
 import prisma from '@/lib/prisma/client';
 import config from '@/config';
+import { directus } from '@/lib/utils';
+import { createItems } from '@directus/sdk';
+
+// TODO Get detail of order by order id
 export async function GET(req: Request) {
     try {
         const auth = await isAuthenticatedAndUserData();
-        const userId = auth.user?.id;
+        const userId = 5;//auth.user?.id;
 
         if (!userId) {
             return responseHelper({ message: 'User not authenticated', statusCode: 401, data: {} }, 401);
@@ -26,12 +30,15 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
     try {
-        const { userId } = await req.json();
-        let listOfProductId: number[] = [];
+        
+        const auth = await isAuthenticatedAndUserData();
+        const userId = auth.user?.id;
 
-        if (!userId || Number.isNaN(Number(userId))) {
-            return responseHelper({ message: 'Invalid request', statusCode: 400, data: {} }, 400);
+        if (!userId) {
+            return responseHelper({ message: 'User not authenticated', statusCode: 401, data: {} }, 401);
         }
+
+
         const detailedOrder: any[] = await prisma.$queryRaw`
         select c.user_id, c.product_id, c.cart_quantity, c.quantity_id as "cart_to_quantiy_ref",
         q.price as "price_per_unit", q.quantity as "product_quantity", q.price * c.cart_quantity as "amount",
@@ -54,7 +61,7 @@ export async function POST(req: Request) {
             updated_at: new Date().toISOString(),
         };
         const newOrderCreated = await prisma.orders.create({ data: newOrder });
-        
+
         const orderItems = detailedOrder.map((item) => {
             return {
                 order_id: newOrderCreated.id,
@@ -67,84 +74,73 @@ export async function POST(req: Request) {
                 updated_at: new Date().toISOString(),
             }
         })
-        console.log(orderItems, "orderItems")
-        const orderItemsQuery = `
-  INSERT INTO order_items (order_id, product_id, product_name, product_quantity, quantity, price_per_unit, created_at, updated_at)
-  VALUES 
-`;
 
-const orderItemsValues = detailedOrder.map((item) => {
-  return `(${newOrderCreated.id}, ${item.product_id}, '${item.product_name}', '${item.product_quantity}', ${item.cart_quantity}, ${item.price_per_unit}, '${new Date().toISOString()}', '${new Date().toISOString()}')`;
-}).join(', ');
+        const orderItemsCreated = await directus.request(createItems('order_items', orderItems));
 
-const fullQuery = `${orderItemsQuery} ${orderItemsValues}`;
-console.log(fullQuery, "fullQuery")
-const orderItemsCreated = await prisma.$queryRaw`${fullQuery}`; // Execute the fullQuery;
-console.log("detailedOrder", orderItemsCreated)
-        
-    
-        return responseHelper({ message: 'Order placed successfully', statusCode: 200, data: {} }, 200);
+        await prisma.cart.deleteMany({ where: { user_id: userId } });
+
+        return responseHelper({ message: 'Order placed successfully', statusCode: 200, data: orderItemsCreated }, 200);
     } catch (err) {
         console.error('Internal server error:', err);
         return responseHelper({ message: 'Internal server error', statusCode: 500, data: {} }, 500);
     }
 }
 
-// export async function PATCH(req: Request) {
-//     try {
-//         const { orderId, userId, status } = await req.json();
+export async function PATCH(req: Request) {
+    try {
+        const { orderId, userId, status } = await req.json();
 
-//         if (!userId || !status) {
-//             return responseHelper({ message: 'Invalid request', statusCode: 400, data: {} }, 400);
-//         }
+        if (!userId || !status) {
+            return responseHelper({ message: 'Invalid request', statusCode: 400, data: {} }, 400);
+        }
 
-//         const order = await prisma.orders.findFirst({
-//             where: {
-//                 user_id: userId,
-//                 id: orderId,
-//             },
-//         });
+        const order = await prisma.orders.findFirst({
+            where: {
+                user_id: userId,
+                id: orderId,
+            },
+        });
 
-//         if (!order) {
-//             return responseHelper({ message: 'No order found', statusCode: 400, data: {} }, 400);
-//         }
+        if (!order) {
+            return responseHelper({ message: 'No order found', statusCode: 400, data: {} }, 400);
+        }
 
-//         const currentStatus = order.status;
-//         const notAllowedOnCancelled = [config.order_status.OUT_FOR_DELIVERY, config.order_status.DELIVERED];
-//         const notAllowedOnOutForDelivery = [config.order_status.CANCELLED];
-//         const notAllowedOnDelivered = [config.order_status.CANCELLED, config.order_status.OUT_FOR_DELIVERY];
+        const currentStatus = order.status;
+        const notAllowedOnCancelled = [config.order_status.OUT_FOR_DELIVERY, config.order_status.DELIVERED];
+        const notAllowedOnOutForDelivery = [config.order_status.CANCELLED];
+        const notAllowedOnDelivered = [config.order_status.CANCELLED, config.order_status.OUT_FOR_DELIVERY];
 
-//         if (currentStatus === config.order_status.CANCELLED && notAllowedOnCancelled.includes(status)) {
-//             return responseHelper({ message: 'Order is cancelled', statusCode: 400, data: {} }, 400);
-//         }
+        if (currentStatus === config.order_status.CANCELLED && notAllowedOnCancelled.includes(status)) {
+            return responseHelper({ message: 'Order is cancelled', statusCode: 400, data: {} }, 400);
+        }
 
-//         if (currentStatus === config.order_status.OUT_FOR_DELIVERY && notAllowedOnOutForDelivery.includes(status)) {
-//             return responseHelper({ message: 'Order already out for delivery', statusCode: 400, data: {} }, 400);
-//         }
+        if (currentStatus === config.order_status.OUT_FOR_DELIVERY && notAllowedOnOutForDelivery.includes(status)) {
+            return responseHelper({ message: 'Order already out for delivery', statusCode: 400, data: {} }, 400);
+        }
 
-//         if (currentStatus === config.order_status.DELIVERED && notAllowedOnDelivered.includes(status)) {
-//             return responseHelper({ message: 'Order already delivered', statusCode: 400, data: {} }, 400);
-//         }
+        if (currentStatus === config.order_status.DELIVERED && notAllowedOnDelivered.includes(status)) {
+            return responseHelper({ message: 'Order already delivered', statusCode: 400, data: {} }, 400);
+        }
 
-//         const response = await prisma.orders.update({
-//             where: {
-//                 id: orderId,
-//             },
-//             data: {
-//                 status: status,
-//             },
-//         });
+        const response = await prisma.orders.update({
+            where: {
+                id: orderId,
+            },
+            data: {
+                status: status,
+            },
+        });
 
-//         if (response) {
-//             return responseHelper({ message: 'Order status updated successfully', statusCode: 200, data: {} }, 200);
-//         }
+        if (response) {
+            return responseHelper({ message: 'Order status updated successfully', statusCode: 200, data: {} }, 200);
+        }
 
-//         return responseHelper({ message: 'Order status update failed', statusCode: 400, data: {} }, 400);
-//     } catch (err) {
-//         console.error('Internal server error:', err);
-//         return responseHelper({ message: 'Order Patch: Internal server error', statusCode: 500, data: {} }, 500);
-//     }
-// }
+        return responseHelper({ message: 'Order status update failed', statusCode: 400, data: {} }, 400);
+    } catch (err) {
+        console.error('Internal server error:', err);
+        return responseHelper({ message: 'Order Patch: Internal server error', statusCode: 500, data: {} }, 500);
+    }
+}
 
 interface OrderItem {
     order_id: number;
