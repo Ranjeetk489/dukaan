@@ -61,8 +61,8 @@ export async function GET(req: NextRequest, res: NextResponse) {
 export async function POST(req: Request) {
   try {
     const { productId, quantityId, quantity } = await req.json();
-    const authData = await isAuthenticatedAndUserData();
-    const userId = authData?.user?.id;
+    // const authData = await isAuthenticatedAndUserData();
+    const userId = 5;//authData?.user?.id;
   
     if (quantity === undefined) {
       return responseHelper(
@@ -74,6 +74,7 @@ export async function POST(req: Request) {
         200,
       );
     }
+    const cart_quantity: number = Number(quantity) || 1;
     
     let cartItem = await prisma.cart.findFirst({
       where: {
@@ -94,27 +95,11 @@ export async function POST(req: Request) {
       apimessage = 'Product count updated';
     } else if (cartItem && quantity) {
       // Update quantity for the item in the cart
-      await prisma.cart.update({
-        where: {
-          id: cartItem.id,
-        },
-        data: {
-          quantity: quantity,
-        },
-      });
+      await prisma.$queryRaw`UPDATE cart SET cart_quantity = ${cart_quantity} WHERE id = ${cartItem.id}`
       apimessage = 'Product count updated';
     } else if (productId && userId) {
       // Add a new product to the cart
-      await prisma.cart.create({
-        data: {
-          user_id: userId,
-          product_id: productId,
-          quantity_id: quantityId,
-          quantity: quantity || 1,
-          created_at: new Date(),
-          updated_at: new Date(),
-        },
-      });
+      await prisma.$queryRaw`INSERT INTO cart (user_id, product_id, quantity_id, cart_quantity) VALUES (${userId}, ${productId}, ${quantityId}, ${cart_quantity})`
       apimessage = 'New product added to cart';
     }
 
