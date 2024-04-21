@@ -48,7 +48,7 @@ model cart {
   id            Int       @id @default(autoincrement())
   user_id       Int?
   product_id    Int?
-  item_quantity Int?
+  cart_quantity Int?
   created_at    DateTime? @default(now()) @db.Timestamp(6)
   updated_at    DateTime? @db.Timestamp(6)
   quantity_id   Int?
@@ -495,16 +495,17 @@ model directus_webhooks {
 }
 
 model order_items {
-  id             Int       @id @default(autoincrement())
-  order_id       Int?
-  product_id     Int?
-  quantity       Int?
-  price_per_unit Decimal?  @db.Decimal
-  created_at     DateTime? @default(now()) @db.Timestamp(6)
-  updated_at     DateTime? @db.Timestamp(6)
-  product_name   String?   @db.VarChar(255)
-  orders         orders?   @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  products       products? @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id               Int       @id @default(autoincrement())
+  order_id         Int?
+  product_id       Int?
+  quantity         Int?
+  price_per_unit   Decimal?  @db.Decimal
+  created_at       DateTime? @default(now()) @db.Timestamp(6)
+  updated_at       DateTime? @db.Timestamp(6)
+  product_name     String?   @db.VarChar(255)
+  product_quantity String?   @db.VarChar(50)
+  orders           orders?   @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  products         products? @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model orders {

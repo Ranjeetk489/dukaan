@@ -1,27 +1,22 @@
 import { responseHelper } from '@/lib/helpers';
-import { directus } from '@/lib/utils';
-import { createItem, createItems, deleteItem, deleteItems, readItems, updateItem } from '@directus/sdk';
-import config from '../../../config';
 import { isAuthenticatedAndUserData } from '@/lib/auth';
-
-
+import prisma from '@/lib/prisma/client';
+import config from '@/config';
 export async function GET(req: Request) {
     try {
-        const { productId, quantity } = await req.json();
-        const auth = await isAuthenticatedAndUserData()
-        //@ts-ignore
-        const { id: userId } = auth.user?.id
+        const auth = await isAuthenticatedAndUserData();
+        const userId = auth.user?.id;
 
+        if (!userId) {
+            return responseHelper({ message: 'User not authenticated', statusCode: 401, data: {} }, 401);
+        }
 
-        // Fetch all orders for the user
-        // @ts-ignore
-        const orders = await directus.request(readItems('orders', {
-            filter: {
-                user_id: {
-                    _eq: userId
-                }
-            }
-        }));
+        const orders = await prisma.orders.findMany({
+            where: {
+                user_id: userId,
+            },
+        });
+
         return responseHelper({ message: 'Orders fetched successfully', statusCode: 200, data: orders }, 200);
     } catch (err) {
         console.error('Internal server error:', err);
@@ -29,34 +24,26 @@ export async function GET(req: Request) {
     }
 }
 
-
 export async function POST(req: Request) {
     try {
         const { userId } = await req.json();
         let listOfProductId: number[] = [];
-        // @ts-ignore
-        const cartItems = await directus.request(readItems('cart', {
-            filter: {
-                user_id: {
-                    _eq: userId
-                }
-            }
-        }));
 
-        cartItems.forEach((item) => {
-            listOfProductId.push(item.product_id);
-        })
-        // @ts-expect-error
-        const productDetails = await directus.request(readItems('products', {
-            filter: {
-                id: {
-                    _in: listOfProductId
-                }
-            }
-        }))
-        const totalAmount: number = cartItems.reduce((total, item) =>
-            total + (Number(productDetails.find((product) =>
-                product.id === item.product_id)?.price) * Number(item.quantity)), 0);
+        if (!userId || Number.isNaN(Number(userId))) {
+            return responseHelper({ message: 'Invalid request', statusCode: 400, data: {} }, 400);
+        }
+        const detailedOrder: any[] = await prisma.$queryRaw`
+        select c.user_id, c.product_id, c.cart_quantity, c.quantity_id as "cart_to_quantiy_ref",
+        q.price as "price_per_unit", q.quantity as "product_quantity", q.price * c.cart_quantity as "amount",
+        p.name as "product_name", p.description, 
+        c.created_at, c.updated_at
+        from cart as c
+        join quantity as q on c.quantity_id = q.id
+        join products as p on c.product_id = p.id
+        where c.user_id = ${userId}
+        `
+
+        const totalAmount = detailedOrder.reduce((acc, curr) => acc + Number(curr.amount), 0);
 
         const newOrder = {
             user_id: userId,
@@ -64,122 +51,107 @@ export async function POST(req: Request) {
             status: config.order_status.ORDER_PLACED,
             order_date: new Date().toISOString(),
             created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-        }
-        const order = await directus.request(createItem('orders', newOrder));
-        let orderId: number = order.id;
-
-        const orderItemsList: OrderItem[] = []
-
-        for (const item of cartItems) {
-            const orderItemData: OrderItem = {
-                order_id: orderId,
+            updated_at: new Date().toISOString(),
+        };
+        const newOrderCreated = await prisma.orders.create({ data: newOrder });
+        
+        const orderItems = detailedOrder.map((item) => {
+            return {
+                order_id: newOrderCreated.id,
                 product_id: item.product_id,
-                product_name: productDetails.find((product) => product.id === item.product_id)?.name as string,
-                quantity: item.quantity,
-                price_per_unit: Number(productDetails.find((product) => product.id === item.product_id)?.price) as number,
+                product_name: item.product_name,
+                product_quantity: item.product_quantity,
+                quantity: item.cart_quantity,
+                price_per_unit: item.price_per_unit,
                 created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-            };
-            orderItemsList.push(orderItemData)
-        }
-        let orderPlaced = await directus.request(createItems('order_items', orderItemsList));
+                updated_at: new Date().toISOString(),
+            }
+        })
+        console.log(orderItems, "orderItems")
+        const orderItemsQuery = `
+  INSERT INTO order_items (order_id, product_id, product_name, product_quantity, quantity, price_per_unit, created_at, updated_at)
+  VALUES 
+`;
 
-        // let response = await emptyCart(Number(userId));
-        // console.log(response, "response")
+const orderItemsValues = detailedOrder.map((item) => {
+  return `(${newOrderCreated.id}, ${item.product_id}, '${item.product_name}', '${item.product_quantity}', ${item.cart_quantity}, ${item.price_per_unit}, '${new Date().toISOString()}', '${new Date().toISOString()}')`;
+}).join(', ');
 
-        return responseHelper({ message: 'Order placed successfully', statusCode: 200, data: order }, 200);
-
+const fullQuery = `${orderItemsQuery} ${orderItemsValues}`;
+console.log(fullQuery, "fullQuery")
+const orderItemsCreated = await prisma.$queryRaw`${fullQuery}`; // Execute the fullQuery;
+console.log("detailedOrder", orderItemsCreated)
+        
+    
+        return responseHelper({ message: 'Order placed successfully', statusCode: 200, data: {} }, 200);
     } catch (err) {
         console.error('Internal server error:', err);
-        return responseHelper({ message: 'Internal server error', statusCode: 400, data: {} }, 500);
+        return responseHelper({ message: 'Internal server error', statusCode: 500, data: {} }, 500);
     }
 }
 
-async function emptyCart(user_id: number) {
-    let result = await directus.request(deleteItems('cart', {
-        filter: {
-            user_id: {
-                _eq: user_id
-            }
-        }
-    }));
-    return result;
-}
+// export async function PATCH(req: Request) {
+//     try {
+//         const { orderId, userId, status } = await req.json();
 
+//         if (!userId || !status) {
+//             return responseHelper({ message: 'Invalid request', statusCode: 400, data: {} }, 400);
+//         }
 
-export async function PATCH(req: Request) {
-    try {
-        const { orderId, userId, status } = await req.json();
-        let order_placed = config.order_status.ORDER_PLACED;
-        let cancelled = config.order_status.CANCELLED;
-        let out_for_delivery = config.order_status.OUT_FOR_DELIVERY;
-        let delivered = config.order_status.DELIVERED;
+//         const order = await prisma.orders.findFirst({
+//             where: {
+//                 user_id: userId,
+//                 id: orderId,
+//             },
+//         });
 
-        const allPossibleStatus = [cancelled, out_for_delivery, delivered]; // "order_placed" is by deafult when order is placed
-        const notAllowedOnCancelled = [out_for_delivery, delivered, cancelled];
-        const notAllowedOnOutForDelivery = [cancelled, out_for_delivery];
-        const notAllowedOnDelivered = [cancelled, delivered];
-        console.log(allPossibleStatus, allPossibleStatus.includes(status), status)
-        if (!userId || !status || allPossibleStatus.includes(status) === false) {
-            return responseHelper({ message: 'Invalid request', statusCode: 400, data: {} }, 400);
-        }
-        // check orders table has that user's order
-        // @ts-ignore
-        const orders = await directus.request(readItems('orders', {
-            filter: {
-                user_id: {
-                    _eq: userId
-                },
-                id: {
-                    _eq: orderId
-                }
-            }
-        }))
-        if (orders.length === 0) {
-            return responseHelper({ message: 'No order found', statusCode: 400, data: {} }, 400);
-        }
+//         if (!order) {
+//             return responseHelper({ message: 'No order found', statusCode: 400, data: {} }, 400);
+//         }
 
-        /*
-        If order status is 'order_placed' then it can be updated to 'cancelled', out_for_delivery', 'delivered', 'cancelled'
-        If order status is 'cancelled' then it can be updated to 'cancelled', out_for_delivery', 'delivered'
-        If order status is 'out_for_delivery' then it can be updated to 'cancelled' : respone : Order out for delivery can't be cancelled
-        If order status is 'delivered' then it can be updated to 'cancelled'
-        */
+//         const currentStatus = order.status;
+//         const notAllowedOnCancelled = [config.order_status.OUT_FOR_DELIVERY, config.order_status.DELIVERED];
+//         const notAllowedOnOutForDelivery = [config.order_status.CANCELLED];
+//         const notAllowedOnDelivered = [config.order_status.CANCELLED, config.order_status.OUT_FOR_DELIVERY];
 
+//         if (currentStatus === config.order_status.CANCELLED && notAllowedOnCancelled.includes(status)) {
+//             return responseHelper({ message: 'Order is cancelled', statusCode: 400, data: {} }, 400);
+//         }
 
-        const currentStatus = orders[0].status;
+//         if (currentStatus === config.order_status.OUT_FOR_DELIVERY && notAllowedOnOutForDelivery.includes(status)) {
+//             return responseHelper({ message: 'Order already out for delivery', statusCode: 400, data: {} }, 400);
+//         }
 
-        if (currentStatus === cancelled && notAllowedOnCancelled.includes(status)) {
-            return responseHelper({ message: 'Order is cancelled', statusCode: 400, data: {} }, 400);
-        }
+//         if (currentStatus === config.order_status.DELIVERED && notAllowedOnDelivered.includes(status)) {
+//             return responseHelper({ message: 'Order already delivered', statusCode: 400, data: {} }, 400);
+//         }
 
-        if (currentStatus === out_for_delivery && notAllowedOnOutForDelivery.includes(status)) {
-            return responseHelper({ message: 'Order already out for delivery', statusCode: 400, data: {} }, 400);
-        }
+//         const response = await prisma.orders.update({
+//             where: {
+//                 id: orderId,
+//             },
+//             data: {
+//                 status: status,
+//             },
+//         });
 
-        if (currentStatus === delivered && notAllowedOnDelivered.includes(status)) {
-            return responseHelper({ message: 'Order already delivered', statusCode: 400, data: {} }, 400);
-        }
+//         if (response) {
+//             return responseHelper({ message: 'Order status updated successfully', statusCode: 200, data: {} }, 200);
+//         }
 
-        let response = await directus.request(updateItem('orders', orderId, { status }));
-        if (response) {
-            return responseHelper({ message: 'Order status updated successfully', statusCode: 200, data: {} }, 200);
-        }
-        return responseHelper({ message: 'Order status updated failed', statusCode: 400, data: {} }, 200);
-
-    } catch (err) {
-        console.error('Internal server error:', err);
-        return responseHelper({ message: 'Order Patch: Internal server error', statusCode: 500, data: {} }, 500);
-    }
-}
+//         return responseHelper({ message: 'Order status update failed', statusCode: 400, data: {} }, 400);
+//     } catch (err) {
+//         console.error('Internal server error:', err);
+//         return responseHelper({ message: 'Order Patch: Internal server error', statusCode: 500, data: {} }, 500);
+//     }
+// }
 
 interface OrderItem {
-    order_id: number,
-    product_id: number,
-    product_name: string,
-    quantity: number,
-    price_per_unit: number,
-    created_at: string,
-    updated_at: string
+    order_id: number;
+    product_id: number;
+    product_name: string;
+    quantity: number;
+    price_per_unit: number;
+    created_at: string;
+    updated_at: string;
 }
