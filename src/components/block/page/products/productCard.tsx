@@ -17,18 +17,18 @@ import {
 
 
 const ProductCard = ({ product }: { product: Product }) => {
-    console.log(product, "product")
+    // console.log(product, "product")
     const { cart, updateProductQuantityInCart, updateProductQuantityLocal } = useProductStore();
     const { debounceFn } = useOptimistic()
-    const quantityInCart = cart.data[product.id]?.quantity || 0
+    const quantityInCart = cart.data[product.id]?.added_quantity || 0
     const productPrice = product.quantities[0].price
     const updateProductOptimistic = (count: number) => {
-        updateProductQuantityLocal(product, count)
-        debounceFn(() => updateProductQuantityInCart(product, count), 500)
+        updateProductQuantityLocal(product, product.quantities[0].id,count)
+        debounceFn(() => updateProductQuantityInCart(product, product.quantities[0].id, count), 500)
     }
 
     const onCountUpdate = (action: 'increment' | 'decrement') => {
-        const quantityInCart = cart.data[product.id]?.quantity || 0
+        const quantityInCart = cart.data[product.id]?.added_quantity || 0
         switch (action) {
             case 'increment':
                 updateProductOptimistic(quantityInCart + 1)
@@ -73,7 +73,7 @@ const ProductCard = ({ product }: { product: Product }) => {
                 </Select>
                 <div className="flex justify-between items-center w-full mt-1">
                     <p className="text-xs font-semibold">₹{productPrice}</p>
-                    <AddSubtract productData={product.quantities} />
+                    <AddSubtract count={quantityInCart} onCountUpdate={onCountUpdate} />
                 </div>
             </div>
         </Card>

@@ -1,7 +1,6 @@
 "use client"
 import { Button } from "@/components/ui/button"
 import { useCategoryStore } from "@/store/useProductStore"
-import { NETWORK_STATES } from "@/lib/client/apiUtil"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import Products from "./products"
 import { getProductsByCategoryId } from "@/lib/prisma"
@@ -25,7 +24,7 @@ const Categories = (props: Props) => {
         setLoading(false)
     }
 
-    console.log(loading)
+    // console.log(loading)
 
     return (
         <div className="grid grid-cols-8 gap-8">
@@ -42,7 +41,7 @@ const Categories = (props: Props) => {
             </div>
             <div className="col-span-6">
                 {
-                    true ?
+                    loading ?
                         <LoadingSpinner /> :
                         <Products productsData={categoryProducts.data} />
                 }

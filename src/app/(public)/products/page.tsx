@@ -1,6 +1,5 @@
 // "use client"
 import Categories from "@/components/block/page/products/categories";
-import Products from "@/components/block/page/products/products";
 import { getCategories } from "@/lib/directus/methods";
 import { getProductsByCategoryId } from "@/lib/prisma";
 

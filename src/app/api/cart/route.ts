@@ -58,7 +58,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(req: Request) { 
   try {
     const { productId, quantityId, quantity } = await req.json();
     // const authData = await isAuthenticatedAndUserData();
@@ -83,7 +83,7 @@ export async function POST(req: Request) {
         quantity_id: quantityId,
       },
     });
-
+    console.log(cartItem)
     let apimessage = '';
     if (quantity === 0 && cartItem) {
       // If quantity is 0, remove the item from the cart

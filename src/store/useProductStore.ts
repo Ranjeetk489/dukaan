@@ -13,8 +13,8 @@ interface ProductStore {
   isCartSheetVisible: boolean,
   toggleCartSheet: (isOpen: boolean) => void
   updateCart: (cartItems: Cart) => void
-  updateProductQuantityInCart: (product: Product, quantity: number) => void
-  updateProductQuantityLocal: (product: Product, quantity: number) => void,
+  updateProductQuantityInCart: (product: Product, quantity: number, quantityId: number) => void
+  updateProductQuantityLocal: (product: Product, quantity: number, quantityId: number) => void,
   
 }
 
@@ -31,26 +31,6 @@ interface CategoryStore {
 }
 
 
-async function getProducts(): Promise<Product[] | []> {
-
-  return []
-}
-
-async function addProductToCart(product: Product) {
-
-  return product
-}
-
-async function getCartItems() {
-  const cartItems = await fetchInsideTryCatch<Product[]>('api/cart', {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
-
-}
-
 export const useProductStore = create<ProductStore>((set, get) => ({
   products: [],
   cart: {
@@ -65,16 +45,16 @@ export const useProductStore = create<ProductStore>((set, get) => ({
     set(state => ({ cart: { data: cartItems , status: NETWORK_STATES.IDLE} }))
   },
   updateProductQuantityLocal: (product, quantity) => {
-    // set(state => ({ cart: { data: {...state.cart.data, [product.id]: {product, quantity}}, status: NETWORK_STATES.IDLE } }))
+    set(state => ({cart: {data: {...state.cart.data, [product.id]: {...product, added_quantity: quantity}}, status: NETWORK_STATES.IDLE}}))
   },
-  updateProductQuantityInCart: async (product, quantity) => {
+  updateProductQuantityInCart: async (product,quantity_id, quantity) => {
     set(state => ({ cart: { data: state.cart.data, status: NETWORK_STATES.LOADING } }))
     const data = await fetchInsideTryCatch('api/cart', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ productId: product.id, quantity: quantity })
+      body: JSON.stringify({ productId: product.id,quantity_id: quantity_id, quantity: quantity })
     }, {
       retryDelay: 1000,
       maxRetries: 3

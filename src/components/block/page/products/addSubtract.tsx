@@ -17,7 +17,7 @@ const AddSubtract = (props: AddSubtractProps) => {
                     <p onClick={() => props.onCountUpdate('increment')}>+</p>
                 </Button>
             ) : (
-                <Button onClick={() => props.onCountUpdate('increment')} variant={"outline"} className="bg-[#f7fff9] uppercase w-[60px] md:w-[72px] text-xs px-4 py-1 md:py-2 hover:bg-[#f7fff9] hover:text-[#318616] text-[#318616] border border-[#318616]">Add</Button>
+                <Button onClick={() => props.onCountUpdate('increment')} variant={"outline"} className="bg-[#f7fff9] uppercase w-[60px] md:w-[72px] text-xs px-4 py-1 md:py-2 hover:bg-[#f7fff9] hover:t    ext-[#318616] text-[#318616] border border-[#318616]">Add</Button>
             )}
         </div>
     );

@@ -1,5 +1,5 @@
 export interface ProductFromDB {
-    id: number
+    id?: number
     name: string
     description: string
     category_id: number
@@ -16,7 +16,7 @@ export interface Product extends ProductFromDB {
 
 
 export interface Quantity {
-    id: number
+    id?: number
     product_id: number
     quantity: string
     price: string
@@ -27,7 +27,7 @@ export interface Quantity {
 }
 
 export interface CartItem extends ProductFromDB, Quantity{
-    cart_id: number;
+    cart_id?: number;
     cart_quantity: number;
 
 }
