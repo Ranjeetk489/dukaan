@@ -11,7 +11,7 @@ export interface ProductFromDB {
 
 
 export interface Product extends ProductFromDB {
-    quantity: Quantity[]
+    quantities: Quantity[]
 }
 
 

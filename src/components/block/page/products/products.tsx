@@ -1,19 +1,20 @@
 'use client'
 
 import { useProductStore } from "@/store/useProductStore";
-import ProductCard from "../../productCard";
+import ProductCard from "./productCard";
+import { Product } from "@/types/client/types";
 
 type Props = {
-
+    productsData: Product[]
 }
 
 const Products = (props: Props) => {
-    const products = useProductStore(state => state.products);
+    // const products = useProductStore(state => state.products);
 
     return (
-        <div className="flex overflow-x-auto gap-4 scroll no-scrollbar">
+        <div className="flex gap-4">
             {
-                products.map((product) => (
+                props.productsData.map((product) => (
                     // eslint-disable-next-line react/jsx-key
                     <ProductCard product={product} key={product.id} />
                 ))

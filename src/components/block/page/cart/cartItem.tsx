@@ -3,7 +3,7 @@ import config from "@/config";
 import { CartItem } from "@/types/client/types";
 import Image from "next/image";
 import React from "react";
-import AddSubtract from "../../common/addSubtract";
+import AddSubtract from "../products/addSubtract";
 import { useProductStore } from "@/store/useProductStore";
 import useOptimistic from "@/lib/client/hooks/useOptimistic";
 

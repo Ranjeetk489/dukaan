@@ -1,10 +1,11 @@
 "use client"
 import { Button } from "@/components/ui/button"
-import { useEffect, useState } from "react"
-import ProductCard from "../../productCard"
 import { useCategoryStore } from "@/store/useProductStore"
 import { NETWORK_STATES } from "@/lib/client/apiUtil"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
+import Products from "./products"
+import { getProductsByCategoryId } from "@/lib/prisma"
+import { useState } from "react"
 
 type Props = {
     categories: { id: number, name: string }[]
@@ -12,31 +13,38 @@ type Props = {
 
 
 const Categories = (props: Props) => {
-    const {categories, getProductsByCategory, categoryProducts, updateCategories } = useCategoryStore()
-    // useEffect(() => {
+    const [loading,setLoading] = useState(false)
+    const { categories, updateCategoryProducts, categoryProducts, updateCategories } = useCategoryStore()
 
-    // }, [])
+    const onCategoryClick = async (id: number) => {
+        setLoading(true)
+        const data = await getProductsByCategoryId(id)
+        if (data) {
+            updateCategoryProducts(data)
+        }
+        setLoading(false)
+    }
+
+    console.log(loading)
 
     return (
-        <div className="grid grid-cols-8">
+        <div className="grid grid-cols-8 gap-8">
             <div className="flex flex-col gap-2 col-span-2">
                 {
                     props.categories.map((category) => {
                         return (
-                            <Button key={category.id} onClick={() => getProductsByCategory(category.id)}>{category.name}</Button>
+                            <form action={() => onCategoryClick(category.id)} key={category.id} className="w-full">
+                                <Button className="w-full" type="submit">{category.name}</Button>
+                            </form>
                         )
                     })
                 }
             </div>
             <div className="col-span-6">
-                
                 {
-                    categoryProducts.status === NETWORK_STATES.LOADING ? <LoadingSpinner/> : 
-                    categoryProducts.data.map((product) => {
-                        return (
-                            <ProductCard key={product.id} product={product} />
-                        )
-                    })
+                    true ?
+                        <LoadingSpinner /> :
+                        <Products productsData={categoryProducts.data} />
                 }
             </div>
         </div>
