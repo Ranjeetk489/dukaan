@@ -87,3 +87,54 @@ export async function GET(req: Request) {
 
   //     product.quantities = productQuantities;
   //   });
+
+
+
+
+  /*
+  import { Directus } from '@directus/sdk';
+
+// Initialize Directus SDK
+const directus = new Directus('https://your-directus-url.com');
+
+// Function to upload an image and associate it with a product
+async function addProductWithImage(productName: string, productDescription: string, categoryId: number, imageUUID: string) {
+    try {
+        // Insert the product data into the products table
+        const newProduct = await directus.items('products').create({
+            name: productName,
+            description: productDescription,
+            category_id: categoryId,
+            image: imageUUID // Associate the image with the product using its UUID
+        });
+
+        console.log('New product added:', newProduct);
+        return newProduct;
+    } catch (error) {
+        console.error('Error adding product:', error);
+        throw error;
+    }
+}
+
+// Example usage
+async function main() {
+    try {
+        // Upload the image to Directus (replace 'path/to/image.jpg' with the actual path to your image file)
+        const uploadedImage = await directus.files.upload('path/to/image.jpg');
+
+        // Get the UUID of the uploaded image
+        const imageUUID = uploadedImage.data.id;
+
+        // Add the product with the associated image
+        const newProduct = await addProductWithImage('Product Name', 'Product Description', 1, imageUUID);
+
+        console.log('New product added:', newProduct);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+// Call the main function
+main();
+
+  */
