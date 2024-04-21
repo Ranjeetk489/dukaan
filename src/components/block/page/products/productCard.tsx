@@ -23,7 +23,7 @@ const ProductCard = ({ product }: { product: Product }) => {
     const quantityInCart = cart.data[product.id]?.added_quantity || 0
     const productPrice = product.quantities[0].price
     const updateProductOptimistic = (count: number) => {
-        updateProductQuantityLocal(product, product.quantities[0].id,count)
+        updateProductQuantityLocal(product,count,  product.quantities[0].id)
         debounceFn(() => updateProductQuantityInCart(product, product.quantities[0].id, count), 500)
     }
 
