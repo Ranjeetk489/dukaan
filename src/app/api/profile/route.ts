@@ -1,6 +1,6 @@
 import { responseHelper } from '@/lib/helpers';
 import { directus } from '@/lib/utils';
-import { readItems, readItem } from '@directus/sdk';
+import { readItems } from '@directus/sdk';
 
 export async function PATCH(req: Request) {
     try {

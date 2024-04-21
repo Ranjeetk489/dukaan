@@ -9,7 +9,7 @@ import { createItems } from '@directus/sdk';
 export async function GET(req: Request) {
     try {
         const auth = await isAuthenticatedAndUserData();
-        const userId = 5;//auth.user?.id;
+        const userId = auth.user?.id;
 
         if (!userId) {
             return responseHelper({ message: 'User not authenticated', statusCode: 401, data: {} }, 401);

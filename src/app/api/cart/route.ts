@@ -2,7 +2,7 @@ import { responseHelper } from '@/lib/helpers';
 import { isAuthenticatedAndUserData } from '@/lib/auth';
 import { PrismaClient } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
-import { Cart, CartItem } from '@/types/client/types';
+import { Cart, CartItem } from '@/types/server/types';
 
 const prisma = new PrismaClient();
 

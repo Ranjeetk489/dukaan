@@ -1,7 +1,7 @@
 import { isAuthenticatedAndUserData } from "@/lib/auth";
 import { responseHelper } from "@/lib/helpers";
 import prisma from "@/lib/prisma/client";
-import { Product, ProductFromDB, Quantity } from "@/types/client/types";
+import { Product, ProductFromDB, Quantity } from "@/types/server/types";
 
 export async function GET(req: Request) {
   try {
@@ -90,7 +90,7 @@ export async function POST(req: Request) {
       },
     });
 
-    const quantities: Quantity[] = product.quantity.map((quantity: any) => {
+    const quantities: Quantity[] = product.quantities.map((quantity: any) => {
       return {
         ...quantity,
         is_stock_available: 1,
