@@ -61,8 +61,8 @@ export async function GET(req: NextRequest, res: NextResponse) {
 export async function POST(req: Request) { 
   try {
     const { productId, quantityId, quantity } = await req.json();
-    // const authData = await isAuthenticatedAndUserData();
-    const userId = 5;//authData?.user?.id;
+    const authData = await isAuthenticatedAndUserData();
+    const userId = authData?.user?.id;
   
     if (quantity === undefined) {
       return responseHelper(

@@ -1,6 +1,7 @@
 import OrderCart from "@/components/block/page/cart/cart";
 import CartItems from "@/components/block/page/cart/cartItems";
 import { getCartItems } from "@/lib/directus/methods";
+import { getCartData } from "@/lib/prisma";
 import prisma from "@/lib/prisma/client";
 import { cookies } from "next/headers";
 import Link from "next/link";
@@ -9,9 +10,9 @@ import { IoMdClose } from "react-icons/io";
 
 type Props = {};
 export default async function Page({}: Props) {
-    const data = await prisma.$queryRaw`SELECT * FROM cart`
-
-
+    const data = await getCartData()
+    console.log(data, "data")
+    
     return (
         <div className="m-auto grid grid-cols-1">
             <div className="col-span-1 py-4 border-b border-slate-200 shadow-sm">
@@ -24,9 +25,9 @@ export default async function Page({}: Props) {
                 <div className="col-span-1 mt-2 px-2 py-3 rounded-lg bg-blue-200 text-blue-600">
                     Store is open
                 </div>
-                {/* <div className="col-span-1">
-                    <OrderCart cartData={cartData}/>
-                </div> */}
+                <div className="col-span-1">
+                    <OrderCart cartData={data}/>
+                </div>
             </div>
         </div>
   );

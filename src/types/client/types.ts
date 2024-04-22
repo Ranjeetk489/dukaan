@@ -48,12 +48,16 @@ export type ApiResponseObject<T> = {
     }
 }
 
-export interface CartProduct extends Product {
+export interface CartItemQuantity extends Quantity {
     added_quantity: number
 }
 
+// export interface CartProduct extends Product {
+//     quantities: CartItemQuantity[]
+// }
+
 export  interface Cart {
-    [productId: number]: CartProduct;
+    [productId: number]: Product;
 }
 
 export interface Category {

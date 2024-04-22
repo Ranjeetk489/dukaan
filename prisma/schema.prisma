@@ -486,7 +486,7 @@ model order_items {
   order_id         Int?
   product_id       Int?
   quantity         Int?
-  price_per_unit   Decimal?  @db.Decimal
+  price_per_unit   String?    @db.VarChar(255)
   created_at       DateTime? @default(now()) @db.Timestamp(6)
   updated_at       DateTime? @db.Timestamp(6)
   product_name     String?   @db.VarChar(255)
@@ -499,7 +499,7 @@ model orders {
   id           Int           @id @default(autoincrement())
   user_id      Int?
   order_date   DateTime?     @db.Timestamp(6)
-  total_amount Decimal?      @db.Decimal
+  total_amount String?    @db.VarChar(255)
   status       String?       @db.VarChar(255)
   created_at   DateTime?     @default(now()) @db.Timestamp(6)
   updated_at   DateTime?     @db.Timestamp(6)
@@ -514,7 +514,7 @@ model payments {
   order_id       Int?
   payment_date   DateTime? @db.Timestamp(6)
   payment_method String?   @db.VarChar(255)
-  amount         Decimal?  @db.Decimal
+  amount         String?    @db.VarChar(255)
   created_at     DateTime? @default(now()) @db.Timestamp(6)
   updated_at     DateTime? @db.Timestamp(6)
   orders         orders?   @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -541,8 +541,8 @@ model products {
 model quantity {
   id                                      Int        @id @default(autoincrement())
   product_id                              Int?
-  quantity                                String?    @db.VarChar
-  price                                   Decimal?   @db.Decimal(10, 2)
+  quantity                                String?    @db.VarChar(255)
+  price                                   String?   @db.VarChar(255)
   is_stock_available                      Int?
   stocked_quantity                        Int?
   created_at                              DateTime?  @default(now()) @db.Timestamp(6)

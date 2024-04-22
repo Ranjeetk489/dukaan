@@ -30,7 +30,6 @@ export interface Quantity {
 export interface CartItem extends ProductFromDB, Quantity{
     cart_id?: number;
     cart_quantity: number;
-
 }
 
 export type ResponseObject = {

@@ -1,6 +1,6 @@
 "use client";
 import { NETWORK_STATES, fetchInsideTryCatch } from "@/lib/client/apiUtil";
-import { Cart, Category, Product } from "@/types/client/types";
+import { Cart, CartItemQuantity, CartProduct, Category, Product, Quantity } from "@/types/client/types";
 import { create } from "zustand";
 
 type NetworkState = (typeof NETWORK_STATES)[keyof typeof NETWORK_STATES];
@@ -51,18 +51,27 @@ export const useProductStore = create<ProductStore>((set, get) => ({
       cart: { data: cartItems, status: NETWORK_STATES.IDLE },
     }));
   },
-  updateProductQuantityLocal: (product, quantity) => {
+  updateProductQuantityLocal: (product, quantity, quantityId) => {
+    let updatedQuantities:CartItemQuantity[]
+    const productExistsInCart = get().cart.data[product.id] ? get().cart.data[product.id] : product
+      updatedQuantities = productExistsInCart.quantities.map((q) => {
+        if (q.id === quantityId) {
+          return { ...q, count: quantity };
+        } else {
+          return {...q, count: q.count ? q.count : 0};
+        }
+      }) as CartItemQuantity[]
     set((state) => ({
       cart: {
         data: {
           ...state.cart.data,
-          [product.id]: { ...product, added_quantity: quantity },
+          [product.id]: { ...product, quantities: updatedQuantities },
         },
         status: NETWORK_STATES.IDLE,
-      },
-    }));
+      }
+    }))
   },
-  updateProductQuantityInCart: async (product, quantity_id, quantity) => {
+  updateProductQuantityInCart: async (product, quantity, quantity_id) => {
     set((state) => ({
       cart: { data: state.cart.data, status: NETWORK_STATES.LOADING },
     }));
@@ -75,13 +84,13 @@ export const useProductStore = create<ProductStore>((set, get) => ({
         },
         body: JSON.stringify({
           productId: product.id,
-          quantity_id: quantity_id,
+          quantityId: quantity_id,
           quantity: quantity,
         }),
       },
       {
         retryDelay: 1000,
-        maxRetries: 3,
+        maxRetries: 1,
       }
     );
     if (data && data.response.statusCode !== 200) {
