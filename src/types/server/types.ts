@@ -20,6 +20,7 @@ export interface Quantity {
     product_id: number
     quantity: string
     price: string
+    count: number
     is_stock_available: number
     stock_quantity: number
     created_at: string

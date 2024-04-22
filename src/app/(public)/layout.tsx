@@ -11,7 +11,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     const { cart, toggleCartSheet } = useProductStore();
-    const totalItemsQuantity = Object.values(cart.data).reduce((acc, item) => acc + item.quantity, 0)
+    const totalItemsQuantity = Object.values(cart.data).reduce((acc, item) => acc + item, 0)
     const {isMobile} = useDevice()
     const router = useRouter()
 

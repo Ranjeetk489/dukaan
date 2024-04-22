@@ -83,7 +83,7 @@ export async function POST(req: Request) {
         quantity_id: quantityId,
       },
     });
-    console.log(cartItem)
+    // console.log(cartItem)
     let apimessage = '';
     if (quantity === 0 && cartItem) {
       // If quantity is 0, remove the item from the cart
