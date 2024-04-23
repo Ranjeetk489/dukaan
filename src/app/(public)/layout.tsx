@@ -3,6 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { useDevice } from "@/lib/client/hooks/useDevice";
 import { useProductStore } from "@/store/useProductStore";
+import { CartItem, CartProduct } from "@/types/client/types";
+import { Quantity } from "@/types/server/types";
 import {useRouter} from 'next/navigation'
 
 export default function RootLayout({
@@ -11,7 +13,19 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     const { cart, toggleCartSheet } = useProductStore();
-    const totalItemsQuantity = Object.values(cart.data).reduce((acc, item) => acc + item.quantity, 0)
+    const getTotalQuantity = () => {
+        let total = 0
+        Object.keys(cart.data).forEach((key: string) => {
+            const cartProduct: CartProduct = cart.data[Number(key)]
+            cartProduct.quantities.forEach((quantity: Quantity) => {
+                total+= quantity.count
+            })
+        })
+        return total
+    }
+    const totalItemsQuantity = getTotalQuantity()
+
+
     const {isMobile} = useDevice()
     const router = useRouter()
 
