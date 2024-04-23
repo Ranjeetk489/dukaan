@@ -1,21 +1,23 @@
 "use client"
 
 import { useProductStore } from '@/store/useProductStore'
-import { Cart, CartItem } from '@/types/client/types'
 import { useRouter } from 'next/navigation'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import CartItems from './cartItems'
 import { ArrowRightIcon } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import BillDetails from './billDetails'
+import { Cart, CartItem } from '@/types/server/types'
+import { formatCartData } from '@/app/(protected)/cart/page'
 
 type Props = {
-    cartData?: Cart
+    cartData?: CartItem[]
 }
 
 function OrderCart(props: Props) {
-    const { toggleCartSheet, cart, updateCart } = useProductStore()
-    const totalAmount = Object.values(cart.data).reduce((acc: number, item: CartItem) => acc + (+item.product.price * item.quantity), 0)
+    const [cart, setCart] = useState<Cart>([]);
+    const { toggleCartSheet, updateCart } = useProductStore()
+    const totalAmount = Object.values(cart).reduce((acc: number, item: CartItem) => acc + ( +item?.price* item?.cart_quantity), 0)
     const router = useRouter()
     
     const handleProceedAction = () => {
@@ -25,7 +27,9 @@ function OrderCart(props: Props) {
 
     useEffect(() => {
         if(props.cartData) {
-            updateCart(props.cartData)
+            const cart = formatCartData(props.cartData)
+            setCart(cart)
+            updateCart(cart)
         }
         //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.cartData])
@@ -34,10 +38,10 @@ function OrderCart(props: Props) {
     const deliveryCharge = 100
     return (
         <>    {
-            Object.keys(cart.data).length ?
+            Object.keys(cart).length ?
                 <div className=''>
                     <div className='px-2'>
-                        <CartItems cartData={cart.data} />
+                        <CartItems cartData={cart} />
                     </div>
                     <div className='px-2 mt-4'>
                         <BillDetails subTotal={totalAmount} deliveryCharge={deliveryCharge} grandTotal={totalAmount + deliveryCharge} />

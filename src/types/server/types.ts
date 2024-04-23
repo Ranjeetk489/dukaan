@@ -20,6 +20,7 @@ export interface Quantity {
     product_id: number
     quantity: string
     price: string
+    count: number
     is_stock_available: number
     stock_quantity: number
     created_at: string
@@ -27,9 +28,8 @@ export interface Quantity {
 }
 
 export interface CartItem extends ProductFromDB, Quantity{
-    cart_id?: number;
+    cart_id: number;
     cart_quantity: number;
-
 }
 
 export type ResponseObject = {
@@ -48,12 +48,12 @@ export type ApiResponseObject<T> = {
     }
 }
 
-export interface CartProduct extends Product {
-    added_quantity: number
-}
+// export interface CartProduct extends Product {
+//     added_quantity: number
+// }
 
 export  interface Cart {
-    [productId: number]: CartProduct;
+    [productId: number]: Product;
 }
 
 export interface Category {
