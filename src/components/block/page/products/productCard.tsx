@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { Card } from "../../../ui/card";
 import config from "@/config";
-import { Product, Quantity } from "@/types/client/types";
+import { Product} from "@/types/client/types";
 import { useProductStore } from "@/store/useProductStore";
 import useOptimistic from "@/lib/client/hooks/useOptimistic";
 import AddSubtract from "./addSubtract";
@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Quantity } from "@/types/server/types";
 
 const ProductCard = ({ product }: { product: Product }) => {
   const { cart, updateProductQuantityInCart, updateProductQuantityLocal } = useProductStore();
@@ -36,15 +37,17 @@ const ProductCard = ({ product }: { product: Product }) => {
 const totalItemsQuantity = getTotalQuantity()
   const productPrice = product.quantities[0].price;
   const updateProductOptimistic = (count: number) => {
-    updateProductQuantityLocal(product, count, product.quantities[quantityIndex].id);
+    updateProductQuantityLocal(product, product.quantities[0].id, count);
     debounceFn(
       () =>
-        updateProductQuantityInCart(product,count, product.quantities[quantityIndex].id),
+        updateProductQuantityInCart(product, product.quantities[0].id, count),
       500
     );
   };
   const [showVariant, setShowVariant] = useState<boolean>(false);
 
+  console.log(quantityInCart)
+  console.log(cart.data[product.id]?.quantities)
 
   const onCountUpdate = (action: "increment" | "decrement") => {
     const quantityInCart = cart.data[product.id]?.quantities[quantityIndex].count || 0;

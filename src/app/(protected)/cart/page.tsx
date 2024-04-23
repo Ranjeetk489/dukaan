@@ -1,17 +1,66 @@
 import OrderCart from "@/components/block/page/cart/cart";
-import CartItems from "@/components/block/page/cart/cartItems";
-import { getCartItems } from "@/lib/directus/methods";
 import { getCartData } from "@/lib/prisma";
-import prisma from "@/lib/prisma/client";
-import { cookies } from "next/headers";
-import Link from "next/link";
+import { CartItemQuantity } from "@/types/client/types";
+import { Cart, CartItem } from "@/types/server/types";
 import React from "react";
 import { IoMdClose } from "react-icons/io";
 
+export function formatCartData(apiData: CartItem[]): Cart {
+    const formattedCart: Cart = {};
+    
+    apiData.forEach((item) => {
+        const {
+        product_id,
+        name,
+        description,
+        category_id,
+        created_at,
+        updated_at,
+        image,
+        quantity_id,
+        quantity,
+        price,
+        is_stock_available,
+        stock_quantity,
+        cart_quantity,
+      } = item;
+  
+      if (!formattedCart[product_id]) {
+        formattedCart[product_id] = {
+          id: product_id,
+          name,
+          description,
+          category_id,
+          created_at,
+          updated_at,
+          image,
+          quantity_id,
+          quantities: [],
+        };
+      }
+  
+      const cartItemQuantity: CartItemQuantity = {
+        id: quantity_id,
+        product_id,
+        quantity,
+        price,
+        is_stock_available,
+        count: cart_quantity,
+        stock_quantity: stock_quantity,
+        created_at,
+        updated_at: updated_at || '',
+        added_quantity: cart_quantity,
+      };
+  
+      formattedCart[product_id].quantities.push(cartItemQuantity);
+    });
+    return formattedCart;
+  }
+  
 type Props = {};
 export default async function Page({}: Props) {
     const data = await getCartData()
-    console.log(data, "data")
+    // const cart = formatCartData(data)
     
     return (
         <div className="m-auto grid grid-cols-1">

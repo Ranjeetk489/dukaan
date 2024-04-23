@@ -24,8 +24,6 @@ const Categories = (props: Props) => {
         setLoading(false)
     }
 
-    // console.log(loading)
-
     return (
         <div className="grid grid-cols-8 gap-8">
             <div className="flex flex-col gap-2 col-span-2">

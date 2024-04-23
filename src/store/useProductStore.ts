@@ -1,6 +1,7 @@
 "use client";
 import { NETWORK_STATES, fetchInsideTryCatch } from "@/lib/client/apiUtil";
-import { Cart, CartItemQuantity, CartProduct, Category, Product, Quantity } from "@/types/client/types";
+import { CartItemQuantity, Category, Product, Quantity } from "@/types/client/types";
+import { Cart } from "@/types/server/types";
 import { create } from "zustand";
 
 type NetworkState = (typeof NETWORK_STATES)[keyof typeof NETWORK_STATES];

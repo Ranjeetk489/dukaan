@@ -28,7 +28,7 @@ export interface Quantity {
 }
 
 export interface CartItem extends ProductFromDB, Quantity{
-    cart_id?: number;
+    cart_id: number;
     cart_quantity: number;
 }
 
@@ -48,12 +48,12 @@ export type ApiResponseObject<T> = {
     }
 }
 
-export interface CartProduct extends Product {
-    added_quantity: number
-}
+// export interface CartProduct extends Product {
+//     added_quantity: number
+// }
 
 export  interface Cart {
-    [productId: number]: CartProduct;
+    [productId: number]: Product;
 }
 
 export interface Category {

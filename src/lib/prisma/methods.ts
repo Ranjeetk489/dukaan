@@ -1,5 +1,5 @@
 'use server'
-import { Product } from "@/types/client/types";
+import { Cart, CartItemQuantity, Product } from "@/types/client/types";
 import prisma from "./client";
 import { isAuthenticatedAndUserData } from "../auth";
 import { CartItem } from "@/types/server/types";
@@ -20,6 +20,7 @@ export const getProductsByCategoryId = async (category_id: number) => {
     GROUP BY
       p.id
   `;
+    // console.log(data, "data")
     return data
 }
 
@@ -56,3 +57,4 @@ export const getCartData = async (): Promise<CartItem[]> => {
   }
   return [];
 }
+
