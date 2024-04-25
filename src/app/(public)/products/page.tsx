@@ -7,7 +7,7 @@ type Props = {}
 
 export  default async function Page({}: Props) {
   const categories = await getCategories()
-  const products = await getProductsByCategoryId(1)
+  // const products = await getProductsByCategoryId(1)
   // console.log(products, "products")
 
   return (
