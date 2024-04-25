@@ -29,10 +29,12 @@ function OrderCart(props: Props) {
         if(props.cartData) {
             const cart = formatCartData(props.cartData)
             setCart(cart)
-            updateCart(cart)
+            // updateCart(cart)
         }
         //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.cartData])
+
+    console.log(cart, "cartData123")
 
 
     const deliveryCharge = 100
@@ -50,7 +52,7 @@ function OrderCart(props: Props) {
                         <p>Cancellation Policy</p>
                         <p className='text-xs text-slate-500 mt-1'>Cancellation charges may be applicable</p>
                     </Card>
-                    <div className='absolute bottom-0 right-0 left-0 py-4 bg-white border-t border-slate-200 rounded-tl-xl shadow-[0_0_10px_0px_rgba(0,0,0,0.1)] rounded-tr-lg'>
+                    <div className='fixed bottom-0 right-0 left-0 py-4 bg-white border-t border-slate-200 rounded-tl-xl shadow-[0_0_10px_0px_rgba(0,0,0,0.1)] rounded-tr-lg'>
                         <div className='mr-4 ml-4 p-2 rounded-md bg-primary flex text-white cursor-pointer justify-between items-center' onClick={handleProceedAction}>
                             <div className='text-xs'>
                                 <p className='font-medium'> ₹{totalAmount}</p>

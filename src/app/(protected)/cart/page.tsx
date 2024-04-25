@@ -51,6 +51,7 @@ export function formatCartData(apiData: CartItem[]): Cart {
         updated_at: updated_at || '',
         added_quantity: cart_quantity,
       };
+      
   
       formattedCart[product_id].quantities.push(cartItemQuantity);
     });
@@ -61,6 +62,10 @@ type Props = {};
 export default async function Page({}: Props) {
     const data = await getCartData()
     // const cart = formatCartData(data)
+
+    console.log(data, "cartData1234")
+    const cartIds: Array<number> = data.map((item) => item.cart_id);
+    const set = new Set(cartIds)
     
     return (
         <div className="m-auto grid grid-cols-1">

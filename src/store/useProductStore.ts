@@ -1,7 +1,7 @@
 "use client";
 import { NETWORK_STATES, fetchInsideTryCatch } from "@/lib/client/apiUtil";
 import { CartItemQuantity, Category, Product, Quantity } from "@/types/client/types";
-import { Cart } from "@/types/server/types";
+import { Cart } from "@/types/client/types";
 import { create } from "zustand";
 
 type NetworkState = (typeof NETWORK_STATES)[keyof typeof NETWORK_STATES];
@@ -54,12 +54,14 @@ export const useProductStore = create<ProductStore>((set, get) => ({
   },
   updateProductQuantityLocal: (product, quantity, quantityId) => {
     let updatedQuantities:CartItemQuantity[]
-    const productExistsInCart = get().cart.data[product.id] ? get().cart.data[product.id] : product
-      updatedQuantities = productExistsInCart.quantities.map((q) => {
+    console.log(quantity, quantityId, product, '====> updatedQuantities not')
+    updatedQuantities = product.quantities.map((q) => {
         if (q.id === quantityId) {
+          console.log(q,'====> q1')
           return { ...q, count: quantity };
         } else {
-          return {...q, count: q.count ? q.count : 0};
+          console.log(q,'====> q')
+          return {...q, count: q.count ? q.count : 0}
         }
       }) as CartItemQuantity[]
     set((state) => ({
