@@ -1,5 +1,4 @@
 'use client'
-
 import { useProductStore } from "@/store/useProductStore";
 import ProductCard from "./productCard";
 import { Product } from "@/types/client/types";
@@ -10,7 +9,6 @@ type Props = {
 
 const Products = (props: Props) => {
     // const products = useProductStore(state => state.products);
-
     return (
         <div className="flex gap-4">
             {

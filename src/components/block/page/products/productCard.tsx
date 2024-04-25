@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { Card } from "../../../ui/card";
 import config from "@/config";
-import { Product} from "@/types/client/types";
+import { Product } from "@/types/client/types";
 import { useProductStore } from "@/store/useProductStore";
 import useOptimistic from "@/lib/client/hooks/useOptimistic";
 import AddSubtract from "./addSubtract";
@@ -14,52 +14,71 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Quantity } from "@/types/server/types";
+import { Quantity } from "@/types/client/types";
+import VariantModal from "./variantModal";
 
 const ProductCard = ({ product }: { product: Product }) => {
-  const { cart, updateProductQuantityInCart, updateProductQuantityLocal } = useProductStore();
+  const { cart, updateProductQuantityInCart, updateProductQuantityLocal } =
+    useProductStore();
   const { debounceFn } = useOptimistic();
-  const [quantityIndex, setQuantityIndex] = useState<number>(0);
-  const quantityInCart = getTotalQuantity()
-  
+  const quantityInCart = getTotalQuantity();
+  const productFromCart = cart.data[product.id] ? cart.data[product.id] : product
+  console.log(quantityInCart, "====> quantityInCart")
+  const [showVariant, setShowVariant] = useState<boolean>(false);
   function getTotalQuantity() {
-    let total = 0
-    const productExistsInCart = cart.data[product.id]
-    if(productExistsInCart) {
+    let total = 0;
+    const productExistsInCart = cart.data[product.id];
+    if (productExistsInCart) {
       productExistsInCart.quantities.forEach((quantity: Quantity) => {
-        total += quantity?.count || 0
-      })
+        total += quantity?.count || 0;
+      });
     } else {
-      total = 0
+      total = 0;
     }
-    return total
+    return total;
   }
-const totalItemsQuantity = getTotalQuantity()
+  const totalItemsQuantity = getTotalQuantity();
   const productPrice = product.quantities[0].price;
-  const updateProductOptimistic = (count: number) => {
-    updateProductQuantityLocal(product, product.quantities[0].id, count);
+  const updateProductOptimistic = (count: number, quantIndex: number) => {
+    const productFromCart = cart.data[product.id] ? cart.data[product.id] : product
+    updateProductQuantityLocal(
+      productFromCart,
+      count,
+      product.quantities[quantIndex].id,
+    );
     debounceFn(
       () =>
-        updateProductQuantityInCart(product, product.quantities[0].id, count),
-      500
+        updateProductQuantityInCart(
+          product,
+          count,
+          product.quantities[quantIndex].id,
+        ),
+      500,
     );
   };
-  const [showVariant, setShowVariant] = useState<boolean>(false);
 
-  console.log(quantityInCart)
-  console.log(cart.data[product.id]?.quantities)
-
-  const onCountUpdate = (action: "increment" | "decrement") => {
-    const quantityInCart = cart.data[product.id]?.quantities[quantityIndex].count || 0;
-    switch (action) {
-      case "increment":
-        updateProductOptimistic(quantityInCart + 1);
-        break;
-      case "decrement":
-        updateProductOptimistic(quantityInCart - 1);
-        break;
+  console.log(cart.data, "====> q11")
+  const onCountUpdate = (action: "increment" | "decrement", quantIndex:number) => {
+    debugger
+    if (product.quantities.length > 1 && !showVariant) {
+      setShowVariant(true);
+    } else {
+      const quantityInCart = cart.data?.[product.id]?.quantities[quantIndex]?.count || 0;
+      switch (action) {
+        case "increment":
+          updateProductOptimistic(quantityInCart + 1, quantIndex);
+          break;
+        case "decrement":
+          updateProductOptimistic(quantityInCart - 1, quantIndex);
+          break;
+      }
     }
   };
+
+  console.log(cart.data, "data in cart")
+  const updateProductOptimisticV1 = (action: "increment" | "decrement", quantIndex: number, quantObj: Quantity) => {
+    onCountUpdate(action, quantIndex);
+  };  
 
   return (
     <Card className="relative flex flex-col border-none shadow-none bg-none  justify-between p-0 gap-2 items-center max-h-[280px] max-w-[200px]">
@@ -85,28 +104,16 @@ const totalItemsQuantity = getTotalQuantity()
         <h3 className="text-xs font-semibold line-clamp-2 md:line-clamp-3 h-[40px]">
           {product.name}
         </h3>
-        <Select>
-          <SelectTrigger
-            className="w-full text-xs h-8"
-          >
-            <SelectValue placeholder={product.quantities[0].quantity} />
-          </SelectTrigger>
-          <SelectContent>
-            {product.quantities.map((quantity, index) => (
-              <SelectItem
-                className="cursor-pointer"
-                key={quantity.id}
-                value={quantity.quantity}
-                onClick={() => {
-                  setShowVariant(!showVariant);
-                  setQuantityIndex(index);
-                }}
-              >
-                {quantity.quantity}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        {product.quantities.length > 1 ? (
+          <VariantModal
+            product={productFromCart}
+            isOpen={showVariant}
+            onClose={() => setShowVariant(false)}
+            onQuantityChange={updateProductOptimisticV1}
+          />
+        ) : (
+          false
+        )}
         <div className="flex justify-between items-center w-full mt-1">
           <p className="text-xs font-semibold">₹{productPrice}</p>
           <AddSubtract count={quantityInCart} onCountUpdate={onCountUpdate} />
