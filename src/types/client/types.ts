@@ -64,3 +64,15 @@ export interface Category {
     id: number;
     name: string; 
 }
+
+
+export interface AdminDashboardOrders {
+    id: number;
+    user_id: number;
+    order_date: string;
+    total_amount: number;
+    status: "order_placed" | "out_for_delivery" | "cancelled" | "delivered";
+    created_at: string,
+    updated_at: string,
+    products: ProductFromDB[]
+}
