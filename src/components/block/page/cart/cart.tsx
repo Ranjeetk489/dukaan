@@ -7,11 +7,11 @@ import CartItems from './cartItems'
 import { ArrowRightIcon } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import BillDetails from './billDetails'
-import { Cart, CartItem, Quantity } from '@/types/client/types'
-import { formatCartData } from '@/app/(protected)/cart/page'
+import { CartItem, Quantity } from '@/types/client/types'
+import { formatCartData } from '@/lib/helpers'
 
 type Props = {
-    cartData: CartItem[]
+    cartData?: CartItem[]
 }
 
 function OrderCart(props: Props) {
