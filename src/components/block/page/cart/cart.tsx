@@ -24,20 +24,19 @@ function OrderCart(props: Props) {
         router.push('/cart')
     }
 
-    function getTotalPrice () {
+    function getTotalPrice (): number {
         let total:number = 0;
         Object.values(cart.data).forEach((product) => {
             product.quantities.forEach((quantity: Quantity) => {
                 total += Number(quantity.price) * Number(quantity.count);
             })
         })
-        return total.toFixed(2)
+        return Number(total.toFixed(2))
     }
 
     useEffect(() => {
         if(props.cartData) {
             const cart = formatCartData(props.cartData)
-            updateCart(cart)
             updateCart(cart)
         }
         //eslint-disable-next-line react-hooks/exhaustive-deps
