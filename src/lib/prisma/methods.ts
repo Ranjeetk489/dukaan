@@ -2,7 +2,7 @@
 import { Cart, CartItemQuantity, Product } from "@/types/client/types";
 import prisma from "./client";
 import { isAuthenticatedAndUserData } from "../auth";
-import { CartItem } from "@/types/server/types";
+import { CartItem } from "@/types/client/types";
 
 export const getProductsByCategoryId = async (category_id: number) => {
     const data: Product[] = await prisma.$queryRaw`

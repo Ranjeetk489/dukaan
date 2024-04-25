@@ -1,14 +1,14 @@
 import OrderCart from "@/components/block/page/cart/cart";
 import { getCartData } from "@/lib/prisma";
 import { CartItemQuantity } from "@/types/client/types";
-import { Cart, CartItem } from "@/types/server/types";
+import { Cart, CartItem } from "@/types/client/types";
 import React from "react";
 import { IoMdClose } from "react-icons/io";
 
 export function formatCartData(apiData: CartItem[]): Cart {
     const formattedCart: Cart = {};
     
-    apiData.forEach((item) => {
+    apiData.forEach((item, index) => {
         const {
         product_id,
         name,
@@ -23,8 +23,9 @@ export function formatCartData(apiData: CartItem[]): Cart {
         is_stock_available,
         stock_quantity,
         cart_quantity,
+        cart_id,
       } = item;
-  
+      // const quantity = apiData
       if (!formattedCart[product_id]) {
         formattedCart[product_id] = {
           id: product_id,
@@ -40,7 +41,7 @@ export function formatCartData(apiData: CartItem[]): Cart {
       }
   
       const cartItemQuantity: CartItemQuantity = {
-        id: quantity_id,
+        id: cart_id,
         product_id,
         quantity,
         price,
@@ -62,10 +63,8 @@ type Props = {};
 export default async function Page({}: Props) {
     const data = await getCartData()
     // const cart = formatCartData(data)
-
-    console.log(data, "cartData1234")
-    const cartIds: Array<number> = data.map((item) => item.cart_id);
-    const set = new Set(cartIds)
+  // console.log(data, "data123")
+  //   console.log(cart, "cartData1234")
     
     return (
         <div className="m-auto grid grid-cols-1">
