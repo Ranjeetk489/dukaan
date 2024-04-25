@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { useDevice } from "@/lib/client/hooks/useDevice";
 import { useProductStore } from "@/store/useProductStore";
-import { CartItem, CartProduct } from "@/types/client/types";
 import { Quantity } from "@/types/server/types";
 import {useRouter} from 'next/navigation'
 
@@ -16,7 +15,7 @@ export default function RootLayout({
     const getTotalQuantity = () => {
         let total = 0
         Object.keys(cart.data).forEach((key: string) => {
-            const cartProduct: CartProduct = cart.data[Number(key)]
+            const cartProduct = cart.data[Number(key)]
             cartProduct.quantities.forEach((quantity: Quantity) => {
                 total+= quantity.count
             })

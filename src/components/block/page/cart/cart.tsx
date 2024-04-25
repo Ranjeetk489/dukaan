@@ -8,7 +8,7 @@ import { ArrowRightIcon } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import BillDetails from './billDetails'
 import { CartItem, Quantity } from '@/types/client/types'
-import { formatCartData } from '@/lib/helpers'
+import { formatCartData } from '@/lib/client/helpers'
 
 type Props = {
     cartData?: CartItem[]
