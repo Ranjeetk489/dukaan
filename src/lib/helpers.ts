@@ -2,6 +2,7 @@ import config from '@/config';
 import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken';
 import { NextResponse } from 'next/server';
+import { Cart, CartItem, CartItemQuantity } from '@/types/client/types';
 
 export async function sendEmail(to: string, otp: string) {
     try {
@@ -88,4 +89,5 @@ export const responseHelper = (res: ResponseObject, status: number, limit?: numb
     });
     return response;
 };
+
 

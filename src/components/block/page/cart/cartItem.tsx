@@ -1,6 +1,6 @@
 "use client";
 import config from "@/config";
-import { CartItem } from "@/types/client/types";
+import { CartItem, Product } from "@/types/client/types";
 import Image from "next/image";
 import React from "react";
 import AddSubtract from "../products/addSubtract";
@@ -28,33 +28,45 @@ type CartProductType = {
 
 
 type Props = {
-    item: CartProductType;
+    item: Omit<CartProductType,
+        "cart_id" |
+        "cart_quantity" |
+        "quantity_price" |
+        "stocked_quantity"
+    > & {
+        count: number;
+    }
+    product: Product;
+    index: number;
 };
 const CartProduct = (props: Props) => {
     const { updateProductQuantityInCart, updateProductQuantityLocal } =
         useProductStore();
     const { debounceFn } = useOptimistic();
 
-    // const updateProductOptimistic = (count: number) => {
-    //     updateProductQuantityLocal(props.item, count, props.item.quantity_id);
-    //     debounceFn(
-    //         () => updateProductQuantityInCart(props.item.product, count),
-    //         500,
-    //     );
-    // };
+    const updateProductOptimistic = (count: number, variantId: number) => {
+        debugger
+        updateProductQuantityLocal(props.product, count, variantId);
+        debounceFn(
+            () => updateProductQuantityInCart(props.product, count, variantId),
+            500,
+        );
+    };
 
-    // const onCountUpdate = (action: "increment" | "decrement") => {
-    //     switch (action) {
-    //         case "increment":
-    //             updateProductOptimistic(props.item.cart_quantity + 1);
-    //             break;
-    //         case "decrement":
-    //             updateProductOptimistic(props.item.cart_quantity - 1);
-    //             break;
-    //     }
-    // };
+    const onCountUpdate = (action: "increment" | "decrement") => {
+        debugger
+        const count = props.product.quantities[props.index]?.count || 0;
+        const variantId = props.product.quantities[props.index]?.id || 0;
+        switch (action) {
+            case "increment":
+                updateProductOptimistic(count + 1, variantId);
+                break;
+            case "decrement":
+                updateProductOptimistic(count - 1, variantId);
+                break;
+        }
+    };
 
-    console.log(props.item, "items123")
 
     return (
         <div
@@ -69,13 +81,13 @@ const CartProduct = (props: Props) => {
                 />
                 <div className="flex flex-col ml-2 basis-2/3">
                     <p className="text-slate-800 mb-0 text-xs line-clamp-2">{props.item.name}</p>
-                    <p className="text-slate-600 text-xs">{props.item.cart_quantity}</p>
+                    <p className="text-slate-600 text-xs">{props.item.quantity}</p>
                     <p className="font-medium text-slate-900 text-xs">
                         ₹{props.item.price}
                     </p>
                 </div>
             </div>
-            {/* <AddSubtract count={props.item.quantity} onCountUpdate={onCountUpdate} /> */}
+            <AddSubtract count={props.item.count} onCountUpdate={onCountUpdate} />
         </div>
     );
 };

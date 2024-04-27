@@ -7,17 +7,16 @@ import CartItems from './cartItems'
 import { ArrowRightIcon } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import BillDetails from './billDetails'
-import { Cart, CartItem } from '@/types/server/types'
-import { formatCartData } from '@/app/(protected)/cart/page'
+import { CartItem, Quantity } from '@/types/client/types'
+import { formatCartData } from '@/lib/client/helpers'
 
 type Props = {
     cartData?: CartItem[]
 }
 
 function OrderCart(props: Props) {
-    const [cart, setCart] = useState<Cart>([]);
-    const { toggleCartSheet, updateCart } = useProductStore()
-    const totalAmount = Object.values(cart).reduce((acc: number, item: CartItem) => acc + ( +item?.price* item?.cart_quantity), 0)
+    const {cart, updateCart, toggleCartSheet} = useProductStore()
+    const totalAmount = getTotalPrice() 
     const router = useRouter()
     
     const handleProceedAction = () => {
@@ -25,25 +24,34 @@ function OrderCart(props: Props) {
         router.push('/cart')
     }
 
+    function getTotalPrice (): number {
+        let total:number = 0;
+        Object.values(cart.data).forEach((product) => {
+            product.quantities.forEach((quantity: Quantity) => {
+                total += Number(quantity.price) * Number(quantity.count);
+            })
+        })
+        return Number(total.toFixed(2))
+    }
+
     useEffect(() => {
         if(props.cartData) {
             const cart = formatCartData(props.cartData)
-            setCart(cart)
-            // updateCart(cart)
+            updateCart(cart)
         }
         //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.cartData])
 
-    console.log(cart, "cartData123")
 
 
     const deliveryCharge = 100
     return (
-        <>    {
+        <>    
+        {
             Object.keys(cart).length ?
                 <div className=''>
                     <div className='px-2'>
-                        <CartItems cartData={cart} />
+                        <CartItems cartData={cart.data} />
                     </div>
                     <div className='px-2 mt-4'>
                         <BillDetails subTotal={totalAmount} deliveryCharge={deliveryCharge} grandTotal={totalAmount + deliveryCharge} />
