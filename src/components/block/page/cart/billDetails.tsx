@@ -44,7 +44,7 @@ function BillDetails(props: Props) {
           </div>}
           <div className='flex justify-between items-center w-full mt-2'>
             <span className='font-bold tracking-wide'>Grand Total</span>
-            <span className='font-medium'>₹{grandTotal}</span>
+            <span className='font-medium'>₹{grandTotal.toFixed(2)}</span>
           </div>
         </div>
       </div>
