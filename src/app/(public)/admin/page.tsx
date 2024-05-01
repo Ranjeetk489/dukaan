@@ -1,7 +1,7 @@
 'use client';
-import ProductsComponent from '@/components/block/page/admin/Products/Products';
 import AdminDashboard from '@/components/block/page/admin/adminDashboard';
 import AdminOrders from '@/components/block/page/admin/orders/adminOrders';
+import ProductsComponent from '@/components/block/page/admin/products/products';
 import React, { useState } from 'react';
 
 const navigation = [
@@ -47,6 +47,7 @@ const VerticalNavbar: React.FC = () => {
       <div className="flex-1">
             {selectedComponent == 'Dashboard' && <AdminDashboard />}
             {selectedComponent == 'Orders' && <AdminOrders />}
+            {selectedComponent == 'Products' && <ProductsComponent />}
       </div>
     </div>
   );

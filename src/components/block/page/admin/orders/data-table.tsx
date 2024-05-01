@@ -53,7 +53,6 @@ export function DataTable<TData, TValue>({
 
 
   const handleClosePopup = () => {
-    // Hide the popup
     setShowPopup(false);
   };
 
