@@ -55,7 +55,7 @@ export const useProductStore = create<ProductStore>((set, get) => ({
   updateProductQuantityLocal: (product, quantity, quantityId) => {
     debugger
     let updatedQuantities:CartItemQuantity[]
-    console.log(quantity, quantityId, product, '====> updatedQuantities not')
+    // console.log(quantity, quantityId, product, '====> updatedQuantities not')
     updatedQuantities = product.quantities.map((q) => {
         if (q.id === quantityId) {
           console.log(q,'====> q1')

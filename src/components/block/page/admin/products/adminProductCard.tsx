@@ -16,7 +16,7 @@ const AdminProductCard = ({ product }: { product: Product }) => {
   const { debounceFn } = useOptimistic();
   const quantityInCart = getTotalQuantity();
   const productFromCart = cart.data[product.id] ? cart.data[product.id] : product
-  console.log(quantityInCart, "====> quantityInCart")
+  // console.log(quantityInCart, "====> quantityInCart")
   const [showVariant, setShowVariant] = useState<boolean>(false);
   function getTotalQuantity() {
     let total = 0;
@@ -50,7 +50,7 @@ const AdminProductCard = ({ product }: { product: Product }) => {
     );
   };
 
-  console.log(cart.data, "====> q11")
+  // console.log(cart.data, "====> q11")
   const onCountUpdate = (action: "increment" | "decrement", quantIndex:number) => {
     debugger
     if (product.quantities.length > 1 && !showVariant) {
@@ -68,7 +68,6 @@ const AdminProductCard = ({ product }: { product: Product }) => {
     }
   };
 
-  console.log(cart.data, "data in cart")
   const updateProductOptimisticV1 = (action: "increment" | "decrement", quantIndex: number, quantObj: Quantity) => {
     onCountUpdate(action, quantIndex);
   };  
