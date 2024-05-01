@@ -9,14 +9,15 @@ import { Quantity } from "@/types/client/types";
 import VariantModal from "./addProduct";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import AddProductModal from "./addProduct";
 
 const AdminProductCard = ({ product }: { product: Product }) => {
+  const [editProductModal, setEditProductModal] = useState<boolean>(false)
   const { cart, updateProductQuantityInCart, updateProductQuantityLocal } =
     useProductStore();
   const { debounceFn } = useOptimistic();
   const quantityInCart = getTotalQuantity();
   const productFromCart = cart.data[product.id] ? cart.data[product.id] : product
-  // console.log(quantityInCart, "====> quantityInCart")
   const [showVariant, setShowVariant] = useState<boolean>(false);
   function getTotalQuantity() {
     let total = 0;
@@ -68,6 +69,10 @@ const AdminProductCard = ({ product }: { product: Product }) => {
     }
   };
 
+  const takeActionOnProduct = async () => {
+   setEditProductModal(!editProductModal)
+  }
+
   const updateProductOptimisticV1 = (action: "increment" | "decrement", quantIndex: number, quantObj: Quantity) => {
     onCountUpdate(action, quantIndex);
   };  
@@ -106,19 +111,17 @@ const AdminProductCard = ({ product }: { product: Product }) => {
         <h3 className="text-xs font-semibold line-clamp-2 md:line-clamp-3 h-[40px]">
           {product.name}
         </h3>
-        {product.quantities.length > 1 ? (
-          <VariantModal
-            product={productFromCart}
-            isOpen={showVariant}
-            onClose={() => setShowVariant(false)}
-            onQuantityChange={updateProductOptimisticV1}
+        {
+          editProductModal &&
+          <AddProductModal 
+            product={product}
+            isOpen={editProductModal}
+            onClose={() => setEditProductModal(false)}
           />
-        ) : (
-          false
-        )}
+        }
         <div className="flex justify-between items-center w-full mt-1">
           <p className="text-xs font-semibold">₹{productPrice}</p>
-          <Button color="primary" style={{ marginRight: '0.5rem', marginTop: '0.5rem' }}>
+          <Button color="primary" onClick={takeActionOnProduct} style={{ marginRight: '0.5rem', marginTop: '0.5rem' }}>
                           Action
                         </Button>
           </div>

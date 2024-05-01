@@ -1,35 +1,60 @@
-"use client";
+import React, { useEffect, useState } from "react";
 import { Product, Quantity } from "@/types/client/types";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import Image from "next/image";
-import config from "@/config";
-import { Card } from "@/components/ui/card";
-import { useDevice } from "@/lib/client/hooks/useDevice";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { useDevice } from "@/lib/client/hooks/useDevice";
 
 type Props = {
-  onQuantityChange: (action: "increment" | "decrement", index: number, quantity: Quantity) => void;
   isOpen: boolean;
   product: Product;
   onClose: () => void;
 };
 
-function AddProductModal(props: Props) {
-  const { isMobile } = useDevice();
+interface QuantityInAddProduct {
+  id?: number;
+  product_id?: number;
+  is_stock_available?: number;
+  quantity: string;
+  price: string;
+  stock_quantity: string;
+}
 
+function AddProductModal(props: Props) {
+  const [productName, setProductName] = useState(props.product.name || "");
+  const [imageURL, setImageURL] = useState(props.product.image || "");
+  const [quantities, setQuantities] = useState<QuantityInAddProduct[]>([]);
+
+  useEffect(() => {
+    props.product.quantities.forEach((quantity: Quantity) => {
+      setQuantities(prevQuantities => [
+        ...prevQuantities, 
+        { id: quantity.id, product_id: quantity.product_id, quantity: quantity.quantity, price: quantity.price, stock_quantity: String(quantity.stock_quantity) }
+      ]);
+    });
+  }, []); // Empty dependency array to run only once
+  
+  const handleAddQuantity = () => {
+    setQuantities([...quantities, { quantity: "", price: "", stock_quantity: "" }]);
+  };
+
+  const handleQuantityChange = (index: number, field: keyof QuantityInAddProduct, value: string) => {
+    const updatedQuantities = [...quantities];
+    // update quantity 
+    // updatedQuantities[index][field] = value;
+    setQuantities(updatedQuantities);
+  };
+
+  const handleSubmit = () => {
+    // Handle form submission here
+    // You can use productName, imageURL, and quantities to submit the form data
+    // For example, you can console.log() the form data
+    console.log("Product Name:", productName);
+    console.log("Image URL:", imageURL);
+    console.log("Quantities:", quantities);
+  };
+
+   const isMobile = useDevice();
   return (
     <>
       {isMobile ? (
@@ -42,81 +67,108 @@ function AddProductModal(props: Props) {
                 </SheetTitle>
               </SheetHeader>
               <SheetDescription className="flex flex-col gap-2 px-2 py-4">
-                {props.product.quantities.map((quantity, index) => (
-                  <Card
-                    key={quantity.id}
-                    className="rounded-md flex px-2 pr-4 justify-between items-center">
-                    <div className="flex  justify-between items-center">
-                      <div className="relative w-full flex items-center justify-center h-full max-w-[70px] max-h-[70px] md:min-w-[70px] md:min-h-[70px]">
-                        {props.product.image ? (
-                          <Image
-                            src={`${config.directusFileDomain}/${props.product.image}`}
-                            alt={props.product.name}
-                            style={{
-                              objectFit: "cover",
-                            }}
-                            className="h-full w-full"
-                            width={80}
-                            height={80}
-                          />
-                        ) : (
-                          <div>Product {props.product.name} has no image</div>
-                        )}
-                      </div>
-                      <div className="">{quantity.quantity}</div>
-                    </div>
-                    <p className="basis-1/3 text-center">₹{quantity.price}</p>
-
-                    <Button color="primary" style={{ marginRight: '0.5rem', marginTop: '0.5rem' }}>
-                      Action
-                    </Button>
-
-                  </Card>
+                {/* Render the form fields */}
+                {/* Product Name input */}
+                <input
+                  type="text"
+                  value={productName}
+                  onChange={(e) => setProductName(e.target.value)}
+                  placeholder="Product Name"
+                  className="border border-gray-300 rounded-md px-3 py-2 mb-3"
+                />
+                {/* Image URL input */}
+                <input
+                  type="text"
+                  value={imageURL}
+                  onChange={(e) => setImageURL(e.target.value)}
+                  placeholder="Image URL"
+                  className="border border-gray-300 rounded-md px-3 py-2 mb-3"
+                />
+                {/* Button to add quantity-price-stock quantity */}
+                <Button color="primary" onClick={handleAddQuantity}>Add Quantity</Button>
+                {/* Render quantity-price-stock quantity inputs */}
+                {quantities.map((quantity, index) => (
+                  <div key={index}>
+                    <input
+                      type="text"
+                      value={quantity.quantity}
+                      onChange={(e) => handleQuantityChange(index, "quantity", e.target.value)}
+                      placeholder="Quantity"
+                      className="border border-gray-300 rounded-md px-3 py-2 mb-3"
+                    />
+                    <input
+                      type="text"
+                      value={quantity.price}
+                      onChange={(e) => handleQuantityChange(index, "price", e.target.value)}
+                      placeholder="Price"
+                      className="border border-gray-300 rounded-md px-3 py-2 mb-3"
+                    />
+                    <input
+                      type="text"
+                      value={quantity.stock_quantity}
+                      onChange={(e) => handleQuantityChange(index, "stock_quantity", e.target.value)}
+                      placeholder="Stock Quantity"
+                      className="border border-gray-300 rounded-md px-3 py-2 mb-3"
+                    />
+                  </div>
                 ))}
+                {/* Button to submit the form */}
+                <Button color="primary" onClick={handleSubmit}>Submit</Button>
               </SheetDescription>
             </SheetContent>
           </Sheet>
         </div>
       ) : (
+        // Desktop view
         <div className="hidden lg:visible">
+          {/* Dialog component */}
           <Dialog open={props.isOpen} onOpenChange={props.onClose}>
-            {/* <DialogTrigger>Open</DialogTrigger>  */}
             <DialogContent className="bg-slate-100">
               <DialogHeader>
                 <DialogTitle>{props.product.name} Variants</DialogTitle>
                 <DialogDescription className="flex flex-col gap-2">
-                  {props.product.quantities.map((quantity, index) => (
-                    <Card
-                      key={quantity.id}
-                      className="rounded-md flex px-2 pr-4 justify-between items-center">
-                      <div className="flex  justify-between items-center">
-                        <div className="relative w-full flex items-center justify-center h-full max-w-[70px] max-h-[70px] md:min-w-[70px] md:min-h-[70px]">
-                          {props.product.image ? (
-                            <Image
-                              src={`${config.directusFileDomain}/${props.product.image}`}
-                              alt={props.product.name}
-                              style={{
-                                objectFit: "cover",
-                              }}
-                              className="h-full w-full"
-                              width={80}
-                              height={80}
-                            />
-                          ) : (
-                            <div>Product {props.product.name} has no image</div>
-                          )}
-                        </div>
-                        <div className="">{quantity.quantity}</div>
-                      </div>
-                      <p className="basis-1/3 text-center">₹{quantity.price}</p>
-                      <div>
-
-                        <Button color="primary" style={{ marginRight: '0.5rem', marginTop: '0.5rem' }}>
-                          Action
-                        </Button>
-                      </div>
-                    </Card>
+                  <input
+                    type="text"
+                    value={productName}
+                    onChange={(e) => setProductName(e.target.value)}
+                    placeholder="Product Name"
+                    className="border border-gray-300 rounded-md px-3 py-2 mb-3"
+                  />
+                  <input
+                    type="text"
+                    value={imageURL}
+                    onChange={(e) => setImageURL(e.target.value)}
+                    placeholder="Image URL"
+                    className="border border-gray-300 rounded-md px-3 py-2 mb-3"
+                  />
+                  <Button color="primary" onClick={handleAddQuantity}>Add Quantity</Button>
+                  {quantities.length && quantities.map((quantity, index) => (
+                    <div key={index}>
+                      <input
+                        type="text"
+                        value={quantity.quantity}
+                        onChange={(e) => handleQuantityChange(index, "quantity", e.target.value)}
+                        placeholder="Quantity"
+                        className="border border-gray-300 rounded-md px-3 py-2 mb-3"
+                      />
+                      <input
+                        type="text"
+                        value={quantity.price}
+                        onChange={(e) => handleQuantityChange(index, "price", e.target.value)}
+                        placeholder="Price"
+                        className="border border-gray-300 rounded-md px-3 py-2 mb-3"
+                      />
+                      <input
+                        type="text"
+                        value={quantity.stock_quantity}
+                        onChange={(e) => handleQuantityChange(index, "stock_quantity", e.target.value)}
+                        placeholder="Stock Quantity"
+                        className="border border-gray-300 rounded-md px-3 py-2 mb-3"
+                      />
+                    </div>
                   ))}
+                  {/* Button to submit the form */}
+                  <Button color="primary" onClick={handleSubmit}>Submit</Button>
                 </DialogDescription>
               </DialogHeader>
             </DialogContent>

@@ -6,12 +6,16 @@ import { Category, Product } from "@/types/client/types";
 import AdminProductCard from "./adminProductCard";
 import { getProductsByCategoryId } from "@/lib/prisma";
 import { getCategories } from "@/lib/directus/methods";
+import AddProductModal from "./addProduct";
+import AddCategoryModal from "./addCategory";
 
 
 const ProductsComponent = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [categoryList, setCategoryList] = useState<Category[]>([]);
+  const [addProductShow, setAddProductShow] = useState(false);
+  const [addNewCategoryShow, setAddNewCategoryShow] = useState(false);
 
   const fetchAllProducts = async () => {
     try {
@@ -36,8 +40,6 @@ const ProductsComponent = () => {
     console.log(id);
     if (id === "") {
       fetchAllProducts();
-      // setSelectedCategory(event.target.value);
-
       return;
     }
     const result = await getProductsByCategoryId(Number(id))
@@ -48,8 +50,14 @@ const ProductsComponent = () => {
 
   const addNewProduct = async () => {
     console.log("Add new product");
-
+    setAddProductShow(!addProductShow);
   }
+
+  const addNewCategory = () => {
+    console.log("Add new category");
+    setAddNewCategoryShow(!addNewCategoryShow);
+  }
+
   useEffect(() => {
     fetchAllProducts();
     getCategoryWithId();
@@ -61,7 +69,7 @@ const ProductsComponent = () => {
         <Button color="primary" style={{ marginRight: '0.5rem', marginTop: '0.5rem' }} onClick={() => addNewProduct()}>
           Add New Product
         </Button>
-        <Button color="primary" style={{ marginTop: '0.5rem' }}>
+        <Button color="primary" onClick={() => addNewCategory()} style={{ marginTop: '0.5rem' }}>
           Add New Category
         </Button>
       </div>
@@ -75,7 +83,23 @@ const ProductsComponent = () => {
           ))}
         </select>
       </div>
+          {
+            addProductShow &&
+            <AddProductModal 
+            product={products[0]}
+            isOpen={addProductShow}
+            onClose={() => setAddProductShow(false)}
+          />
+          }
 
+          {
+            addNewCategoryShow &&
+            <AddCategoryModal
+              isOpen={addNewCategoryShow}
+              onClose={() => setAddNewCategoryShow(false)}
+              onSubmit={() => setAddNewCategoryShow(false)}
+            />
+          }
       <div style={{ height: '800px', overflowY: 'auto' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '4px', padding: '8px' }}>
           {products.map((product, index) => (
