@@ -46,9 +46,6 @@ function AddProductModal(props: Props) {
   };
 
   const handleSubmit = () => {
-    // Handle form submission here
-    // You can use productName, imageURL, and quantities to submit the form data
-    // For example, you can console.log() the form data
     console.log("Product Name:", productName);
     console.log("Image URL:", imageURL);
     console.log("Quantities:", quantities);
@@ -67,8 +64,6 @@ function AddProductModal(props: Props) {
                 </SheetTitle>
               </SheetHeader>
               <SheetDescription className="flex flex-col gap-2 px-2 py-4">
-                {/* Render the form fields */}
-                {/* Product Name input */}
                 <input
                   type="text"
                   value={productName}
@@ -76,7 +71,6 @@ function AddProductModal(props: Props) {
                   placeholder="Product Name"
                   className="border border-gray-300 rounded-md px-3 py-2 mb-3"
                 />
-                {/* Image URL input */}
                 <input
                   type="text"
                   value={imageURL}
@@ -84,9 +78,7 @@ function AddProductModal(props: Props) {
                   placeholder="Image URL"
                   className="border border-gray-300 rounded-md px-3 py-2 mb-3"
                 />
-                {/* Button to add quantity-price-stock quantity */}
                 <Button color="primary" onClick={handleAddQuantity}>Add Quantity</Button>
-                {/* Render quantity-price-stock quantity inputs */}
                 {quantities.map((quantity, index) => (
                   <div key={index}>
                     <input
@@ -112,16 +104,13 @@ function AddProductModal(props: Props) {
                     />
                   </div>
                 ))}
-                {/* Button to submit the form */}
                 <Button color="primary" onClick={handleSubmit}>Submit</Button>
               </SheetDescription>
             </SheetContent>
           </Sheet>
         </div>
       ) : (
-        // Desktop view
         <div className="hidden lg:visible">
-          {/* Dialog component */}
           <Dialog open={props.isOpen} onOpenChange={props.onClose}>
             <DialogContent className="bg-slate-100">
               <DialogHeader>
