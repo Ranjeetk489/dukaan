@@ -3,10 +3,10 @@ export interface ProductFromDB {
     name: string
     description: string
     category_id: number
-    created_at: string
-    updated_at: string
+    created_at?: string
+    updated_at?: string
     image: string
-    quantity_id: number
+    quantity_id?: number
 }
 
 
@@ -21,10 +21,10 @@ export interface Quantity {
     quantity: string
     price: string
     is_stock_available: number
-    count: number
+    count?: number
     stock_quantity: number
-    created_at: string
-    updated_at: string
+    created_at?: string
+    updated_at?: string
 }
 
 export interface CartItem extends ProductFromDB, Quantity{

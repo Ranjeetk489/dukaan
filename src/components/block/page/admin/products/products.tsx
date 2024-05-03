@@ -9,6 +9,23 @@ import { getCategories } from "@/lib/directus/methods";
 import AddProductModal from "./addProduct";
 import AddCategoryModal from "./addCategory";
 
+const sampleProduct: Product = {
+  id: 1,
+  name: "Sample Product",
+  description: "This is a sample product",
+  image: "https://via.placeholder.com/150",
+  category_id: 1,
+  quantities: [
+    {
+      id: 1,
+      product_id: 1,
+      quantity: "10",
+      is_stock_available: 1,
+      price: "10",
+      stock_quantity: 1
+    }
+  ]
+}
 
 const ProductsComponent = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -16,7 +33,9 @@ const ProductsComponent = () => {
   const [categoryList, setCategoryList] = useState<Category[]>([]);
   const [addProductShow, setAddProductShow] = useState(false);
   const [addNewCategoryShow, setAddNewCategoryShow] = useState(false);
+  const [loadEditingProduct, setLoadEditingProduct] = useState<Product>(sampleProduct);
 
+  
   const fetchAllProducts = async () => {
     try {
       const response = await fetchInsideTryCatch<Product[]>(
@@ -86,7 +105,7 @@ const ProductsComponent = () => {
           {
             addProductShow &&
             <AddProductModal 
-            product={products[0]}
+            product={loadEditingProduct}
             isOpen={addProductShow}
             onClose={() => setAddProductShow(false)}
           />

@@ -1,8 +1,8 @@
 'use client';
-import AdminDashboard from '@/components/block/page/admin/adminDashboard';
+import AdminDashboard from '@/components/block/page/admin/dashboard/adminDashboard';
 import AdminOrders from '@/components/block/page/admin/orders/adminOrders';
 import ProductsComponent from '@/components/block/page/admin/products/products';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const navigation = [
   { name: 'Dashboard', component: AdminDashboard },
@@ -15,6 +15,9 @@ const navigation = [
 const VerticalNavbar: React.FC = () => {
   const [selectedComponent, setSelectedComponent] = useState<string| null>(null);
 
+  useEffect(() => {
+    setSelectedComponent('Dashboard');
+  }, [])
   const handleMenuClick = (component: string) => {
     setSelectedComponent(component);
   };
