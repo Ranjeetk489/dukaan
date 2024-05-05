@@ -16,14 +16,14 @@ const sampleProduct: Product = {
   image: "https://via.placeholder.com/150",
   category_id: 1,
   quantities: [
-    {
-      id: 1,
-      product_id: 1,
-      quantity: "10",
-      is_stock_available: 1,
-      price: "10",
-      stocked_quantity: 1
-    }
+    // {
+    //   id: 1,
+    //   product_id: 1,
+    //   quantity: "10 gram",
+    //   is_stock_available: 1,
+    //   price: "10",
+    //   stocked_quantity: 1
+    // }
   ]
 }
 
