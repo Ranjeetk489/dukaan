@@ -35,7 +35,7 @@ const ProductsComponent = () => {
   const [addNewCategoryShow, setAddNewCategoryShow] = useState(false);
   const [loadEditingProduct, setLoadEditingProduct] = useState<Product>(sampleProduct);
 
-  
+
   const fetchAllProducts = async () => {
     try {
       const response = await fetchInsideTryCatch<Product[]>(
@@ -54,6 +54,7 @@ const ProductsComponent = () => {
     const result = await getCategories();
     setCategoryList(result);
   }
+
   const handleCategoryChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
     const id = event.target.value;
     console.log(id);
@@ -63,7 +64,7 @@ const ProductsComponent = () => {
     }
     const result = await getProductsByCategoryId(Number(id))
     setProducts(result);
- 
+
     setSelectedCategory(event.target.value);
   };
 
@@ -85,7 +86,8 @@ const ProductsComponent = () => {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
-        <Button color="primary" style={{ marginRight: '0.5rem', marginTop: '0.5rem' }} onClick={() => addNewProduct()}>
+        <Button color="primary" style={{ marginRight: '0.5rem', marginTop: '0.5rem' }}
+          onClick={() => addNewProduct()}>
           Add New Product
         </Button>
         <Button color="primary" onClick={() => addNewCategory()} style={{ marginTop: '0.5rem' }}>
@@ -102,23 +104,23 @@ const ProductsComponent = () => {
           ))}
         </select>
       </div>
-          {
-            addProductShow &&
-            <AddProductModal 
-            product={loadEditingProduct}
-            isOpen={addProductShow}
-            onClose={() => setAddProductShow(false)}
-          />
-          }
+      {
+        addProductShow &&
+        <AddProductModal
+          product={loadEditingProduct}
+          isOpen={addProductShow}
+          onClose={() => setAddProductShow(false)}
+        />
+      }
 
-          {
-            addNewCategoryShow &&
-            <AddCategoryModal
-              isOpen={addNewCategoryShow}
-              onClose={() => setAddNewCategoryShow(false)}
-              onSubmit={() => setAddNewCategoryShow(false)}
-            />
-          }
+      {
+        addNewCategoryShow &&
+        <AddCategoryModal
+          isOpen={addNewCategoryShow}
+          onClose={() => setAddNewCategoryShow(false)}
+          onSubmit={() => setAddNewCategoryShow(false)}
+        />
+      }
       <div style={{ height: '800px', overflowY: 'auto' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '4px', padding: '8px' }}>
           {products.map((product, index) => (
@@ -128,9 +130,6 @@ const ProductsComponent = () => {
       </div>
     </div>
   );
-
-
-
 };
 
 export default ProductsComponent;

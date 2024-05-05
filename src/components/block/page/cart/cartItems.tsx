@@ -5,7 +5,6 @@ import { useProductStore } from "@/store/useProductStore";
 import CartProduct from "./cartItem";
 import { useEffect } from "react";
 import { CartItem, Product } from "@/types/client/types";
-import { update } from "lodash";
 
 type Props = {
     cartData: Cart
