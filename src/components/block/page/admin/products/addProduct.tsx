@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Product, Quantity } from "@/types/client/types";
 import SingleFileUploader from "@/components/ui/SingleVideoUploader";
 import { Button } from "@/components/ui/button";
-import { useDevice } from "@/lib/client/hooks/useDevice";
 
 type Props = {
   isOpen: boolean;
@@ -24,8 +23,6 @@ const AddProductModal = (props: Props) => {
   const [quantities, setQuantities] = useState<QuantityInAddProduct[]>([]);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imageUUID, setImageUUID] = useState<string>("");
-
-  
 
   useEffect(() => {
     props.product.quantities.forEach((quantity: Quantity) => {
@@ -55,109 +52,86 @@ const AddProductModal = (props: Props) => {
     console.log("Quantities:", quantities);
   };
 
-  const isMobile = useDevice();
+
+  if (!props.isOpen) {
+    return null; // Render nothing if modal is not open
+  }
 
   return (
-    <>
-      {isMobile ? (
-        <div className="">
-          <div className="py-4 px-0">
-            <div className="border-b border-slate-200 shadow-sm pb-4">
-              <p className="font-semibold text-sm">{props.product.name}</p>
-            </div>
-            <div className="flex flex-col gap-2 px-2 py-4 text-black">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-gray-300 bg-opacity-75">
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="bg-white rounded-lg shadow-xl w-11/12 md:max-w-md">
+          <div className="py-4 px-6 text-black">
+            <div className="border-b border-slate-200 pb-4">
+              <label className="font-semibold text-lg mb-2">Product Name</label>
               <input
                 type="text"
                 value={productName}
                 onChange={(e) => setProductName(e.target.value)}
                 placeholder="Product Name"
-                className="border border-gray-300 rounded-md px-3 py-2 mb-3"
+                className="border border-gray-300 rounded-md px-3 py-2 w-full"
               />
-              <SingleFileUploader
-                onUpload={handleUpload}
-              />
-              <Button color="primary" onClick={handleAddQuantity}>Add Quantity</Button>
-              {quantities.map((quantity, index) => (
-                <div key={index}>
-                  <input
-                    type="text"
-                    value={quantity.quantity}
-                    onChange={(e) => handleQuantityChange(index, "quantity", e.target.value)}
-                    placeholder="Quantity"
-                    className="border border-gray-300 rounded-md px-3 py-2 mb-3"
-                  />
-                  <input
-                    type="text"
-                    value={quantity.price}
-                    onChange={(e) => handleQuantityChange(index, "price", e.target.value)}
-                    placeholder="Price"
-                    className="border border-gray-300 rounded-md px-3 py-2 mb-3"
-                  />
-                  <input
-                    type="text"
-                    value={quantity.stock_quantity}
-                    onChange={(e) => handleQuantityChange(index, "stock_quantity", e.target.value)}
-                    placeholder="Stock Quantity"
-                    className="border border-gray-300 rounded-md px-3 py-2 mb-3"
-                  />
-                </div>
-              ))}
-              <Button color="primary" onClick={handleSubmit}>Submit</Button>
             </div>
-          </div>
-        </div>
-      ) : (
-        <div className="text-black">
-          <div className="bg-slate-100">
-            <div>
-              <div>
-                <p>Product Details</p>
-                <div className="flex flex-col gap-2 text-black">
-                  <input
-                    id="productName"
-                    type="text"
-                    value={productName}
-                    onChange={(e) => setProductName(e.target.value)}
-                    placeholder="Product Name"
-                    className="border border-gray-300 rounded-md px-3 py-2 mb-3"
-                  />
-                  <SingleFileUploader
-                    onUpload={handleUpload}
-                  />
-                  <Button color="primary" onClick={handleAddQuantity}>Add Quantity</Button>
-                  {quantities.length && quantities.map((quantity, index) => (
-                    <div key={index}>
-                      <input
-                        type="text"
-                        value={quantity.quantity}
-                        onChange={(e) => handleQuantityChange(index, "quantity", e.target.value)}
-                        placeholder="Quantity"
-                        className="border border-gray-300 rounded-md px-3 py-2 mb-3"
-                      />
-                      <input
-                        type="text"
-                        value={quantity.price}
-                        onChange={(e) => handleQuantityChange(index, "price", e.target.value)}
-                        placeholder="Price"
-                        className="border border-gray-300 rounded-md px-3 py-2 mb-3"
-                      />
-                      <input
-                        type="text"
-                        value={quantity.stock_quantity}
-                        onChange={(e) => handleQuantityChange(index, "stock_quantity", e.target.value)}
-                        placeholder="Stock Quantity"
-                        className="border border-gray-300 rounded-md px-3 py-2 mb-3"
-                      />
-                    </div>
+            <div className="mt-4">
+              <label className="font-semibold text-lg mb-2">Image Upload</label>
+              <SingleFileUploader onUpload={handleUpload} />
+            </div>
+            <div className="mt-4">
+             
+              <table className="border border-gray-300 rounded-md w-full mt-4">
+                <thead className="bg-gray-200">
+                  <tr>
+                    <th className="px-3 py-2">Quantity</th>
+                    <th className="px-3 py-2">Price</th>
+                    <th className="px-3 py-2">Stock Quantity</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {quantities.map((quantity, index) => (
+                    <tr key={index}>
+                      <td className="border border-gray-300 px-3 py-2">
+                        <input
+                          type="text"
+                          value={quantity.quantity}
+                          onChange={(e) => handleQuantityChange(index, "quantity", e.target.value)}
+                          placeholder="Quantity"
+                          className="w-full outline-none"
+                        />
+                        <span className="text-gray-500 text-sm mt-1">e.g., 100gm, 1L</span>
+                      </td>
+                      <td className="border border-gray-300 px-3 py-2">
+                        <input
+                          type="text"
+                          value={quantity.price}
+                          onChange={(e) => handleQuantityChange(index, "price", e.target.value)}
+                          placeholder="Price"
+                          className="w-full outline-none"
+                        />
+                      </td>
+                      <td className="border border-gray-300 px-3 py-2">
+                        <input
+                          type="text"
+                          value={quantity.stock_quantity}
+                          onChange={(e) => handleQuantityChange(index, "stock_quantity", e.target.value)}
+                          placeholder="Stock Quantity"
+                          className="w-full outline-none"
+                        />
+                        <span className="text-gray-500 text-sm mt-1">In stock count</span>
+                      </td>
+                    </tr>
                   ))}
-                  <Button color="primary" onClick={handleSubmit}>Submit</Button>
-                </div>
-              </div>
+                </tbody>
+              </table>
+              <Button color="primary" className="mt-4" onClick={handleAddQuantity}>Add Quantity</Button>
             </div>
           </div>
+          <div className="flex justify-end py-4 px-6 gap-2">
+            <Button color="primary" onClick={handleSubmit}>Submit</Button>
+            <Button color="secondary" onClick={props.onClose}>Close</Button>
+          </div>
         </div>
-      )}
-    </>
+      </div>
+    </div>
   );
 };
 

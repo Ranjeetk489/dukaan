@@ -53,7 +53,6 @@ const SingleFileUploader: React.FC<Props> = ({ onUpload }) => {
   return (
     <>
       <input type="file" onChange={handleFileChange} />
-      <Button onClick={handleUpload}>Upload Image</Button>
       {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
       {file && (
         <section>
@@ -67,23 +66,12 @@ const SingleFileUploader: React.FC<Props> = ({ onUpload }) => {
       )}
 
       {file && (
-        <button
+        <Button
+        color="primary" className="mt-4"
           onClick={handleUpload}
-          style={{
-            borderRadius: "8px",
-            border: "1px solid transparent",
-            padding: "0.6em 1.2em",
-            fontSize: "1em",
-            fontWeight: 500,
-            fontFamily: "inherit",
-            backgroundColor: "#646cff",
-            cursor: "pointer",
-            transition: "border-color 0.25s",
-            color: "white", // Changed to white for better visibility
-          }}
         >
           Upload Image
-        </button>
+        </Button>
       )}
 
       <Result status={status} />
