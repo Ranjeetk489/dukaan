@@ -22,7 +22,7 @@ const sampleProduct: Product = {
       quantity: "10",
       is_stock_available: 1,
       price: "10",
-      stock_quantity: 1
+      stocked_quantity: 1
     }
   ]
 }
@@ -107,6 +107,7 @@ const ProductsComponent = () => {
       {
         addProductShow &&
         <AddProductModal
+          categoryList={categoryList}
           product={loadEditingProduct}
           isOpen={addProductShow}
           onClose={() => setAddProductShow(false)}
@@ -124,7 +125,7 @@ const ProductsComponent = () => {
       <div style={{ height: '800px', overflowY: 'auto' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '4px', padding: '8px' }}>
           {products.map((product, index) => (
-            <AdminProductCard key={index} product={product} />
+            <AdminProductCard key={index} product={product} categoryList={categoryList} />
           ))}
         </div>
       </div>

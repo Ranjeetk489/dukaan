@@ -22,7 +22,7 @@ export interface Quantity {
     price: string
     count: number
     is_stock_available: number
-    stock_quantity: number
+    stocked_quantity: number
     created_at: string
     updated_at: string
 }

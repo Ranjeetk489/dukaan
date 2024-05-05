@@ -2,12 +2,12 @@
 import Image from "next/image";
 import { useState } from "react";
 import config from "@/config";
-import { Product } from "@/types/client/types";
+import { Category, Product } from "@/types/client/types";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import AddProductModal from "./addProduct";
 
-const AdminProductCard = ({ product }: { product: Product }) => {
+const AdminProductCard = ({ product, categoryList }: { product: Product, categoryList: Category[] }) => {
   const [editProductModal, setEditProductModal] = useState<boolean>(false)
 
   const productPrice = product.quantities[0].price;
@@ -19,7 +19,7 @@ const AdminProductCard = ({ product }: { product: Product }) => {
 
 
   return (
-    <Card className="relative flex flex-col border-none shadow-none bg-none  justify-between p-0 gap-2 items-center max-h-[280px] max-w-[200px]">
+    <Card className="relative flex flex-col border-none shadow-none bg-none  justify-between p-0 gap-2 m-3 items-center max-h-[280px] max-w-[200px]">
       <div className="w-fit shadow-sm md:shadow-none border">
         {product.image ? (
           <div className="relative flex items-center justify-center h-full min-w-[120px] min-h-[120px] md:min-w-[170px] md:min-h-[150px]">
@@ -35,7 +35,8 @@ const AdminProductCard = ({ product }: { product: Product }) => {
             />
           </div>
         ) : (
-          // <div>Product {product.name} has no image</div>
+          // TODO : Add default image
+          // TODO : ADD UUID to env and import from there
           <Image
             src={`${config.directusFileDomain}/ea7d848d-440a-443f-9eb4-01882c73076a`}
             alt={product.name}
@@ -55,6 +56,7 @@ const AdminProductCard = ({ product }: { product: Product }) => {
         {
           editProductModal &&
           <AddProductModal
+            categoryList={categoryList}
             product={product}
             isOpen={editProductModal}
             onClose={() => setEditProductModal(false)}
@@ -62,7 +64,10 @@ const AdminProductCard = ({ product }: { product: Product }) => {
         }
         <div className="flex justify-between items-center w-full mt-1">
           <p className="text-xs font-semibold">₹{productPrice}</p>
-          <Button color="primary" onClick={takeActionOnProduct} style={{ marginRight: '0.5rem', marginTop: '0.5rem' }}>
+          <Button
+            color="primary"
+            onClick={takeActionOnProduct}
+            className="m-2">
             Action
           </Button>
         </div>

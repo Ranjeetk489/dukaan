@@ -16,7 +16,7 @@ export function formatCartData(apiData: CartItem[]): Cart {
         quantity,
         price,
         is_stock_available,
-        stock_quantity,
+        stocked_quantity,
         cart_quantity,
         cart_id,
       } = item;
@@ -42,7 +42,7 @@ export function formatCartData(apiData: CartItem[]): Cart {
         price,
         is_stock_available,
         count: cart_quantity,
-        stock_quantity: stock_quantity,
+        stocked_quantity: stocked_quantity,
         created_at,
         updated_at: updated_at || '',
         added_quantity: cart_quantity,

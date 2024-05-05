@@ -5,7 +5,7 @@ export type DirectusCartItem = {
         name: string
         description: string
         price: string, 
-        stock_quantity: number
+        stocked_quantity: number
         category_id: number
         created_at: string
         updated_at: string
