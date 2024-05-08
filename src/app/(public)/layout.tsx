@@ -16,7 +16,7 @@ export default function RootLayout({
         let total = 0
         Object.keys(cart.data).forEach((key: string) => {
             const cartProduct = cart.data[Number(key)]
-            cartProduct.quantities.forEach((quantity: Quantity) => {
+            cartProduct.quantities.forEach((quantity: any) => {
                 total+= quantity.count
             })
         })

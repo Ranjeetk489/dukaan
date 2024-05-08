@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Toast } from "@radix-ui/react-toast";
 
 type Props = {
   isOpen: boolean;
@@ -14,6 +15,8 @@ function AddCategoryModal(props: Props) {
   const handleSubmit = () => {
     // Call the onSubmit prop with the category name
     props.onSubmit(categoryName);
+    // TODO: notification success
+    
     // Reset the input field
     setCategoryName("");
   };

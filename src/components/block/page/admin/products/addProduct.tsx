@@ -1,25 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { Category, Product, Quantity } from "@/types/client/types";
+import { Category, NewProduct, Product, Quantity, QuantityInAddProduct } from "@/types/client/types";
+import { Product as ServerProductTypes } from "@/types/server/types";
 import SingleFileUploader from "@/components/ui/SingleVideoUploader";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@radix-ui/react-select";
 import { ChevronDown } from "lucide-react";
+
+
 
 type Props = {
   categoryList: Category[];
   isOpen: boolean;
   product: Product;
   onClose: () => void;
+  onsubmit: (product: NewProduct) => void;
 };
 
-interface QuantityInAddProduct {
-  id?: number;
-  product_id?: number;
-  is_stock_available?: number;
-  quantity: string;
-  price: string;
-  stocked_quantity: string;
-}
+
 
 const AddProductModal = (props: Props) => {
   const [productName, setProductName] = useState(props.product.name || "");
@@ -38,6 +35,7 @@ const AddProductModal = (props: Props) => {
       ]);
     });
     console.log(props, "=====> categoryList")
+    console.log(props.onsubmit, "=====> onsubmit")
   }, []);
 
 
@@ -77,6 +75,16 @@ const AddProductModal = (props: Props) => {
     console.log("Product Name:", productName);
     console.log("Image UUID:", imageUUID);
     console.log("Quantities:", quantities);
+    const returnObject = {
+      name: productName,
+      description: productDiscription,
+      image: imageUUID,
+      category_id: selectedCategory,
+      quantities: quantities,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    props.onsubmit(returnObject);
   };
 
 

@@ -35,6 +35,7 @@ type Props = {
         "stocked_quantity"
     > & {
         count: number;
+        quantity_id?: number;
     }
     product: Product;
     index: number;

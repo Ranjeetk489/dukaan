@@ -27,7 +27,7 @@ export interface Quantity {
     updated_at?: string
 }
 
-export interface CartItem extends ProductFromDB, Quantity{
+export interface CartItem extends ProductFromDB, Quantity {
     cart_id: number;
     cart_quantity: number;
 }
@@ -56,15 +56,35 @@ export interface CartItemQuantity extends Quantity {
 //     quantities: CartItemQuantity[]
 // }
 
-export  interface Cart {
+export interface Cart {
     [productId: number]: Product;
 }
 
 export interface Category {
     id: number;
-    name: string; 
+    name: string;
 }
 
+
+export interface NewProduct {
+    id?: number;
+    name: string;
+    description: string;
+    image: string;
+    category_id: string;
+    quantities: QuantityInAddProduct[];
+    created_at: string;
+    updated_at: string;
+}
+
+export interface QuantityInAddProduct {
+    id?: number;
+    product_id?: number;
+    is_stock_available?: number;
+    quantity: string;
+    price: string;
+    stocked_quantity: string;
+}
 
 export interface AdminDashboardOrders {
     id: number;

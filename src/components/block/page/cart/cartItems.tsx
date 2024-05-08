@@ -27,8 +27,8 @@ function CartItems(props: Props) {
                                 const updatedItem = {
                                     ...item,
                                     ...quant,
-                                    created_at: new Date(item.created_at), // Convert created_at to Date type
-                                    updated_at: item.updated_at ? new Date(item.updated_at) : null // Convert updated_at to Date type
+                                    created_at: item.created_at ? new Date(item.created_at): new Date(), 
+                                    updated_at: item.updated_at ? new Date(item.updated_at) : new Date()
                                 };
                                 return (
                                     <CartProduct key={index} item={updatedItem} product={item} index={index} />

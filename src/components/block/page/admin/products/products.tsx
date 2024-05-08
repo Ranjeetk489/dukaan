@@ -2,12 +2,14 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { fetchInsideTryCatch } from "@/lib/client/apiUtil";
-import { Category, Product } from "@/types/client/types";
+import { Category, NewProduct, Product, ResponseObject } from "@/types/client/types";
 import AdminProductCard from "./adminProductCard";
 import { getProductsByCategoryId } from "@/lib/prisma";
 import { getCategories } from "@/lib/directus/methods";
 import AddProductModal from "./addProduct";
 import AddCategoryModal from "./addCategory";
+import { directus } from "@/lib/utils";
+import { createItem } from "@directus/sdk";
 
 const sampleProduct: Product = {
   id: 1,
@@ -68,16 +70,38 @@ const ProductsComponent = () => {
     setSelectedCategory(event.target.value);
   };
 
-  const addNewProduct = async () => {
-    console.log("Add new product");
+  const addNewProduct = async (product: NewProduct) => {
+    console.log("Add new product", product);
     setAddProductShow(!addProductShow);
+
+    // TODO: Add new product
+    // TODO: Add quantites
+    
+  //   let response = await fetch("/api/admin/product", {
+  //     method: "POST",
+  //     headers: {
+  //         "Content-Type": "application/json"
+  //     },
+  //     body: JSON.stringify({ product })
+  // })
+
+
   }
 
-  const addNewCategory = () => {
-    console.log("Add new category");
-    setAddNewCategoryShow(!addNewCategoryShow);
+  const addNewCategory = async (newCategory: string) => {
+    console.log("Add new category", newCategory);
+    let response = await directus.request(createItem('categories', {
+      name: newCategory,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }));
+    const data: ResponseObject = await response.json()
+    console.log(data)
   }
 
+  const openNewCategoryDialog = () => {
+    setAddNewCategoryShow(true);
+  }
   useEffect(() => {
     fetchAllProducts();
     getCategoryWithId();
@@ -87,10 +111,10 @@ const ProductsComponent = () => {
     <div>
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
         <Button color="primary" style={{ marginRight: '0.5rem', marginTop: '0.5rem' }}
-          onClick={() => addNewProduct()}>
+          onClick={() => setAddProductShow(!addProductShow)}>
           Add New Product
         </Button>
-        <Button color="primary" onClick={() => addNewCategory()} style={{ marginTop: '0.5rem' }}>
+        <Button color="primary" onClick={openNewCategoryDialog} style={{ marginTop: '0.5rem' }}>
           Add New Category
         </Button>
       </div>
@@ -111,6 +135,7 @@ const ProductsComponent = () => {
           product={loadEditingProduct}
           isOpen={addProductShow}
           onClose={() => setAddProductShow(false)}
+          onsubmit={(product) =>addNewProduct(product)}
         />
       }
 
@@ -119,7 +144,7 @@ const ProductsComponent = () => {
         <AddCategoryModal
           isOpen={addNewCategoryShow}
           onClose={() => setAddNewCategoryShow(false)}
-          onSubmit={() => setAddNewCategoryShow(false)}
+          onSubmit={addNewCategory}
         />
       }
       <div style={{ height: '800px', overflowY: 'auto' }}>

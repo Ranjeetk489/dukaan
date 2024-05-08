@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import config from "@/config";
-import { Category, Product } from "@/types/client/types";
+import { Category, NewProduct, Product } from "@/types/client/types";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import AddProductModal from "./addProduct";
@@ -16,6 +16,16 @@ const AdminProductCard = ({ product, categoryList }: { product: Product, categor
     setEditProductModal(!editProductModal)
   }
 
+  const updateProductDetails = (product: NewProduct) => {
+    console.log("Update product", product)
+    // const response = fetch("/api/admin/product", {
+    //   method: "POST",
+    //   headers: {
+    //       "Content-Type": "application/json"
+    //   },
+    //   body: JSON.stringify({ product })
+    // })
+  }
 
 
   return (
@@ -60,6 +70,7 @@ const AdminProductCard = ({ product, categoryList }: { product: Product, categor
             product={product}
             isOpen={editProductModal}
             onClose={() => setEditProductModal(false)}
+            onsubmit={(product) => updateProductDetails(product)}
           />
         }
         <div className="flex justify-between items-center w-full mt-1">
