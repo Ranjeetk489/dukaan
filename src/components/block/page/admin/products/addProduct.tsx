@@ -22,7 +22,7 @@ const AddProductModal = (props: Props) => {
   const [productName, setProductName] = useState(props.product.name || "");
   const [productDiscription, setProductDiscription] = useState(props.product.description || "");
   const [quantities, setQuantities] = useState<QuantityInAddProduct[]>([]);
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [searchInput, setSearchInput] = useState("");
   const [imageUUID, setImageUUID] = useState<string>("");

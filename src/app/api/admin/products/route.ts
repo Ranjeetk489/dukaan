@@ -1,4 +1,3 @@
-import { isAuthenticatedAndUserData } from "@/lib/auth";
 import { responseHelper } from "@/lib/helpers";
 import prisma from '@/lib/prisma/client';
 import { Product, ProductFromDB, Quantity } from "@/types/server/types";
@@ -7,7 +6,7 @@ export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
     let category_id: Number | undefined = Number(url.searchParams.get("categoryId"));
-    const searchWith: string | null |undefined = url.searchParams.get("searchWith");
+    const searchWith: string | null | undefined = url.searchParams.get("searchWith");
 
     let whereClause = "";
 
@@ -56,8 +55,6 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const { product }: { product: Product } = await req.json();
-    const authData = await isAuthenticatedAndUserData();
-    const userId = authData?.user?.id;
 
     if (!product) {
       return responseHelper(
@@ -66,12 +63,6 @@ export async function POST(req: Request) {
       );
     }
 
-    if (!userId) {
-      return responseHelper(
-        { message: "User id is required", statusCode: 400, data: {} },
-        400,
-      );
-    }
 
     const newProduct: ProductFromDB = {
       name: product.name,
@@ -123,5 +114,70 @@ export async function POST(req: Request) {
       { message: "Internal server error in creating Product", statusCode: 500, data: {} },
       500,
     );
+  }
+}
+
+
+
+export async function PATCH(req: Request) {
+  try {
+    const { product }: { product: Product } = await req.json();
+    if (!product.id) {
+      throw new Error("Product id is required");
+    }
+
+    const product_id = Number(product.id);
+
+    // Prepare product data for update
+    const productDataForDB: ProductFromDB = {
+      name: product.name,
+      description: product.description,
+      category_id: product.category_id,
+      quantity_id: product.quantity_id,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      image: product.image,
+    }
+
+    // Begin transaction
+    const updatedProduct = await prisma.$transaction([
+      // Update product
+      prisma.products.update({
+        where: { id: product_id },
+        data: productDataForDB,
+      }),
+
+      // Update quantities with existing IDs
+      ...product.quantities.filter(q => q.id).map(quantity => prisma.quantity.update({
+        where: { id: quantity.id },
+        data: { is_stock_available: 1, updated_at: new Date().toISOString() },
+      })),
+
+      // Create new quantities without IDs
+      prisma.quantity.createMany({
+        data: product.quantities.filter(q => !q.id).map(quantity => ({
+          ...quantity,
+          is_stock_available: 1,
+          product_id: product_id,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })),
+      }),
+    ]);
+
+    return responseHelper({
+      message: "Product updated successfully",
+      statusCode: 200,
+      data: updatedProduct[0],
+    }, 200);
+  } catch (error) {
+    console.error("Internal server error in updating Product:", error);
+    return responseHelper({
+      message: "Internal server error in updating Product",
+      statusCode: 500,
+      data: {},
+    }, 500);
+  } finally {
+    await prisma.$disconnect();
   }
 }

@@ -90,7 +90,7 @@ export async function PATCH(req: Request) {
     try {
         const { orderId, userId, status } = await req.json();
 
-        if (!userId || !status) {
+        if (!userId || !orderId || !status) {
             return responseHelper({ message: 'Invalid request', statusCode: 400, data: {} }, 400);
         }
 
@@ -106,41 +106,34 @@ export async function PATCH(req: Request) {
         }
 
         const currentStatus = order.status;
-        const notAllowedOnCancelled = [config.order_status.OUT_FOR_DELIVERY, config.order_status.DELIVERED];
-        const notAllowedOnOutForDelivery = [config.order_status.CANCELLED];
-        const notAllowedOnDelivered = [config.order_status.CANCELLED, config.order_status.OUT_FOR_DELIVERY];
+        const allowedStatusChanges: Record<string, string[]> = {
+            [config.order_status.CANCELLED]: [config.order_status.OUT_FOR_DELIVERY, config.order_status.DELIVERED],
+            [config.order_status.OUT_FOR_DELIVERY]: [config.order_status.CANCELLED],
+            [config.order_status.DELIVERED]: [config.order_status.CANCELLED, config.order_status.OUT_FOR_DELIVERY],
+        };
 
-        if (currentStatus === config.order_status.CANCELLED && notAllowedOnCancelled.includes(status)) {
-            return responseHelper({ message: 'Order is cancelled', statusCode: 400, data: {} }, 400);
+        if (currentStatus && allowedStatusChanges[currentStatus]?.includes(status)) {
+            const updatedOrder = await prisma.orders.update({
+                where: {
+                    id: orderId,
+                },
+                data: {
+                    status: status,
+                },
+            });
+
+            if (updatedOrder) {
+                return responseHelper({ message: 'Order status updated successfully', statusCode: 200, data: {} }, 200);
+            }
         }
 
-        if (currentStatus === config.order_status.OUT_FOR_DELIVERY && notAllowedOnOutForDelivery.includes(status)) {
-            return responseHelper({ message: 'Order already out for delivery', statusCode: 400, data: {} }, 400);
-        }
-
-        if (currentStatus === config.order_status.DELIVERED && notAllowedOnDelivered.includes(status)) {
-            return responseHelper({ message: 'Order already delivered', statusCode: 400, data: {} }, 400);
-        }
-
-        const response = await prisma.orders.update({
-            where: {
-                id: orderId,
-            },
-            data: {
-                status: status,
-            },
-        });
-
-        if (response) {
-            return responseHelper({ message: 'Order status updated successfully', statusCode: 200, data: {} }, 200);
-        }
-
-        return responseHelper({ message: 'Order status update failed', statusCode: 400, data: {} }, 400);
+        return responseHelper({ message: 'Failed to update order status', statusCode: 400, data: {} }, 400);
     } catch (err) {
         console.error('Internal server error:', err);
         return responseHelper({ message: 'Order Patch: Internal server error', statusCode: 500, data: {} }, 500);
     }
 }
+
 
 interface OrderItem {
     order_id: number;
