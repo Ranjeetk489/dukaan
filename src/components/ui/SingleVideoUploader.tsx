@@ -32,7 +32,7 @@ const SingleFileUploader: React.FC<Props> = ({ onUpload }) => {
       formData.append("file", file);
 
       try {
-        //TODO: Upload image and return the url to parent
+        // TODO: Upload image and return the UUID to parent
         const result = await fetch("https://httpbin.org/post", {
           method: "POST",
           body: formData,
@@ -42,7 +42,7 @@ const SingleFileUploader: React.FC<Props> = ({ onUpload }) => {
 
         console.log(data);
         setStatus("success");
-        onUpload(data.url); // Pass uploaded URL to parent component
+        onUpload(data.url); // Pass uploaded UUID to parent component
       } catch (error) {
         console.error(error);
         setStatus("fail");

@@ -90,11 +90,13 @@ const ProductsComponent = () => {
 
   const addNewCategory = async (newCategory: string) => {
     console.log("Add new category", newCategory);
-    let response = await directus.request(createItem('categories', {
-      name: newCategory,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    }));
+    let response = await fetch("/api/admin/category", {
+      method: "POST",
+      headers: {
+          "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ name: newCategory })
+    })
     const data: ResponseObject = await response.json()
     console.log(data)
   }
