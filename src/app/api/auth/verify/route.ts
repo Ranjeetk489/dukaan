@@ -6,6 +6,7 @@ import { cookies } from 'next/headers';
 import config from '@/config';
 import rateLimit from '@/lib/ratelimit';
 import { AuthRequest } from '@/types/api';
+import { isAuthenticatedAndUserData } from '@/lib/auth';
 
 
 const limiter = rateLimit({
@@ -96,3 +97,17 @@ export async function POST(req: Request) {
 
 }
 
+export async function GET() {
+    try {
+        
+        const auth = await isAuthenticatedAndUserData();
+        const userId = auth.user?.id;
+
+        if (!userId) {
+            return responseHelper({ message: 'User not authenticated', statusCode: 401, data: {} }, 401);
+        }
+        return responseHelper({ message: 'User authenticated', statusCode: 200, data: {userId} }, 200);
+    } catch (error) {
+        responseHelper({ message: 'Internal server error', statusCode: 500, data: {} }, 500);
+    }
+}

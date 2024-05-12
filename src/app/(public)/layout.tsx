@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/button";
 import { useDevice } from "@/lib/client/hooks/useDevice";
 import { useProductStore } from "@/store/useProductStore";
 import { useRouter } from 'next/navigation'
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { AiFillProfile } from "react-icons/ai";
+import isAuthenticatedAndUserId from "../(protected)/utils";
 
 export default function RootLayout({
     children,
@@ -12,8 +14,21 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     const [searchValue, setSearchValue] = useState('')
+    const [isLoggedIn, setIsLoggedIn] = useState(false)
 
     const { cart, toggleCartSheet } = useProductStore();
+
+    useEffect(() => {
+        isUserLoggedIn();
+    }, [])
+
+    const isUserLoggedIn= async () => {
+        const response = await isAuthenticatedAndUserId();
+        console.log(response, "response")
+        if(response.isAuthenticated) {
+            setIsLoggedIn(true)
+        }
+    }
     const getTotalQuantity = () => {
         let total = 0
         Object.keys(cart.data).forEach((key: string) => {
@@ -66,6 +81,16 @@ export default function RootLayout({
                         Cart {' '}
                         <p className="w-[24px]">({totalItemsQuantity})</p>
                     </Button>
+                </div>
+                <div>
+                {isLoggedIn && <AiFillProfile 
+                    className="w-[40px] h-[40px] cursor-pointer bg-[#f7fff9] text-[#318616] "
+                    onClick={() => router.push('/profile')}
+                />}
+                {
+                    !isLoggedIn && 
+                    <Button className="" onClick={() => router.push('/auth/login')}>Login</Button>
+                }
                 </div>
             </header>
             {children}
