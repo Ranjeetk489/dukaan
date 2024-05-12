@@ -22,8 +22,12 @@ const EditAddressPopup: React.FC<EditPopupProps> = ({ address, onCancel, isOpen,
     };
 
     const handleSubmit = () => {
-        // Submit logic here
         console.log(editedAddress, 'editedAddress')
+        if(editedAddress.id) {
+            // Call API to update address
+        }else {
+            // Call API to create address
+        }
         onCancel();
     };
 
@@ -39,36 +43,42 @@ const EditAddressPopup: React.FC<EditPopupProps> = ({ address, onCancel, isOpen,
                             <Input
                                 type="text"
                                 name="address_line1"
+                                placeholder="Address Line 1"
                                 value={editedAddress.address_line1}
                                 onChange={handleInputChange}
                             />
                             <Input
                                 type="text"
                                 name="address_line2"
+                                placeholder="Address Line 2"
                                 value={editedAddress.address_line2}
                                 onChange={handleInputChange}
                             />
                             <Input
                                 type="text"
                                 name="city"
+                                placeholder="City"
                                 value={editedAddress.city}
                                 onChange={handleInputChange}
                             />
                             <Input
                                 type="text"
                                 name="state"
+                                placeholder="State"
                                 value={editedAddress.state}
                                 onChange={handleInputChange}
                             />
                             <Input
                                 type="text"
                                 name="country"
+                                placeholder="Country"
                                 value={editedAddress.country}
                                 onChange={handleInputChange}
                             />
                             <Input
                                 type="text"
                                 name="postal_code"
+                                placeholder="Postal Code"
                                 value={editedAddress.postal_code}
                                 onChange={handleInputChange}
                             />

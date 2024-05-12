@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button"
 import { Address } from "@/types/client/types";
 import AddressModal from "./AddressModal";
+import { useState } from "react";
+import EditAddressPopup from "./EditAddressPopup";
 
 
 const mockAddresses: Address[] = [
@@ -30,8 +32,30 @@ const mockAddresses: Address[] = [
     },
     // Add more mock addresses as needed
 ];
-
+const emptyAddress: Address = {
+    id: 0,
+    user_id: 0,
+    address_line1: '',
+    address_line2: '',
+    city: '',
+    state: '',
+    country: '',
+    postal_code: '',
+    created_at: '',
+    updated_at: '',
+};
 const MyAddress = () => {
+    const [addNewAddressPopup, setAddNewAddressPopup] = useState(false);
+    const [newAddress, setNewAddress] = useState<Address | null>(emptyAddress);
+    const [openAddAddressPopup, setOpenAddAddressPopup] = useState(false);
+
+    
+    
+    const handleAddNewAddressClick = () => {
+        setAddNewAddressPopup(true)
+        console.log("Add new address click")
+    }
+
     return (
         <>
             <div className="flex gap-4 mb-4">
@@ -39,14 +63,23 @@ const MyAddress = () => {
             </div>
             <div>
                 <Button
-                    className="bg-primary text-white">
+                    className="bg-primary text-white"
+                    onClick={handleAddNewAddressClick}>
                     Add New Address
                 </Button>
             </div>
             <div>
                 <AddressModal addresses={mockAddresses} />
             </div>
-
+        {
+            addNewAddressPopup && 
+            <EditAddressPopup
+                address={newAddress!}
+                onCancel={() => setAddNewAddressPopup(false)}
+                isOpen={addNewAddressPopup}
+                onChange={() => setAddNewAddressPopup(false)}
+            />
+        }
         </>
     )
 }

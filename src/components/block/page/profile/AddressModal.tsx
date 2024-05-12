@@ -14,7 +14,7 @@ type Props = {
 const AddressModal = ({ addresses }: Props) => {
     const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
     const [openEditAddressPopup, setOpenEditAddressPopup] = useState(false);
-
+    
     const handleEditClick = (address: Address) => {
         setSelectedAddress(address);
         setOpenEditAddressPopup(true)
@@ -49,12 +49,13 @@ const AddressModal = ({ addresses }: Props) => {
                     ))}
                 </ul>
             </div>
-            <EditAddressPopup
+            {openEditAddressPopup &&
+                <EditAddressPopup
                 address={selectedAddress!}
                 onCancel={() => setOpenEditAddressPopup(false)}
                 isOpen={openEditAddressPopup}
                 onChange={() => setOpenEditAddressPopup(false)}
-            />
+            />}
         </>
     );
 };
