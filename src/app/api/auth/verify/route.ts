@@ -108,6 +108,6 @@ export async function GET() {
         }
         return responseHelper({ message: 'User authenticated', statusCode: 200, data: {userId} }, 200);
     } catch (error) {
-        responseHelper({ message: 'Internal server error', statusCode: 500, data: {} }, 500);
+        return responseHelper({ message: 'Internal server error', statusCode: 500, data: {} }, 500);
     }
 }

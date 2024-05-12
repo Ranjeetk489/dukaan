@@ -56,6 +56,6 @@ export async function POST(req: Request) {
         return responseHelper({ message: 'OTP sent to your email', statusCode: 400, data:{}}, 200, limit, remaining);
     } catch (error) {
         console.error(error);
-        responseHelper({ message: 'Internal server error', statusCode: 500, data:{} }, 500);
+        return responseHelper({ message: 'Internal server error', statusCode: 500, data:{} }, 500);
     }
 }

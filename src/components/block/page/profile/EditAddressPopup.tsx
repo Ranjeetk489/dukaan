@@ -4,6 +4,7 @@ import { Address } from "@/types/client/types";
 import { Heading } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogHeader } from '@/components/ui/dialog';
+import { toast } from "@/components/ui/use-toast";
 
 
 type EditPopupProps = {
@@ -11,9 +12,11 @@ type EditPopupProps = {
     onCancel: (event?: React.MouseEvent<HTMLButtonElement>) => void;
     isOpen: boolean;
     onChange: (isOpen: boolean) => void;
+    loadAddresses: () => void;
+
 };
 
-const EditAddressPopup: React.FC<EditPopupProps> = ({ address, onCancel, isOpen, onChange }) => {
+const EditAddressPopup: React.FC<EditPopupProps> = ({ address, onCancel, isOpen, onChange, loadAddresses }) => {
     const [editedAddress, setEditedAddress] = useState<Address>(address);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,14 +24,62 @@ const EditAddressPopup: React.FC<EditPopupProps> = ({ address, onCancel, isOpen,
         setEditedAddress({ ...editedAddress, [name]: value });
     };
 
-    const handleSubmit = () => {
+    const validateInputs = () => {
+        // Check if all required fields are filled
+        if (
+            !editedAddress.address_line1 ||
+            !editedAddress.address_line2 ||
+            !editedAddress.city ||
+            !editedAddress.state ||
+            !editedAddress.country ||
+            !editedAddress.postal_code
+        ) {
+            alert("All fields are required");
+            return false;
+        }
+
+        // Validate postal code format
+        const postalCodeRegex = /^\d{6}$/;
+        if (!postalCodeRegex.test(editedAddress.postal_code)) {
+            alert("Postal code must be a 6-digit number");
+            return false;
+        }
+
+        return true;
+    };
+
+    const handleSubmit = async () => {
         console.log(editedAddress, 'editedAddress')
+        if(!validateInputs()) {
+            return;
+        }
         if(editedAddress.id) {
-            // Call API to update address
+            const response = await fetch(`/api/profile/address`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ address: editedAddress })
+            })
         }else {
-            // Call API to create address
+            const response = await fetch("/api/profile/address", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ address: editedAddress })
+            })
+            console.log(response, 'response')
+            
+            if(response.ok) {
+                toast({
+                    title: "Success",
+                    description: "Address added successfully",
+                  })
+            }
         }
         onCancel();
+        loadAddresses();
     };
 
     return (
