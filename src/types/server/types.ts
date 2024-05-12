@@ -67,10 +67,20 @@ export interface Order {
     order_date: string;
     total_amount: number;
     status: "order_placed" | "out_for_delivery" | "cancelled" | "delivered";
+    order_items: OrderItem[];
     created_at: string;
     updated_at: string;
 }
 
+export interface OrderItem {
+    order_id: number;
+    product_id: number;
+    product_name: string;
+    quantity: number;
+    price_per_unit: number;
+    created_at: string;
+    updated_at: string;
+}
 
 export interface Address  {
     id: number;

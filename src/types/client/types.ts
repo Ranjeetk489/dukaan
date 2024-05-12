@@ -109,3 +109,26 @@ export interface Address {
     created_at?: string;
     updated_at?: string;
   };
+
+
+  export interface Order {
+    id?: number;
+    user_id: number;
+    order_date: string;
+    total_amount: number;
+    status: "order_placed" | "out_for_delivery" | "cancelled" | "delivered";
+    order_items: OrderItem[];
+    created_at: string;
+    updated_at: string;
+}
+
+export interface OrderItem {
+    id?: number;
+    order_id: number;
+    product_id: number;
+    product_name: string;
+    quantity: number;
+    price_per_unit: number;
+    created_at: string;
+    updated_at: string;
+}
