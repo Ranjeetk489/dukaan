@@ -67,7 +67,7 @@ function VariantModal(props: Props) {
                     </div>
                     <p className="basis-1/3 text-center">₹{quantity.price}</p>
                     <AddSubtract
-                      count={quantity.count}
+                      count={(quantity.count || 0) as number}
                       onCountUpdate={(action) => props.onQuantityChange(action, index, quantity)}
                     />
                   </Card>
@@ -109,7 +109,7 @@ function VariantModal(props: Props) {
                       </div>
                       <p className="basis-1/3 text-center">₹{quantity.price}</p>
                       <AddSubtract
-                        count={quantity.count}
+                        count={(quantity.count || 0) as number}
                         onCountUpdate={(action) => props.onQuantityChange(action, index, quantity)}
                       />
                     </Card>
