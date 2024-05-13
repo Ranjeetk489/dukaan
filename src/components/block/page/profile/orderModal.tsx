@@ -7,6 +7,7 @@ import { Order } from "@/types/client/types"
 import { Heading } from "lucide-react"
 import { useState } from "react"
 import { Table, TableHeader, TableBody, TableRow, TableCell, TableCaption, TableHead } from "@/components/ui/table"
+import { fetchInsideTryCatch } from "@/lib/client/apiUtil"
 
 type Props = {
     orders: Order[]
@@ -28,6 +29,21 @@ const OrderModal = (props: Props) => {
         "cancelled": "Cancelled",
         "delivered": "Delivered"
     }
+
+    const handleCancelOrder = async (id: number) => {
+        console.log("Cancel order", id)
+        const response = await fetchInsideTryCatch(`/api/admin/orders`,
+            {
+                method: "PATCH",
+                body: JSON.stringify({ orderId: id, status: "cancelled" })
+            }
+        )
+        if (response && response.response && response.response.statusCode === 200) {
+            console.log("Order cancelled")
+
+        }
+
+    }
     return (
         <>
 
@@ -36,7 +52,7 @@ const OrderModal = (props: Props) => {
                     <TableCaption>Order Items</TableCaption>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Product Name</TableHead>
+                            <TableHead>Ordered On</TableHead>
                             <TableHead>Total Amount</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead>Action</TableHead>
@@ -45,8 +61,8 @@ const OrderModal = (props: Props) => {
                     <TableBody>
                         {orders.map((order) => (
                             <TableRow key={order.id}>
-                                <TableCell>{order.created_at}</TableCell>
-                                <TableCell>{order.total_amount}</TableCell>
+                                <TableCell>{new Date(order.created_at).toDateString()}</TableCell>
+                                <TableCell>Rs. {order.total_amount}</TableCell>
                                 <TableCell>{OrderStatus[order.status]}</TableCell>
                                 <TableCell>
                                     <Button
@@ -76,7 +92,7 @@ const OrderModal = (props: Props) => {
                                     <div>
                                         <div className="flex items-center justify-between">
                                             <span className="text-sm font-medium">Order Date</span>
-                                            <span className="text-sm">{showOrderDetails.order_date}</span>
+                                            <span className="text-sm">{new Date(showOrderDetails.order_date).toDateString()}</span>
                                         </div>
                                         <div className="flex items-center justify-between">
                                             <span className="text-sm font-medium">Order Amount</span>
@@ -112,7 +128,17 @@ const OrderModal = (props: Props) => {
                                                 </div>
                                             </div>
                                         </div>
-
+                                        {/* Cancel button if order_date is not older than 5 hours */}
+                                        {new Date(showOrderDetails.order_date).getTime() > new Date().getTime() - 5 * 60 * 60 * 1000 &&
+                                            <div className="flex items-center justify-between">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => handleCancelOrder(Number(showOrderDetails.id))}
+                                                >
+                                                    Calcel Order
+                                                </Button>
+                                            </div>}
                                     </div>
                                 </div>
                             </DialogDescription>
