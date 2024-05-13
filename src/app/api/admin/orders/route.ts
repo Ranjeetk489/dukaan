@@ -1,32 +1,59 @@
 import { responseHelper } from '@/lib/helpers';
-import { isAuthenticatedAndUserData } from '@/lib/auth';
 import prisma from '@/lib/prisma/client';
 import config from '@/config';
-import { Order } from '@/types/server/types';
+import { Prisma } from '@prisma/client';
 
 
 export async function GET(req: Request) {
     try {
+        const url = new URL(req.url);
+        const filterStatus = url.searchParams.get("filterStatus");
+        const page = Number(url.searchParams.get("page"));
+        const ORDER_VALUE_MAPPING: Record<string, string> = {
+            "Out for delivery": "out_for_delivery",
+            "Delivered": "delivered",
+            "Cancelled": "cancelled",
+            "Order Placed": "order_placed",
+        }
 
+        const offset = page ? (page - 1) * 10 : 0;
+        const filterByStatus = filterStatus ? ORDER_VALUE_MAPPING[filterStatus] : null;
+        
+        const whereCond = Prisma.sql` where o.status = ${filterByStatus}`;
+        const orders: any = await prisma.$queryRaw`
+            SELECT
+                o.id,
+                o.user_id,
+                TO_CHAR(o.order_date, 'DDth Mon YYYY') AS order_date,
+                o.total_amount,
+                o.status,
+                o.created_at,
+                o.updated_at,
+                json_agg(oi.*) as products
+            FROM
+                orders o
+            LEFT JOIN
+                order_items oi ON o.id = oi.order_id
+            ${filterByStatus ? whereCond : Prisma.empty}
+            GROUP BY
+                o.id
+            ORDER BY
+                o.order_date DESC
+            LIMIT
+                10
+            OFFSET
+                ${offset};
+        `;
 
-        const orders:any = await prisma.$queryRaw`
-        SELECT
-        o.id,
-        o.user_id,
-        TO_CHAR(o.order_date, 'DDth Mon YYYY') AS order_date,
-        o.total_amount,
-        o.status,
-        o.created_at,
-        o.updated_at,
-        json_agg(oi.*) as products
-    FROM
-        orders o
-    LEFT JOIN
-        order_items oi ON o.id = oi.order_id
-    GROUP BY
-        o.id;`;
-        // console.log(orders, "orders")
-        return responseHelper({ message: 'Orders fetched successfully', statusCode: 200, data: orders }, 200);
+        const totalOrders: any = await prisma.$queryRaw`
+            SELECT
+                COUNT(*) as total
+            FROM
+                orders
+            ${filterByStatus ? whereCond : Prisma.empty};
+        `;
+        
+        return responseHelper({ message: 'Orders fetched successfully', statusCode: 200, data: { orders, total: Number(totalOrders[0].total) } }, 200);
     } catch (err) {
         console.error('Internal server error:', err);
         return responseHelper({ message: 'Internal server error', statusCode: 500, data: {} }, 500);

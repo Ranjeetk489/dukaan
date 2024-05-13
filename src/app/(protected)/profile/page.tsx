@@ -2,6 +2,7 @@
 import MyAddress from '@/components/block/page/profile/myAddress';
 import MyOrders from '@/components/block/page/profile/myOrders';
 import React, { useState } from 'react';
+import { AiFillHome } from "react-icons/ai";
 
 type Props = {};
 
@@ -18,8 +19,22 @@ function Profile({}: Props) {
   };
 
   return (
-    <div className="flex h-screen px-60 py-4">
+    <>
+    <div className='container'>
+
+    <div className="flex h-screen">
       <div className=" bg-gray-100 p-4 h-screen w-[190px]">
+      <header>
+      <h1 className="text-3xl font-bold">Profile</h1>
+    <div className='flex items-center mt-2'>Back to Home 
+    <AiFillHome 
+    className='w-5 h-5 ml-2 bg-red-300 p-1 rounded-full cursor-pointer'
+    onClick={() => window.location.href = '/products'}
+    />
+    </div> 
+
+    </header>
+    <br />
         <ul>
           <li
             className={`cursor-pointer mb-2 ${
@@ -48,7 +63,9 @@ function Profile({}: Props) {
         {activeTab === 'My Orders' && <MyOrders />}
       </div>
     </div>
-  );
+    </div>
+    </>  
+    );
 }
 
 export default Profile;

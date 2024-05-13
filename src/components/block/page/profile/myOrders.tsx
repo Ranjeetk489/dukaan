@@ -13,6 +13,8 @@ const MyOrders = (props: Props) => {
     useEffect(() => {
         getOrders();
     }, [])
+
+
     const getOrders = async () => {
         console.log("get orders")
         const orders = await fetchInsideTryCatch("/api/profile/order")
@@ -30,6 +32,7 @@ const MyOrders = (props: Props) => {
             </div>
             <OrderModal
                 orders={orders}
+                getOrders={getOrders}
             />
         </>
     )

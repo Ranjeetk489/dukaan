@@ -10,27 +10,29 @@ import { useEffect, useState } from "react";
 export default async function AdminOrders() {
 
   const [data, setData] = useState<AdminDashboardOrders[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
 
-
-  async function getData(): Promise<AdminDashboardOrders[]> {
+  async function getData(filterStatus: string): Promise<AdminDashboardOrders[]> {
     // Fetch data from your API here.
-    const response = await fetchInsideTryCatch<AdminDashboardOrders[]>(
-      `api/admin/orders`
+    const response = await fetchInsideTryCatch<any>(
+      `api/admin/orders?filterStatus=${filterStatus}&page=${page}`
     );
   
     if (response && response.response.statusCode === 200 && response.response.data) {
-      return response.response.data;
+      setData(response.response.data.orders);
+      setTotalPages(response.response.data.totalPages);
     }
     return [];
   }
 
   useEffect(() => {
-    getData().then((data) => setData(data));
+    getData("All")
   }, []);
 
   return (
     <div className="container mx-auto py-10">
-      <DataTable columns={columns} data={data} />
+      <DataTable getData={getData} data={data} setPage={setPage} totalPages={totalPages}/>
     </div>
   )
 }
