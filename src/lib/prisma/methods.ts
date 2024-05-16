@@ -38,7 +38,7 @@ export const getCartData = async (): Promise<CartItem[]> => {
             p.description, 
             p.image, 
             p.category_id, 
-            p.quantity_id, 
+            q.id as quantity_id, 
             q.price,
             q.product_id, 
             q.quantity, 

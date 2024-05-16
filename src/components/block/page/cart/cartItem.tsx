@@ -28,15 +28,16 @@ type CartProductType = {
 
 
 type Props = {
-    item: Omit<CartProductType,
-        "cart_id" |
-        "cart_quantity" |
-        "quantity_price" |
-        "stocked_quantity"
-    > & {
-        count: number;
-        quantity_id?: number;
-    }
+    item: any
+    // Omit<CartProductType,
+    //     "cart_id" |
+    //     "cart_quantity" |
+    //     "quantity_price" |
+    //     "stocked_quantity"
+    // > & {
+    //     count: number;
+    //     quantity_id?: number;
+    // }
     product: Product;
     index: number;
 };
@@ -46,7 +47,6 @@ const CartProduct = (props: Props) => {
     const { debounceFn } = useOptimistic();
 
     const updateProductOptimistic = (count: number, variantId: number) => {
-        debugger
         updateProductQuantityLocal(props.product, count, variantId);
         debounceFn(
             () => updateProductQuantityInCart(props.product, count, variantId),
@@ -55,7 +55,7 @@ const CartProduct = (props: Props) => {
     };
 
     const onCountUpdate = (action: "increment" | "decrement") => {
-        debugger
+        // debugger
         const count = props.product.quantities[props.index]?.count || 0;
         const variantId = props.product.quantities[props.index]?.id || 0;
         switch (action) {

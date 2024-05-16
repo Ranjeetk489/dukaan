@@ -53,7 +53,7 @@ export const useProductStore = create<ProductStore>((set, get) => ({
     }));
   },
   updateProductQuantityLocal: (product, quantity, quantityId) => {
-    debugger
+    // debugger
     let updatedQuantities:CartItemQuantity[]
     // console.log(quantity, quantityId, product, '====> updatedQuantities not')
     updatedQuantities = product.quantities.map((q) => {
@@ -76,6 +76,7 @@ export const useProductStore = create<ProductStore>((set, get) => ({
     }))
   },
   updateProductQuantityInCart: async (product, quantity, quantity_id) => {
+    debugger
     set((state) => ({
       cart: { data: state.cart.data, status: NETWORK_STATES.LOADING },
     }));

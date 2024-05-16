@@ -69,7 +69,6 @@ const EditAddressPopup: React.FC<EditPopupProps> = ({ address, onCancel, isOpen,
                 },
                 body: JSON.stringify({ address: editedAddress })
             })
-            console.log(response, 'response')
             
             if(response.ok) {
                 toast({
