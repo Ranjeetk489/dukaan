@@ -1,7 +1,5 @@
 import OrderCart from "@/components/block/page/cart/cart";
 import { getCartData } from "@/lib/prisma";
-import { CartItemQuantity } from "@/types/client/types";
-import { Cart, CartItem } from "@/types/client/types";
 import React from "react";
 import { IoMdClose } from "react-icons/io";
 
@@ -24,9 +22,9 @@ export default async function Page({}: Props) {
                     Store is open
                 </div>
                 <div className="col-span-1">
-                    <OrderCart cartData={data}/>
+                    <OrderCart cartData={data} />
                 </div>
             </div>
         </div>
-  );
+    );
 }

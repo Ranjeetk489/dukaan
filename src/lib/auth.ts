@@ -2,9 +2,7 @@ import config from "@/config";
 // since jwtverify dosent work on edge. Here jose npm package is used
 import { jwtVerify, SignJWT } from "jose";
 import { cookies } from "next/headers";
-import { responseHelper } from "./helpers";
-import { NextResponse } from "next/server";
-import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
+
 
 export const verifyAuth = async (token: string, secret: string) => {
     try {
@@ -26,7 +24,12 @@ export const verifyAuth = async (token: string, secret: string) => {
 
 type AuthData = {
     isAuthenticated: boolean;
-    user?: AuthUser | null
+    user?: AuthUser | null;
+}
+
+export enum Role {
+    USER = 'user',
+    ADMIN = 'admin'
 }
 
 export type AuthUser =  {
@@ -39,6 +42,7 @@ export type AuthUser =  {
     updated_at: Date;
     iat: Date;
     exp: Date;
+    role: Role
 } 
 
 
@@ -50,6 +54,12 @@ export const isAuthenticatedAndUserData = async():Promise<AuthData> => {
     if (token) {
         let verified = await jwtVerify(token.value, new TextEncoder().encode(config.jwtSecret));
         const userData = verified.payload as unknown as AuthData['user'];
+        let adminEmailArray = (config.adminEmail).split(",");
+        if (userData && adminEmailArray.includes(userData.email)) {
+            userData.role = Role.ADMIN
+        }else if(userData){
+            userData.role = Role.USER
+        }
         return {
             isAuthenticated: true,
             user: userData 
