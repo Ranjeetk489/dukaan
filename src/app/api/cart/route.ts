@@ -26,7 +26,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
             p.description, 
             p.image, 
             p.category_id, 
-            p.quantity_id, 
+            q.id as quantity_id, 
             q.price,
             q.product_id, 
             q.quantity, 
@@ -62,6 +62,9 @@ export async function POST(req: Request) {
   try {
     const { productId, quantityId, quantity } = await req.json();
     const authData = await isAuthenticatedAndUserData();
+    if(!authData.isAuthenticated || !authData.user) {
+        return responseHelper({ message: 'User not authenticated', statusCode: 401, data: {} }, 401);
+    }
     const userId = authData?.user?.id;
   
     if (quantity === undefined) {
@@ -74,7 +77,7 @@ export async function POST(req: Request) {
         200,
       );
     }
-    const cart_quantity: number = Number(quantity) || 1;
+    const cart_quantity: number = isNaN(Number(quantity))? 1 :  Number(quantity);
     
     let cartItem = await prisma.cart.findFirst({
       where: {
@@ -83,23 +86,21 @@ export async function POST(req: Request) {
         quantity_id: quantityId,
       },
     });
-    // console.log(cartItem)
+    console.log(cartItem)
     let apimessage = '';
-    if (quantity === 0 && cartItem) {
+    let response: any = {};
+    if (quantity == 0 && cartItem) {
       // If quantity is 0, remove the item from the cart
-      await prisma.cart.delete({
-        where: {
-          id: cartItem.id,
-        },
-      });
-      apimessage = 'Product count updated';
+      response = await prisma.$queryRaw`DELETE FROM cart WHERE id = ${cartItem.id}`
+
+      apimessage = 'Product removed from cart';
     } else if (cartItem && quantity) {
-      // Update quantity for the item in the cart
-      await prisma.$queryRaw`UPDATE cart SET cart_quantity = ${cart_quantity} WHERE id = ${cartItem.id}`
+      response = await prisma.$queryRaw`UPDATE cart SET cart_quantity = ${cart_quantity} WHERE id = ${cartItem.id}`
+
       apimessage = 'Product count updated';
     } else if (productId && userId) {
       // Add a new product to the cart
-      await prisma.$queryRaw`INSERT INTO cart (user_id, product_id, quantity_id, cart_quantity) VALUES (${userId}, ${productId}, ${quantityId}, ${cart_quantity})`
+      response = await prisma.$queryRaw`INSERT INTO cart (user_id, product_id, quantity_id, cart_quantity) VALUES (${userId}, ${productId}, ${quantityId}, ${cart_quantity})`
       apimessage = 'New product added to cart';
     }
 
@@ -111,7 +112,7 @@ export async function POST(req: Request) {
     }
 
     return responseHelper(
-      { message: apimessage, statusCode: 200, data: {} },
+      { message: apimessage, statusCode: 200, data: response },
       200,
     );
   } catch (error) {

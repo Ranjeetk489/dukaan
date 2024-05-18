@@ -1,7 +1,7 @@
 import { Cart, CartItem, CartItemQuantity } from "@/types/client/types";
 
 export function formatCartData(apiData: CartItem[]): Cart {
-    const formattedCart: Cart = {};
+    const formattedCart: Cart = {} as Cart;
     
     apiData.forEach((item, index) => {
         const {
@@ -30,13 +30,13 @@ export function formatCartData(apiData: CartItem[]): Cart {
           created_at,
           updated_at,
           image,
-          quantity_id,
           quantities: [],
         };
       }
-  
+    
       const cartItemQuantity: CartItemQuantity = {
-        id: cart_id,
+        id: quantity_id as number,
+        cart_id,
         product_id,
         quantity,
         price,

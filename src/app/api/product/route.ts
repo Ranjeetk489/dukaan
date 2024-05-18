@@ -7,16 +7,20 @@ export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
     const category_id = Number(url.searchParams.get("categoryId"));
+    const seachBy: string | null | undefined = url.searchParams.get("seachBy");
 
-    if (!category_id || Number.isNaN(category_id)) {
+
+    if ((!category_id || Number.isNaN(category_id)) && (!seachBy)) {
       return responseHelper(
-        { message: "Category Id is required", statusCode: 400, data: {} },
+        { message: "Category Id is required or Search keyword is required", statusCode: 400, data: {} },
         400,
       );
     }
 
 
-    const productsWithQuantities: Product[] = await prisma.$queryRaw`
+    let productsWithQuantities: Product[] = [];
+    if (category_id) {
+      productsWithQuantities = await prisma.$queryRaw`
       SELECT
         p.*,
         json_agg(q.*) as quantities
@@ -31,7 +35,25 @@ export async function GET(req: Request) {
       GROUP BY
         p.id
     `;
+    }
 
+    if (seachBy) {
+      productsWithQuantities = await prisma.$queryRaw`
+      SELECT
+        p.*,
+        json_agg(q.*) as quantities
+      FROM
+        products p
+      LEFT JOIN
+        quantity q
+      ON
+        p.id = q.product_id
+      WHERE
+        p.name ILIKE '%${seachBy}%' OR p.description ILIKE '%${seachBy}%'
+      GROUP BY
+        p.id
+    `;
+    }
 
     return responseHelper(
       {
@@ -78,7 +100,6 @@ export async function POST(req: Request) {
       name: product.name,
       description: product.description,
       category_id: product.category_id,
-      quantity_id: product.quantity_id,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       image: product.image,

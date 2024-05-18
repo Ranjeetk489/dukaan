@@ -19,6 +19,7 @@ export interface ConfigProps {
         OUT_FOR_DELIVERY: string,
         DELIVERED: string,
         CANCELLED: string,
-    }
+    },
+    adminEmail: string,
 }
 

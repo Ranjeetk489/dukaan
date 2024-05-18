@@ -1,7 +1,6 @@
 
 import { Button } from "@/components/ui/button";
 import { isAuthenticatedAndUserData } from "@/lib/auth";
-import Image from "next/image";
 import Link from "next/link";
 import { redirect, useRouter } from "next/navigation";
 

@@ -6,7 +6,6 @@ export interface ProductFromDB {
     created_at?: string
     updated_at?: string
     image: string
-    quantity_id?: number
 }
 
 
@@ -30,6 +29,7 @@ export interface Quantity {
 export interface CartItem extends ProductFromDB, Quantity {
     cart_id: number;
     cart_quantity: number;
+    quantity_id?: number;
 }
 
 export type ResponseObject = {
@@ -50,6 +50,8 @@ export type ApiResponseObject<T> = {
 
 export interface CartItemQuantity extends Quantity {
     added_quantity: number
+    quantity_id?: number
+    cart_id?: number
 }
 
 // export interface CartProduct extends Product {
@@ -58,6 +60,8 @@ export interface CartItemQuantity extends Quantity {
 
 export interface Cart {
     [productId: number]: Product;
+    cart_id?: number;
+    quantity_id?: number;
 }
 
 export interface Category {

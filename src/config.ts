@@ -20,7 +20,8 @@ const config: ConfigProps = {
         OUT_FOR_DELIVERY: "out_for_delivery",
         DELIVERED: "delivered",
         CANCELLED: "cancelled",
-    }
+    },
+    adminEmail: process.env.ADMIN_LOGIN_EMAIL_ID!,
 }
 
 export default config

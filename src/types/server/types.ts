@@ -6,7 +6,6 @@ export interface ProductFromDB {
     created_at: string
     updated_at: string
     image: string
-    quantity_id: number
 }
 
 

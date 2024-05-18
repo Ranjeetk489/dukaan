@@ -486,7 +486,7 @@ model order_items {
   order_id         Int?
   product_id       Int?
   quantity         Int?
-  price_per_unit   String?    @db.VarChar(255)
+  price_per_unit   Decimal?  @db.Decimal
   created_at       DateTime? @default(now()) @db.Timestamp(6)
   updated_at       DateTime? @db.Timestamp(6)
   product_name     String?   @db.VarChar(255)
@@ -499,7 +499,7 @@ model orders {
   id           Int           @id @default(autoincrement())
   user_id      Int?
   order_date   DateTime?     @db.Timestamp(6)
-  total_amount String?    @db.VarChar(255)
+  total_amount Decimal?      @db.Decimal
   status       String?       @db.VarChar(255)
   created_at   DateTime?     @default(now()) @db.Timestamp(6)
   updated_at   DateTime?     @db.Timestamp(6)
@@ -514,7 +514,7 @@ model payments {
   order_id       Int?
   payment_date   DateTime? @db.Timestamp(6)
   payment_method String?   @db.VarChar(255)
-  amount         String?    @db.VarChar(255)
+  amount         Decimal?  @db.Decimal
   created_at     DateTime? @default(now()) @db.Timestamp(6)
   updated_at     DateTime? @db.Timestamp(6)
   orders         orders?   @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -522,34 +522,31 @@ model payments {
 }
 
 model products {
-  id                                      Int             @id @default(autoincrement())
-  name                                    String?         @db.VarChar(255)
-  description                             String?
-  category_id                             Int?
-  created_at                              DateTime?       @default(now()) @db.Timestamp(6)
-  updated_at                              DateTime?       @db.Timestamp(6)
-  image                                   String?         @db.Uuid
-  quantity_id                             Int?
-  cart                                    cart[]
-  order_items                             order_items[]
-  quantity_products_quantity_idToquantity quantity?       @relation("products_quantity_idToquantity", fields: [quantity_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_quantity_id")
-  categories                              categories?     @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  directus_files                          directus_files? @relation(fields: [image], references: [id], onUpdate: NoAction, map: "products_image_foreign")
-  quantity_quantity_product_idToproducts  quantity[]      @relation("quantity_product_idToproducts")
+  id                                     Int             @id @default(autoincrement())
+  name                                   String?         @db.VarChar(255)
+  description                            String?
+  category_id                            Int?
+  created_at                             DateTime?       @default(now()) @db.Timestamp(6)
+  updated_at                             DateTime?       @db.Timestamp(6)
+  image                                  String?         @db.Uuid
+  cart                                   cart[]
+  order_items                            order_items[]
+  categories                             categories?     @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  directus_files                         directus_files? @relation(fields: [image], references: [id], onUpdate: NoAction, map: "products_image_foreign")
+  quantity_quantity_product_idToproducts quantity[]      @relation("quantity_product_idToproducts")
 }
 
 model quantity {
-  id                                      Int        @id @default(autoincrement())
-  product_id                              Int?
-  quantity                                String?    @db.VarChar(255)
-  price                                   String?   @db.VarChar(255)
-  is_stock_available                      Int?
-  stocked_quantity                        Int?
-  created_at                              DateTime?  @default(now()) @db.Timestamp(6)
-  updated_at                              DateTime?  @default(now()) @db.Timestamp(6)
-  cart                                    cart[]
-  products_products_quantity_idToquantity products[] @relation("products_quantity_idToquantity")
-  products_quantity_product_idToproducts  products?  @relation("quantity_product_idToproducts", fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id                                     Int       @id @default(autoincrement())
+  product_id                             Int?
+  quantity                               String?   @db.VarChar
+  price                                  String?   @db.VarChar(255)
+  is_stock_available                     Int?
+  stocked_quantity                       Int?
+  created_at                             DateTime? @default(now()) @db.Timestamp(6)
+  updated_at                             DateTime? @default(now()) @db.Timestamp(6)
+  cart                                   cart[]
+  products_quantity_product_idToproducts products? @relation("quantity_product_idToproducts", fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model users {

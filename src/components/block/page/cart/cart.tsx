@@ -43,8 +43,12 @@ function OrderCart(props: Props) {
     }, [props.cartData])
 
 
+//TODO: take value from env
+    let deliveryCharge = 100
+    if(totalAmount > 500) {
+        deliveryCharge = 0
+    }
 
-    const deliveryCharge = 100
     return (
         <>    
         {
