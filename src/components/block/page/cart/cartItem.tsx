@@ -55,7 +55,6 @@ const CartProduct = (props: Props) => {
     };
 
     const onCountUpdate = (action: "increment" | "decrement") => {
-        // debugger
         const count = props.product.quantities[props.index]?.count || 0;
         const variantId = props.product.quantities[props.index]?.id || 0;
         switch (action) {

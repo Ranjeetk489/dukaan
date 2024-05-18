@@ -92,15 +92,11 @@ export async function POST(req: Request) {
     if (quantity == 0 && cartItem) {
       // If quantity is 0, remove the item from the cart
       response = await prisma.$queryRaw`DELETE FROM cart WHERE id = ${cartItem.id}`
-      // response = await prisma.cart.delete({
-      //   where: {
-      //     id: cartItem.id,
-      //   },
-      // });
+
       apimessage = 'Product removed from cart';
     } else if (cartItem && quantity) {
-      // Update quantity for the item in the cart
       response = await prisma.$queryRaw`UPDATE cart SET cart_quantity = ${cart_quantity} WHERE id = ${cartItem.id}`
+
       apimessage = 'Product count updated';
     } else if (productId && userId) {
       // Add a new product to the cart
