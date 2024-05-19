@@ -503,6 +503,8 @@ model orders {
   status       String?       @db.VarChar(255)
   created_at   DateTime?     @default(now()) @db.Timestamp(6)
   updated_at   DateTime?     @db.Timestamp(6)
+  address_id   Int?
+  full_address String?
   order_items  order_items[]
   users        users?        @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   payments     payments[]

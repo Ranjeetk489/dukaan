@@ -1,3 +1,4 @@
+"use client";
 import { Role, isAuthenticatedAndUserData } from '@/lib/auth';
 import { createContext, useContext, useState, ReactNode } from 'react';
 

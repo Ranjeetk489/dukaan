@@ -1,3 +1,4 @@
+"use client"
 import { useEffect, useState } from "react"
 import OrderModal from "./orderModal"
 import { Order } from "@/types/client/types"

@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button"
 import { Address } from "@/types/client/types";
 import AddressModal from "./AddressModal";

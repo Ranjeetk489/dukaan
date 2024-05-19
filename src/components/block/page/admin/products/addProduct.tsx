@@ -1,6 +1,7 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { Category, NewProduct, Product, Quantity, QuantityInAddProduct } from "@/types/client/types";
-import { Product as ServerProductTypes } from "@/types/server/types";
 import SingleFileUploader from "@/components/ui/SingleVideoUploader";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@radix-ui/react-select";
@@ -34,8 +35,6 @@ const AddProductModal = (props: Props) => {
         { id: quantity.id, product_id: quantity.product_id, quantity: quantity.quantity, price: quantity.price, stocked_quantity: String(quantity.stocked_quantity) }
       ]);
     });
-    console.log(props, "=====> categoryList")
-    console.log(props.onsubmit, "=====> onsubmit")
   }, []);
 
 

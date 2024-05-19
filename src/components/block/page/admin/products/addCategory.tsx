@@ -1,7 +1,7 @@
+"use client";
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Toast } from "@radix-ui/react-toast";
 
 type Props = {
   isOpen: boolean;

@@ -136,3 +136,6 @@ export interface OrderItem {
     created_at: string;
     updated_at: string;
 }
+
+
+export type PaymentOption = "COD" | "UPI" | "Card";

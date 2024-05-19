@@ -1,13 +1,12 @@
 "use client";
 import { fetchInsideTryCatch } from "@/lib/client/apiUtil";
 import { AdminDashboardOrders } from "@/types/client/types";
-import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { useEffect, useState } from "react";
 
 
 
-export default async function AdminOrders() {
+export default function AdminOrders() {
 
   const [data, setData] = useState<AdminDashboardOrders[]>([]);
   const [page, setPage] = useState(1);
