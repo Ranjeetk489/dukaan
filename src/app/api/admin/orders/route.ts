@@ -10,7 +10,7 @@ export async function GET(req: Request) {
         const filterStatus = url.searchParams.get("filterStatus");
         const page = Number(url.searchParams.get("page"));
         const ORDER_VALUE_MAPPING: Record<string, string> = {
-            "Out for delivery": "out_for_delivery",
+            "Out for Delivery": "out_for_delivery",
             "Delivered": "delivered",
             "Cancelled": "cancelled",
             "Order Placed": "order_placed",
@@ -19,8 +19,8 @@ export async function GET(req: Request) {
         const offset = page ? (page - 1) * 10 : 0;
         const filterByStatus = filterStatus ? ORDER_VALUE_MAPPING[filterStatus] : null;
         
-        const whereCond = Prisma.sql` where o.status = ${filterByStatus}`;
-        const orders: any = await prisma.$queryRaw`
+
+        const orders: any = await prisma.$queryRaw(Prisma.sql`
             SELECT
                 o.id,
                 o.user_id,
@@ -34,7 +34,7 @@ export async function GET(req: Request) {
                 orders o
             LEFT JOIN
                 order_items oi ON o.id = oi.order_id
-            ${filterByStatus ? whereCond : Prisma.empty}
+            ${filterByStatus ? Prisma.sql`WHERE o.status =  ${filterByStatus}` : Prisma.empty}
             GROUP BY
                 o.id
             ORDER BY
@@ -43,14 +43,14 @@ export async function GET(req: Request) {
                 10
             OFFSET
                 ${offset};
-        `;
+        `);
 
         const totalOrders: any = await prisma.$queryRaw`
             SELECT
                 COUNT(*) as total
             FROM
-                orders
-            ${filterByStatus ? whereCond : Prisma.empty};
+                orders o
+            ${filterByStatus ? Prisma.sql`WHERE o.status =  ${filterByStatus}` : Prisma.empty};
         `;
         
         return responseHelper({ message: 'Orders fetched successfully', statusCode: 200, data: { orders, total: Number(totalOrders[0].total) } }, 200);
