@@ -24,11 +24,11 @@ export default function RootLayout({
 
     const isUserLoggedIn= async () => {
         const response = await isAuthenticatedAndUserId();
-        console.log(response, "response")
         if(response.isAuthenticated) {
             setIsLoggedIn(true)
         }
     }
+    
     const getTotalQuantity = () => {
         let total = 0
         Object.keys(cart.data).forEach((key: string) => {
@@ -46,6 +46,11 @@ export default function RootLayout({
     const router = useRouter()
 
     const onCartClick = () => {
+        if(!isLoggedIn) {
+            router.push('/auth/login')
+            return;
+        }
+
         if (isMobile) {
             router.push('/cart')
         } else {

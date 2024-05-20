@@ -4,8 +4,9 @@ import { isAuthenticatedAndUserData } from "./lib/auth";
 
 export async function middleware(req: NextRequest) {
     const decryptedToken = await isAuthenticatedAndUserData();
+
     if (!decryptedToken.isAuthenticated) {
-        return NextResponse.redirect(new URL("/auth/login", `#{req.url}`));
+        return NextResponse.redirect(new URL("/auth/login", req.url));
     }
     return NextResponse.next({
         request: req,
