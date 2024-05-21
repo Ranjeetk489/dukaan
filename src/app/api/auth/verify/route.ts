@@ -6,7 +6,7 @@ import { cookies } from 'next/headers';
 import config from '@/config';
 import rateLimit from '@/lib/ratelimit';
 import { AuthRequest } from '@/types/api';
-import { isAuthenticatedAndUserData } from '@/lib/auth';
+import { Role, isAuthenticatedAndUserData } from '@/lib/auth';
 
 
 const limiter = rateLimit({
@@ -32,14 +32,14 @@ export async function POST(req: Request) {
             }
         }))
 
-        if(!authRequest.length) {
-            return responseHelper({ message: 'Expired OTP' , statusCode: 404, data: {}}, 200, limit, remaining,)
+        if (!authRequest.length) {
+            return responseHelper({ message: 'Expired OTP', statusCode: 404, data: {} }, 200, limit, remaining,)
         }
 
         const requestObj = authRequest[0] as AuthRequest
         const isVerified = await verifyOtp(otp, requestObj.hashed_otp)
-        if(!isVerified) {
-            return responseHelper({ message: 'Invalid OTP' , statusCode: 400, data: {}}, 200, limit, remaining)
+        if (!isVerified) {
+            return responseHelper({ message: 'Invalid OTP', statusCode: 400, data: {} }, 200, limit, remaining)
         }
         if (requestObj.action === 'login') {
             const isVerified = await verifyOtp(otp, requestObj.hashed_otp)
@@ -59,7 +59,12 @@ export async function POST(req: Request) {
                     sameSite: 'lax',
                     path: '/'
                 })
-                return responseHelper({ message: 'OTP verified', statusCode: 200 , data: {}}, 200, limit, remaining)   
+                let role = Role.USER
+                let adminEmailArray = (config.adminEmail).split(",");
+                if (adminEmailArray.includes(email)) {
+                    role = Role.ADMIN
+                }
+                return responseHelper({ message: 'OTP verified', statusCode: 200, data: {role} }, 200, limit, remaining)
             }
         } else {
             const isVerified = await verifyOtp(otp, requestObj.hashed_otp)
@@ -75,7 +80,7 @@ export async function POST(req: Request) {
                     date_created: new Date().toISOString(),
                     date_updated: new Date().toISOString()
                 }))
-                const token = jwtHelpers.createToken(user, config.jwtSecret, '7 days', )
+                const token = jwtHelpers.createToken(user, config.jwtSecret, '7 days',)
                 cookies().set('token', token, {
                     httpOnly: false,
                     secure: false,
@@ -85,12 +90,12 @@ export async function POST(req: Request) {
                 return responseHelper({ message: 'OTP verified', statusCode: 200, data: {} }, 200, limit, remaining)
             }
         }
-    } catch(error) {
+    } catch (error) {
         console.log(error)
-        if((error as Error)?.message === "Rate limit exceeded") {
+        if ((error as Error)?.message === "Rate limit exceeded") {
             return responseHelper({ message: 'Rate limit exceeded', statusCode: 429, data: {} }, 429)
         }
-        return responseHelper({ message: 'Internal server error', statusCode: 500 , data:{}}, 500)
+        return responseHelper({ message: 'Internal server error', statusCode: 500, data: {} }, 500)
     }
 
     // check if email exists in the database
@@ -99,14 +104,14 @@ export async function POST(req: Request) {
 
 export async function GET() {
     try {
-        
+
         const auth = await isAuthenticatedAndUserData();
         const userId = auth.user?.id;
 
         if (!userId) {
             return responseHelper({ message: 'User not authenticated', statusCode: 401, data: {} }, 401);
         }
-        return responseHelper({ message: 'User authenticated', statusCode: 200, data: {userId} }, 200);
+        return responseHelper({ message: 'User authenticated', statusCode: 200, data: { userId } }, 200);
     } catch (error) {
         return responseHelper({ message: 'Internal server error', statusCode: 500, data: {} }, 500);
     }

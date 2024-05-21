@@ -25,6 +25,8 @@ import { useState } from "react";
 import { LoadingSpinner } from "../ui/loading-spinner";
 import { useRouter } from "next/navigation";
 
+const ADMIN_ROLE = "admin"
+
 const FormSchema = z.object({
   pin: z.string().min(6, {
     message: "Your one-time password must be 6 characters.",
@@ -61,7 +63,13 @@ export function InputOTPForm(props: {
           title: "Success",
           description: "OTP verified",
         });
-        push("/products")
+
+        //@ts-ignore
+        if (resultjson.response.data.role === ADMIN_ROLE) {
+          push("/admin")
+        } else {
+          push("/products")
+        }
       } else {
         toast({
           title: "Error",
@@ -107,7 +115,7 @@ export function InputOTPForm(props: {
         />
 
         <Button type="submit" disabled={isLoading}>
-        {isLoading ? <LoadingSpinner/> : false}
+          {isLoading ? <LoadingSpinner /> : false}
           Submit</Button>
       </form>
     </Form>
