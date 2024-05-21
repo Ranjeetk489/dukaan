@@ -59,12 +59,8 @@ export async function POST(req: Request) {
                     sameSite: 'lax',
                     path: '/'
                 })
-                let role = Role.USER
-                let adminEmailArray = (config.adminEmail).split(",");
-                if (adminEmailArray.includes(email)) {
-                    role = Role.ADMIN
-                }
-                return responseHelper({ message: 'OTP verified', statusCode: 200, data: {role} }, 200, limit, remaining)
+                const role = checkIfAdmin(email)
+                return responseHelper({ message: 'OTP verified', statusCode: 200, data: { role } }, 200, limit, remaining)
             }
         } else {
             const isVerified = await verifyOtp(otp, requestObj.hashed_otp)
@@ -87,7 +83,9 @@ export async function POST(req: Request) {
                     sameSite: 'lax',
                     path: '/'
                 })
-                return responseHelper({ message: 'OTP verified', statusCode: 200, data: {} }, 200, limit, remaining)
+                const role = checkIfAdmin(email)
+
+                return responseHelper({ message: 'OTP verified', statusCode: 200, data: {role} }, 200, limit, remaining)
             }
         }
     } catch (error) {
@@ -111,8 +109,19 @@ export async function GET() {
         if (!userId) {
             return responseHelper({ message: 'User not authenticated', statusCode: 401, data: {} }, 401);
         }
-        return responseHelper({ message: 'User authenticated', statusCode: 200, data: { userId } }, 200);
+
+        return responseHelper({ message: 'User authenticated', statusCode: 200, data: { user : auth.user } }, 200);
     } catch (error) {
         return responseHelper({ message: 'Internal server error', statusCode: 500, data: {} }, 500);
     }
+}
+
+
+function checkIfAdmin(email: string) {
+    let role = Role.USER
+    let adminEmailArray = (config.adminEmail).split(",");
+    if (adminEmailArray.includes(email)) {
+        role = Role.ADMIN
+    }
+    return role
 }

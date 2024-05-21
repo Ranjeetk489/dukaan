@@ -26,12 +26,17 @@ function Profile({ }: Props) {
     }
   };
 
-  useEffect(() => {
-    let auth: any = isAuthenticatedAndUserId()
-
+  async function isAuthenticated() {
+    let auth: any = await isAuthenticatedAndUserId()
     if(!auth.isAuthenticated) {
-      window.location.href = '/auth/login'
+      router.push('/auth/login')
     }
+    if(auth.isAuthenticated && auth.userData?.user?.role === "admin") {
+      router.push('/admin')
+    }
+  }
+  useEffect(() => {
+    isAuthenticated()
   }, [])
 
   return (
