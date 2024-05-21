@@ -18,7 +18,7 @@ export async function GET(req: Request) {
 
         const offset = page ? (page - 1) * 10 : 0;
         const filterByStatus = filterStatus ? ORDER_VALUE_MAPPING[filterStatus] : null;
-        
+
 
         const orders: any = await prisma.$queryRaw(Prisma.sql`
             SELECT
@@ -45,14 +45,16 @@ export async function GET(req: Request) {
                 ${offset};
         `);
 
-        const totalOrders: any = await prisma.$queryRaw`
+
+        const totalOrders: any = await prisma.$queryRaw(Prisma.sql`
             SELECT
                 COUNT(*) as total
             FROM
-                orders o
-            ${filterByStatus ? Prisma.sql`WHERE o.status =  ${filterByStatus}` : Prisma.empty};
-        `;
-        
+                orders
+            ${filterByStatus ? Prisma.sql`WHERE status = ${filterByStatus}` : Prisma.empty}
+            `);
+
+
         return responseHelper({ message: 'Orders fetched successfully', statusCode: 200, data: { orders, total: Number(totalOrders[0].total) } }, 200);
     } catch (err) {
         console.error('Internal server error:', err);
