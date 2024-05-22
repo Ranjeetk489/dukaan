@@ -7,13 +7,6 @@ import { Product } from "@/types/client/types";
 import { useProductStore } from "@/store/useProductStore";
 import useOptimistic from "@/lib/client/hooks/useOptimistic";
 import AddSubtract from "./addSubtract";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Quantity } from "@/types/client/types";
 import VariantModal from "./variantModal";
 
