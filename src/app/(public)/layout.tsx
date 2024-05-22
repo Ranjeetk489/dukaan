@@ -94,7 +94,7 @@ export default function RootLayout({
                 />}
                 {
                     !isLoggedIn && 
-                    <Button className="" onClick={() => router.push('/auth/login')}>Login</Button>
+                    <Button className="bg-[black]" onClick={() => router.push('/auth/login')}>Login / Signup</Button>
                 }
                 </div>
             </header>
