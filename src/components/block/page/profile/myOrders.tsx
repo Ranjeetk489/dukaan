@@ -18,8 +18,7 @@ const MyOrders = (props: Props) => {
 
     const getOrders = async () => {
         console.log("get orders")
-        const orders = await fetchInsideTryCatch("/api/profile/order")
-        console.log(orders, "orders")
+        const orders = await fetchInsideTryCatch("api/profile/order")
         const data = orders && orders.response.data ? orders.response.data as Order[] : []
         if (data) {
             setOrders(data)

@@ -1,11 +1,13 @@
 "use client"
 import PaymentOptions from "@/components/block/page/payment/paymentOptions";
 import { Button } from "@/components/ui/button";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { fetchInsideTryCatch } from "@/lib/client/apiUtil";
 import { Address, PaymentOption } from "@/types/client/types";
 import { Select } from "@radix-ui/react-select";
 import { ChevronDown } from "lucide-react";
+import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 
@@ -21,6 +23,7 @@ export default function Page(props: Props) {
     const [idtoAddressMap, setIdtoAddressMap] = useState<{ [key: number]: string }>({});
     const [selectedOption, setSelectedOption] = useState<PaymentOption>("COD");
     const [totalAmount, setTotalAmount] = useState<TotalAmount>({ totalCartSum: 0 });
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         loadAddresses();
@@ -82,6 +85,7 @@ export default function Page(props: Props) {
         return false;
     }
     const placeOrder = async () => {
+        setIsLoading(true);
         const response = await fetchInsideTryCatch('/api/order', {
             method: 'POST',
             body: JSON.stringify({
@@ -91,6 +95,11 @@ export default function Page(props: Props) {
                 cartTotal: totalAmount.totalCartSum
             })
         })
+        setIsLoading(false);
+        if(response && response.response.statusCode === 200 && response.response.data) {
+            console.log(response.response.data)
+        }
+        redirect("/afterpayment")
     };
 
     return (
@@ -153,8 +162,9 @@ export default function Page(props: Props) {
                 <Button
                     className="bg-primary text-white"
                     onClick={placeOrder}
-                    disabled={!isAllFieldsFilled()}
+                    disabled={!isAllFieldsFilled() || isLoading}
                 >
+                    {isLoading ? <LoadingSpinner/> : false}
                     Place Order
                 </Button>
             </div>

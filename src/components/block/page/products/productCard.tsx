@@ -9,6 +9,7 @@ import useOptimistic from "@/lib/client/hooks/useOptimistic";
 import AddSubtract from "./addSubtract";
 import { Quantity } from "@/types/client/types";
 import VariantModal from "./variantModal";
+import { useDevice } from "@/lib/client/hooks/useDevice";
 
 const ProductCard = ({ product }: { product: Product }) => {
   const { cart, updateProductQuantityInCart, updateProductQuantityLocal } =
@@ -73,11 +74,14 @@ const ProductCard = ({ product }: { product: Product }) => {
     onCountUpdate(action, quantIndex);
   };  
 
+  let {isMobile} = useDevice();
+  // isMobile = true
+
   return (
     <Card className="relative flex flex-col border-none shadow-none bg-none  justify-between p-0 gap-2 items-center max-h-[280px] max-w-[200px]">
       <div className="w-fit shadow-sm md:shadow-none border">
         {product.image ? (
-          <div className="relative flex items-center justify-center h-full min-w-[120px] min-h-[120px] md:min-w-[170px] md:min-h-[150px]">
+          <div className="relative flex items-center justify-center h-full min-w-[90px] min-h-[90px] md:min-w-[170px] md:min-h-[150px]">
             <Image
               src={`${config.directusFileDomain}/${product.image}`}
               alt={product.name}
@@ -94,7 +98,7 @@ const ProductCard = ({ product }: { product: Product }) => {
         )}
       </div>
       <div className=" w-full flex flex-col h-full justify-between px-1">
-        <h3 className="text-xs font-semibold line-clamp-2 md:line-clamp-3 h-[40px]">
+        <h3 className={`text-xs font-semibold line-clamp-2 md:line-clamp-3 ${isMobile ? 'h-[60px]}' : 'h-[40px]'}`}>
           {product.name}
         </h3>
         {product.quantities.length > 1 ? (
@@ -108,7 +112,7 @@ const ProductCard = ({ product }: { product: Product }) => {
           false
         )}
         <div className="flex justify-between items-center w-full mt-1">
-          <p className="text-xs font-semibold">₹{productPrice}</p>
+          <p className={`text-xs font-semibold ${isMobile ? 'mr-1' : '' }`}>₹{productPrice}</p>
           <AddSubtract count={quantityInCart} onCountUpdate={onCountUpdate} />
         </div>
       </div>

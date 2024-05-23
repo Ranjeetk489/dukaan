@@ -8,6 +8,7 @@ import { AiFillHome } from "react-icons/ai";
 import { toast } from "@/components/ui/use-toast";
 import { Dialog } from "@radix-ui/react-dialog";
 import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useDevice } from "@/lib/client/hooks/useDevice";
 
 
 type Props = {
@@ -15,11 +16,12 @@ type Props = {
     loadAddresses: () => void;
 };
 
-const AddressModal = ({ addresses , loadAddresses}: Props) => {
+const AddressModal = ({ addresses, loadAddresses }: Props) => {
     const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
     const [openEditAddressPopup, setOpenEditAddressPopup] = useState(false);
-    const [ deletePopup, setDeletePopup ] = useState(false);
-
+    const [deletePopup, setDeletePopup] = useState(false);
+    let { isMobile } = useDevice();
+    // isMobile = true
     const handleEditClick = (address: Address) => {
         setSelectedAddress(address);
         setOpenEditAddressPopup(true)
@@ -36,12 +38,12 @@ const AddressModal = ({ addresses , loadAddresses}: Props) => {
             body: JSON.stringify({ address: selectedAddress })
         })
 
-        if(response.ok) {
+        if (response.ok) {
             setSelectedAddress(null);
             toast({
                 title: "Success",
                 description: "Address deleted successfully",
-              })
+            })
         }
         setDeletePopup(false)
         // Refresh the Addresses
@@ -50,41 +52,70 @@ const AddressModal = ({ addresses , loadAddresses}: Props) => {
     const handleDeleteClick = async (address: Address) => {
         setSelectedAddress(address);
         setDeletePopup(true)
-        
+
     };
 
     return (
         <>
-            <div className="flex flex-col">
-                <ul>
-                    {addresses.map(address => (
-                        <li key={address.id}>
-                            <div className="flex items-center gap-4 mb-4">
-                                <AiFillHome />
+            {
+                isMobile ?
+                    <div className="flex flex-col">
+                        <ul>
+                            {addresses.map(address => (
+                                <li key={address.id} className=" mb-4">
+                                    <div className="grid grid-cols-1 gap-4">
 
-                                <div className="font-medium">Home</div>
 
-                                <div>{`${address.address_line1}, ${address.address_line2}, ${address.city}, ${address.state}, ${address.country}, ${address.postal_code}`}</div>
-                                <div className="flex items-center gap-2 ml-auto">
+                                        <div className="font-medium">Home</div>
 
-                                    <Button className="bg-primary text-white" onClick={() => handleEditClick(address)}>Edit</Button>
+                                        <div>{`${address.address_line1}, ${address.address_line2}, ${address.city}, ${address.state}, ${address.country}, ${address.postal_code}`}</div>
+                                        <div className="flex items-center gap-2 ml-auto">
 
-                                    <Button className="bg-primary text-white" onClick={() => handleDeleteClick(address)}>Delete</Button>
-                                </div>
-                            </div>
+                                            <Button className="bg-primary text-white" onClick={() => handleEditClick(address)}>Edit</Button>
 
-                        </li>
-                    ))}
-                </ul>
-            </div>
+                                            <Button className="bg-primary text-white" onClick={() => handleDeleteClick(address)}>Delete</Button>
+                                        </div>
+                                    </div>
+                                    <svg height="1" className="mt-2">
+                                        <line x1="0" y1="0" x2="100%" y2="0" stroke="black" strokeWidth="1" />
+                                    </svg>
+                                </li>
+
+                            ))}
+                        </ul>
+                    </div>
+                    :
+                    <div className="flex flex-col">
+                        <ul>
+                            {addresses.map(address => (
+                                <li key={address.id}>
+                                    <div className="flex items-center gap-4 mb-4">
+                                        <AiFillHome />
+
+                                        <div className="font-medium">Home</div>
+
+                                        <div>{`${address.address_line1}, ${address.address_line2}, ${address.city}, ${address.state}, ${address.country}, ${address.postal_code}`}</div>
+                                        <div className="flex items-center gap-2 ml-auto">
+
+                                            <Button className="bg-primary text-white" onClick={() => handleEditClick(address)}>Edit</Button>
+
+                                            <Button className="bg-primary text-white" onClick={() => handleDeleteClick(address)}>Delete</Button>
+                                        </div>
+                                    </div>
+
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+            }
             {openEditAddressPopup &&
                 <EditAddressPopup
-                address={selectedAddress!}
-                onCancel={() => setOpenEditAddressPopup(false)}
-                isOpen={openEditAddressPopup}
-                onChange={() => setOpenEditAddressPopup(false)}
-                loadAddresses={loadAddresses}
-            />}
+                    address={selectedAddress!}
+                    onCancel={() => setOpenEditAddressPopup(false)}
+                    isOpen={openEditAddressPopup}
+                    onChange={() => setOpenEditAddressPopup(false)}
+                    loadAddresses={loadAddresses}
+                />}
             {
                 deletePopup &&
                 <Dialog open={deletePopup} onOpenChange={setDeletePopup}>

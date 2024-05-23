@@ -15,7 +15,7 @@ type Props = {
 const Categories = (props: Props) => {
     const [loading, setLoading] = useState(false)
     const { categories, updateCategoryProducts, categoryProducts, updateCategories } = useCategoryStore()
-    const { isMobile } = useDevice()
+    let { isMobile } = useDevice()
     // isMobile = true
     const onCategoryClick = async (id: number) => {
         setLoading(true)

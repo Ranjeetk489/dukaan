@@ -24,11 +24,10 @@ const MyAddress = () => {
     const [addNewAddressPopup, setAddNewAddressPopup] = useState(false);
     const [usersAddesses, setUsersAddesses] = useState<Address[]>([]);
     const getMyAddresses = async () => {
-        const response = await fetchInsideTryCatch('/api/profile/address')
+        const response = await fetchInsideTryCatch('api/profile/address')
 
         if(response && response.response.statusCode === 200 && response.response.data) {
             let data = response && response.response.data
-            console.log(data, 'data')
             setUsersAddesses(data as Address[])
         }
         return []
@@ -47,7 +46,7 @@ const MyAddress = () => {
             <div className="flex gap-4 mb-4">
                 My Address
             </div>
-            <div>
+            <div className="mb-4">
                 <Button
                     className="bg-primary text-white"
                     onClick={handleAddNewAddressClick}>

@@ -49,31 +49,21 @@ const OrderModal = (props: Props) => {
     return (
         <>
             <div className="w-full">
-                <Table className="table-fixed">
+                <Table className="w-full overflow-x-auto">
                     <TableCaption>Order Items</TableCaption>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Ordered On</TableHead>
-                            <TableHead>Total Amount</TableHead>
+                            <TableHead>Date</TableHead>
+                            <TableHead>Total</TableHead>
                             <TableHead>Status</TableHead>
-                            <TableHead>Action</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {orders.map((order) => (
-                            <TableRow key={order.id}>
+                            <TableRow key={order.id} onClick={() => handleViewDetails(order)}>
                                 <TableCell>{new Date(order.created_at).toDateString()}</TableCell>
                                 <TableCell>Rs. {order.total_amount}</TableCell>
                                 <TableCell>{OrderStatus[order.status]}</TableCell>
-                                <TableCell>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => handleViewDetails(order)}
-                                    >
-                                        View Details
-                                    </Button>
-                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

@@ -42,7 +42,7 @@ export default function RootLayout({
     const totalItemsQuantity = getTotalQuantity()
 
 
-    const { isMobile } = useDevice()
+    let { isMobile } = useDevice()
     // isMobile = true
     const router = useRouter()
 

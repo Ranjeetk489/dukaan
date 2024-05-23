@@ -10,16 +10,25 @@ type Props = {
 
 const Products = (props: Props) => {
     // const products = useProductStore(state => state.products);
-    const { isMobile } = useDevice()
+    let { isMobile } = useDevice()
+    // isMobile = true
     return (
-        <div className="flex gap-4">
+        <>
             {
-                props.productsData.map((product) => (
-                    // eslint-disable-next-line react/jsx-key
-                    <ProductCard product={product} key={product.id} />
-                ))
+                isMobile ?
+                    <div className="grid grid-cols-2 sm:grid-cols-2 gap-4">
+                        {props.productsData.map((product) => (
+                            <ProductCard product={product} key={product.id} />
+                        ))}
+                    </div>
+                    :
+                    <div className="flex flex-wrap">
+                        {props.productsData.map((product) => (
+                            <ProductCard product={product} key={product.id} />
+                        ))}
+                    </div>
             }
-        </div>
+        </>
     )
 }
 
