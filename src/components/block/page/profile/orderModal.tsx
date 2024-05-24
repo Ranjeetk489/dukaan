@@ -6,6 +6,7 @@ import { Order } from "@/types/client/types"
 import { useState } from "react"
 import { Table, TableHeader, TableBody, TableRow, TableCell, TableCaption, TableHead } from "@/components/ui/table"
 import { fetchInsideTryCatch } from "@/lib/client/apiUtil"
+import { useDevice } from "@/lib/client/hooks/useDevice"
 
 type Props = {
     orders: Order[];
@@ -17,7 +18,7 @@ const OrderModal = (props: Props) => {
     const [cancelPopup, setCancelPopup] = useState(false)
     const [deleteOrderId, setDeleteOrderId] = useState<number | null>(null)
     const { orders } = props
-
+    const { isMobile } = useDevice()
     const handleViewDetails = (order: Order) => {
         console.log(order)
         setShowOrderDetails(order)
@@ -53,9 +54,10 @@ const OrderModal = (props: Props) => {
                     <TableCaption>Order Items</TableCaption>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Date</TableHead>
-                            <TableHead>Total</TableHead>
-                            <TableHead>Status</TableHead>
+                            <TableHead>{isMobile ? "Date" : "Order Date"}</TableHead>
+                            <TableHead>{isMobile ? "Amount" : "Total Amount"}</TableHead>
+                            <TableHead>{isMobile ? "Status" : "Order Status"}</TableHead>
+                            {!isMobile && <TableHead>Action</TableHead>}
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -64,6 +66,16 @@ const OrderModal = (props: Props) => {
                                 <TableCell>{new Date(order.created_at).toDateString()}</TableCell>
                                 <TableCell>Rs. {order.total_amount}</TableCell>
                                 <TableCell>{OrderStatus[order.status]}</TableCell>
+                                {!isMobile && <TableCell>
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => {
+                                            handleViewDetails(order)
+                                        }}
+                                    >
+                                        View Details
+                                    </Button>
+                                </TableCell>}
                             </TableRow>
                         ))}
                     </TableBody>
