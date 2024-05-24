@@ -70,7 +70,7 @@ export default function RootLayout({
             {isMobile?
             <header className="flex flex-col sm:flex-row justify-between my-4">
             <div className="flex flex-col mb-2 sm:mb-0">
-                <h4 className="text-primary">Dukaan</h4>
+                <h4 className="text-primary">TaYaima</h4>
                 <p>Estimated Delivery in 24hr</p>
             </div>
             <div className="flex flex-col-2 w-full sm:flex-row gap-2 h-[43px] mb-2 sm:mb-0">
@@ -101,7 +101,7 @@ export default function RootLayout({
         </header>
                 :<header className="flex justify-between my-4">
                 <div className="flex flex-col">
-                    <h4 className="text-primary">Dukaan</h4>
+                    <h4 className="text-primary">TaYaima</h4>
                     <p>Estimated Delivery in 24hr</p>
                 </div>
                 <div className="flex gap-2 h-[43px]">
