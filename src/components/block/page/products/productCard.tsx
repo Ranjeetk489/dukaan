@@ -51,7 +51,6 @@ const ProductCard = ({ product }: { product: Product }) => {
   };
 
   const onCountUpdate = (action: "increment" | "decrement", quantIndex:number) => {
-    debugger
     if (product.quantities.length > 1 && !showVariant) {
       setShowVariant(true);
     } else {
@@ -95,7 +94,7 @@ const ProductCard = ({ product }: { product: Product }) => {
         )}
       </div>
       <div className=" w-full flex flex-col h-full justify-between px-1">
-        <h3 className={`text-xs font-semibold line-clamp-2 md:line-clamp-3 ${isMobile ? 'h-[60px]}' : 'h-[40px]'}`}>
+        <h3 className={`text-xs font-semibold line-clamp-2 md:line-clamp-3 `}>
           {product.name}
         </h3>
         {product.quantities.length > 1 ? (

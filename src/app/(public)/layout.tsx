@@ -83,7 +83,7 @@ export default function RootLayout({
                 />
                 <Button className="" onClick={handleChange}>Search</Button>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 ml-2">
                 <Button className="w-full sm:w-auto" onClick={onCartClick}>
                     Cart <span className="w-[24px]">({totalItemsQuantity})</span>
                 </Button>

@@ -76,7 +76,6 @@ export const useProductStore = create<ProductStore>((set, get) => ({
     }))
   },
   updateProductQuantityInCart: async (product, quantity, quantity_id) => {
-    debugger
     set((state) => ({
       cart: { data: state.cart.data, status: NETWORK_STATES.LOADING },
     }));

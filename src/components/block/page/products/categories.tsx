@@ -5,7 +5,6 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import Products from "./products";
 import { getProductsByCategoryId } from "@/lib/prisma";
 import { useEffect, useState } from "react";
-import { useDevice } from "@/lib/client/hooks/useDevice";
 import {ClipLoader} from 'react-spinners'
 import { useSearchParams } from "next/navigation";
 
@@ -21,10 +20,7 @@ const Categories = (props: Props) => {
         categoryProducts,
         updateCategories,
     } = useCategoryStore();
-    let { isMobile } = useDevice();
-    // isMobile = true
     const onCategoryClick = async (id: number) => {
-        debugger
         setLoading(true);
         const data = await getProductsByCategoryId(id);
         setLoading(false);
