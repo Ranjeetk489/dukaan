@@ -22,13 +22,13 @@ export default function RootLayout({
         isUserLoggedIn();
     }, [])
 
-    const isUserLoggedIn= async () => {
+    const isUserLoggedIn = async () => {
         const response = await isAuthenticatedAndUserId();
-        if(response.isAuthenticated) {
+        if (response.isAuthenticated) {
             setIsLoggedIn(true)
         }
     }
-    
+
     const getTotalQuantity = () => {
         let total = 0
         Object.keys(cart.data).forEach((key: string) => {
@@ -42,12 +42,11 @@ export default function RootLayout({
     const totalItemsQuantity = getTotalQuantity()
 
 
-    let { isMobile } = useDevice()
-    // isMobile = true
+    const { isMobile } = useDevice()
     const router = useRouter()
 
     const onCartClick = () => {
-        if(!isLoggedIn) {
+        if (!isLoggedIn) {
             router.push('/auth/login')
             return;
         }
@@ -67,7 +66,6 @@ export default function RootLayout({
 
     return (
         <div className="container">
-            {isMobile?
             <header className="flex flex-col sm:flex-row justify-between my-4">
             <div className="flex flex-col mb-2 sm:mb-0">
                 <h4 className="text-primary">TaYaima</h4>
@@ -100,39 +98,6 @@ export default function RootLayout({
                 )}
             </div>
         </header>
-                :<header className="flex justify-between my-4">
-                <div className="flex flex-col">
-                    <h4 className="text-primary">TaYaima</h4>
-                    <p>Estimated Delivery in 24hr</p>
-                </div>
-                <div className="flex gap-2 h-[43px]">
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        className="border border-gray-500 rounded px-3 py-1 w-[600px]"
-                        onChange={(e) => setSearchValue(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleChange()}
-                    />
-                    <Button className="" onClick={handleChange}>Search</Button>
-                </div>
-
-                <div>
-                    <Button className="" onClick={onCartClick}>
-                        Cart {' '}
-                        <p className="w-[24px]">({totalItemsQuantity})</p>
-                    </Button>
-                </div>
-                <div>
-                {isLoggedIn && <AiFillProfile 
-                    className="w-[40px] h-[40px] cursor-pointer bg-[#f7fff9] text-[#318616] "
-                    onClick={() => router.push('/profile')}
-                />}
-                {
-                    !isLoggedIn && 
-                    <Button className="bg-[black]" onClick={() => router.push('/auth/login')}>Login / Signup</Button>
-                }
-                </div>
-            </header>}
             {children}
         </div>
     );

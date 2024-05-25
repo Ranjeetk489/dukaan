@@ -1,8 +1,6 @@
 "use client";
-import { useProductStore } from "@/store/useProductStore";
 import ProductCard from "./productCard";
 import { Product } from "@/types/client/types";
-import { useDevice } from "@/lib/client/hooks/useDevice";
 
 type Props = {
   productsData: Product[];

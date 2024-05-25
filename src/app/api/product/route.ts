@@ -5,9 +5,10 @@ import { Product, ProductFromDB, Quantity } from "@/types/server/types";
 
 export async function GET(req: Request) {
   try {
+    console.log("api/product/route GET")
     const url = new URL(req.url);
     const category_id = Number(url.searchParams.get("categoryId"));
-    const seachBy: string | null | undefined = url.searchParams.get("seachBy");
+    const seachBy: string | null | undefined = url.searchParams.get("search");
 
 
     if ((!category_id || Number.isNaN(category_id)) && (!seachBy)) {
