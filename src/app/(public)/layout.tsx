@@ -61,7 +61,7 @@ export default function RootLayout({
 
     const handleChange = () => {
         console.log("handle change", searchValue)
-        
+        router.push(`/products?search=${searchValue}`)
     }
 
 
@@ -79,6 +79,7 @@ export default function RootLayout({
                     placeholder="Search..."
                     className="border border-gray-500 rounded px-3 py-1 flex-grow"
                     onChange={(e) => setSearchValue(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleChange()}
                 />
                 <Button className="" onClick={handleChange}>Search</Button>
             </div>
@@ -110,6 +111,7 @@ export default function RootLayout({
                         placeholder="Search..."
                         className="border border-gray-500 rounded px-3 py-1 w-[600px]"
                         onChange={(e) => setSearchValue(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && handleChange()}
                     />
                     <Button className="" onClick={handleChange}>Search</Button>
                 </div>

@@ -17,7 +17,6 @@ const ProductCard = ({ product }: { product: Product }) => {
   const { debounceFn } = useOptimistic();
   const quantityInCart = getTotalQuantity();
   const productFromCart = cart.data[product.id] ? cart.data[product.id] : product
-  // console.log(quantityInCart, "====> quantityInCart")
   const [showVariant, setShowVariant] = useState<boolean>(false);
   function getTotalQuantity() {
     let total = 0;
@@ -51,7 +50,6 @@ const ProductCard = ({ product }: { product: Product }) => {
     );
   };
 
-  // console.log(cart.data, "====> q11")
   const onCountUpdate = (action: "increment" | "decrement", quantIndex:number) => {
     debugger
     if (product.quantities.length > 1 && !showVariant) {
@@ -69,7 +67,6 @@ const ProductCard = ({ product }: { product: Product }) => {
     }
   };
 
-  // console.log(cart.data, "data in cart")
   const updateProductOptimisticV1 = (action: "increment" | "decrement", quantIndex: number, quantObj: Quantity) => {
     onCountUpdate(action, quantIndex);
   };  
@@ -78,7 +75,7 @@ const ProductCard = ({ product }: { product: Product }) => {
   // isMobile = true
 
   return (
-    <Card className="relative flex flex-col border-none shadow-none bg-none  justify-between p-0 gap-2 items-center max-h-[280px] max-w-[200px]">
+    <Card className="relative flex flex-col border-none shadow-none bg-none w-fit justify-between p-0 gap-2 items-center max-h-[280px] max-w-[200px]">
       <div className="w-fit shadow-sm md:shadow-none border">
         {product.image ? (
           <div className="relative flex items-center justify-center h-full min-w-[90px] min-h-[90px] md:min-w-[170px] md:min-h-[150px]">
