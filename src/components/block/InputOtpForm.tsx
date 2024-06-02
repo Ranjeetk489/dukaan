@@ -19,7 +19,7 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { toast } from "@/components/ui/use-toast";
+import toast from "react-hot-toast";
 import { ResponseObject } from "@/types/client/types";
 import { useState } from "react";
 import { LoadingSpinner } from "../ui/loading-spinner";
@@ -59,10 +59,7 @@ export function InputOTPForm(props: {
       const resultjson: ResponseObject = await result.json();
       
       if (resultjson.response.statusCode === 200) {
-        toast({
-          title: "Success",
-          description: "OTP verified",
-        });
+        toast.success("OTP verified successfully")
 
         //@ts-ignore
         if (resultjson.response.data.role === ADMIN_ROLE) {
@@ -71,17 +68,12 @@ export function InputOTPForm(props: {
           push("/products")
         }
       } else {
-        toast({
-          title: "Error",
-          description: resultjson.response.message || "Invalid OTP",
-        });
+        toast.error(resultjson.response.message || "Invalid OTP");
       }
       setIsLoading(false)
     } catch (err) {
-      toast({
-        title: "Error",
-        description: (err as Error).message,
-      });
+      toast.error("Invalid OTP");
+      setIsLoading(false)
     }
   }
 

@@ -17,7 +17,7 @@ import { useState } from "react";
 import { InputOTPForm } from "@/components/block/InputOtpForm";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ResponseObject } from "@/types/client/types";
-import { toast } from "@/components/ui/use-toast";
+import toast from "react-hot-toast";
 
 export default function SignupForm() {
   const [showOtpScreen, setShowOtpScreen] = useState(false)
@@ -50,16 +50,9 @@ export default function SignupForm() {
     setIsLoading(false)
     let data: ResponseObject = await response.json();
     if(data.response.statusCode !== 200) {
-      toast({
-        title: "Error",
-        description: data.response.message || "Please try again",
-      })
-      // TODO notification response.message
+      toast.error(data.response.message)
     } else {
-      toast({
-        title: "Success",
-        description: "OTP sent to your email",
-      })
+      toast.success("OTP sent to your email")
     }
     setShowOtpScreen(true)
   };

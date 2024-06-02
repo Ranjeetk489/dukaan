@@ -5,7 +5,7 @@ import { Address } from "@/types/client/types";
 import { Heading } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogHeader } from '@/components/ui/dialog';
-import { toast } from "@/components/ui/use-toast";
+import toast from "react-hot-toast";
 
 
 type EditPopupProps = {
@@ -72,10 +72,7 @@ const EditAddressPopup: React.FC<EditPopupProps> = ({ address, onCancel, isOpen,
             })
             
             if(response.ok) {
-                toast({
-                    title: "Success",
-                    description: "Address added successfully",
-                  })
+                toast.success("Address added successfully")
             }
         }
         onCancel();

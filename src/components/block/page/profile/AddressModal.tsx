@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import EditAddressPopup from "./EditAddressPopup";
 import { AiFillHome } from "react-icons/ai";
-import { toast } from "@/components/ui/use-toast";
+import toast from "react-hot-toast";
 import { Dialog } from "@radix-ui/react-dialog";
 import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
@@ -38,10 +38,7 @@ const AddressModal = ({ addresses, loadAddresses }: Props) => {
 
         if (response.ok) {
             setSelectedAddress(null);
-            toast({
-                title: "Success",
-                description: "Address deleted successfully",
-            })
+            toast.success("Address deleted successfully")
         }
         setDeletePopup(false)
         // Refresh the Addresses
