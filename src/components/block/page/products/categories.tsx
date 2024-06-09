@@ -38,6 +38,14 @@ const Categories = (props: Props) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    useEffect(() => {
+        // api call for search
+        console.log(params.get('search'), "params")
+        // remove search from url
+        if (params.get('search')) {
+             }
+    }, [params.get('search')]);
+
     return (
         <div className="grid grid-cols-8 gap-8 lg:grid-cols-9 lg:gap-6">
             <div className="flex flex-col gap-2 col-span-2 lg:col-span-3">
