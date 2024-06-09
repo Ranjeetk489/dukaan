@@ -7,8 +7,9 @@ import { fetchInsideTryCatch } from "@/lib/client/apiUtil";
 import { Address, PaymentOption } from "@/types/client/types";
 import { Select } from "@radix-ui/react-select";
 import { ChevronDown } from "lucide-react";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 
 interface Props { }
@@ -24,6 +25,8 @@ export default function Page(props: Props) {
     const [selectedOption, setSelectedOption] = useState<PaymentOption>("COD");
     const [totalAmount, setTotalAmount] = useState<TotalAmount>({ totalCartSum: 0 });
     const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter()
+
 
     useEffect(() => {
         loadAddresses();
@@ -86,7 +89,7 @@ export default function Page(props: Props) {
     }
     const placeOrder = async () => {
         setIsLoading(true);
-        const response = await fetchInsideTryCatch('/api/order', {
+        const response = await fetchInsideTryCatch('api/order', {
             method: 'POST',
             body: JSON.stringify({
                 addressId: selectedAddressId,
@@ -99,7 +102,8 @@ export default function Page(props: Props) {
         if(response && response.response.statusCode === 200 && response.response.data) {
             console.log(response.response.data)
         }
-        redirect("/afterpayment")
+        router.push('/products')
+        toast.success("Order Placed Successfully");
     };
 
     return (
