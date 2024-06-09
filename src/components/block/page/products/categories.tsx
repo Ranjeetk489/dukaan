@@ -60,7 +60,7 @@ const Categories = (props: Props) => {
                                 key={category.id}
                                 className="w-full">
                                 <Button
-                                    className="w-full p-2 text-center whitespace-normal break-words"
+                                    className="w-full p-2 text-center whitespace-normal break-words h-fit"
                                     type="submit">
                                     {category.name.substring(0, 20)}
                                 </Button>
