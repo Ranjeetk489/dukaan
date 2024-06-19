@@ -20,31 +20,25 @@ const Categories = (props: Props) => {
         categoryProducts,
         updateCategories,
     } = useCategoryStore();
-    const onCategoryClick = async (id: number) => {
+    const onCategoryClick = async (id: number, searchValue: string) => {
         setLoading(true);
-        const data = await getProductsByCategoryId(id);
+        const data = await getProductsByCategoryId(id, searchValue);
         setLoading(false);
         if (data) {
             updateCategoryProducts(data);
         }
     };
     const params = useSearchParams()
-    console.log(params.get('search'), "params12")
-
-    
 
     useEffect(() => {
-        onCategoryClick(props.categories[0].id);
+        if(params.get('search')) {
+            onCategoryClick(props.categories[0].id, params.get('search') as string);
+        } else {
+            onCategoryClick(props.categories[0].id, '');
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    useEffect(() => {
-        // api call for search
-        console.log(params.get('search'), "params")
-        // remove search from url
-        if (params.get('search')) {
-             }
     }, [params.get('search')]);
+
 
     return (
         <div className="grid grid-cols-8 gap-8 lg:grid-cols-9 lg:gap-6">
@@ -56,7 +50,7 @@ const Categories = (props: Props) => {
                     .map((category) => {
                         return (
                             <form
-                                action={() => onCategoryClick(category.id)}
+                                action={() => onCategoryClick(category.id, '')}
                                 key={category.id}
                                 className="w-full">
                                 <Button

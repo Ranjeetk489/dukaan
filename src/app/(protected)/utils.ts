@@ -28,7 +28,7 @@ export type AuthUser =  {
 
 const isAuthenticatedAndUserId = async () => {
     const response = await fetchInsideTryCatch<AuthData>('api/auth/verify')
-        
+    console.log(response, 'response12')
     if (response && response.response.statusCode === 200 && response.response.data) {
         return {
             isAuthenticated: true,

@@ -102,15 +102,13 @@ export async function POST(req: Request) {
 
 export async function GET() {
     try {
-
         const auth = await isAuthenticatedAndUserData();
         const userId = auth.user?.id;
-
         if (!userId) {
             return responseHelper({ message: 'User not authenticated', statusCode: 401, data: {} }, 401);
         }
 
-        return responseHelper({ message: 'User authenticated', statusCode: 200, data: { user : auth.user } }, 200);
+        return responseHelper({ message: 'User authenticated', statusCode: 200, data: { user : auth } }, 200);
     } catch (error) {
         return responseHelper({ message: 'Internal server error', statusCode: 500, data: {} }, 500);
     }

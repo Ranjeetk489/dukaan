@@ -50,7 +50,6 @@ export default function RootLayout({
             router.push('/auth/login')
             return;
         }
-
         if (isMobile) {
             router.push('/cart')
         } else {
@@ -70,9 +69,8 @@ export default function RootLayout({
         [searchParams]
     )
     const handleChange = () => {
-        console.log("handle change", searchValue)
-        router.push(`/products?search=${searchValue}`)
-        router.push(pathname + '?' + createQueryString('sort', 'asc'))
+        router.push(`/products?search=${searchValue}&sort=asc`);
+        // router.push(pathname + '?' + createQueryString('sort', 'asc'))
     }
 
 

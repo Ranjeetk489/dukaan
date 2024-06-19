@@ -1,10 +1,33 @@
 'use server'
 import { Cart, CartItemQuantity, Product } from "@/types/client/types";
 import prisma from "./client";
+import { Prisma } from "@prisma/client";
 import { isAuthenticatedAndUserData } from "../auth";
 import { CartItem } from "@/types/client/types";
 
-export const getProductsByCategoryId = async (category_id: number) => {
+export const getProductsByCategoryId = async (category_id: number, searchValue: string) => {
+  if (searchValue) {
+    const prismaQuery = Prisma.sql`
+  SELECT
+    p.*,
+    json_agg(q.*) as quantities 
+  FROM
+    products p
+  LEFT JOIN 
+    quantity q
+  ON
+    p.id = q.product_id
+  WHERE
+    p.name ILIKE $1
+  GROUP BY 
+    p.id, q.price
+  ORDER BY q.price DESC
+`;
+
+    const data: Product[] = await prisma.$queryRawUnsafe<Product[]>(prismaQuery.sql, `%${searchValue}%`);
+    return data;
+
+  } else {
     const data: Product[] = await prisma.$queryRaw`
     SELECT
       p.*,
@@ -20,8 +43,9 @@ export const getProductsByCategoryId = async (category_id: number) => {
     GROUP BY
       p.id
   `;
-    // console.log(data, "data")
     return data
+  }
+
 }
 
 export const getCartData = async (): Promise<CartItem[]> => {
